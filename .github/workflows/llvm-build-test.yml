@@ -57,6 +57,8 @@ jobs:
         shell: bash
         run: |
           brew install ninja llvm
+          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
+          clang --version
 
       - name: Build
         if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
