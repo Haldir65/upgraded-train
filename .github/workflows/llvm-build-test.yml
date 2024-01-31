@@ -1,0 +1,61 @@
+name: Build
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - main
+
+jobs:
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        target:
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+            tar_extra_args: ''
+        llvm_version: ['16.x']
+        llvm_repo_url: ['https://github.com/llvm/llvm-project.git']
+      fail-fast: true
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Install `ninja` on Ubuntu
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          sudo apt-get install ninja-build -y
+
+          
+      - name: Build
+        if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
+        shell: bash
+        run: |
+          ./scripts/build_llvm.sh ${{ matrix.llvm_version }} ${{ matrix.llvm_repo_url }}
+
+      - name: Inspect
+        shell: bash
+        run: |
+          PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH llvm-config --version
+          PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH clang --version
+
+      - name: Zip
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar --directory llvm-project/build/destdir --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/llvm.tar.xz .
+          ls -lh dist/llvm.tar.xz
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target.id }}-${{ matrix.llvm_version }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
