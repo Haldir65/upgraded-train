@@ -54,6 +54,7 @@ CROSS_COMPILE=""
 case "${LLVM_CROSS}" in
     aarch64*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=aarch64-linux-gnu" ;;
     riscv64*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=riscv64-linux-gnu" ;;
+    mipsel*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=mipsel-linux-gnu" ;;
     *) ;;
 esac
 
@@ -81,7 +82,6 @@ cmake \
   -DLLVM_INCLUDE_TESTS=OFF \
   -DLLVM_INCLUDE_TOOLS=ON \
   -DLLVM_INCLUDE_UTILS=OFF \
-  -DLLVM_OPTIMIZED_TABLEGEN=ON \
   -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
   "${CROSS_COMPILE}" \
   "${CMAKE_ARGUMENTS}" \
