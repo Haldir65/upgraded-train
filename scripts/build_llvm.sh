@@ -61,6 +61,7 @@ esac
 cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_ENABLE_ASSERTIONS=OFF  \
   -DCMAKE_INSTALL_PREFIX="/" \
   -DLLVM_ENABLE_PROJECTS="clang;lld;libc;libclc;lldb" \
   -DLLVM_ENABLE_RUNTIMES=all  \
@@ -80,7 +81,7 @@ cmake \
   ../llvm
 
 # Showtime!
-cmake --build . --config Release
+cmake --build . --config Release -j${nproc}
 DESTDIR=destdir cmake --install . --strip --config Release
 
 # move usr/bin/* to bin/ or llvm-config will be broken

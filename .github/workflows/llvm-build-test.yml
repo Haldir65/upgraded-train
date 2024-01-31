@@ -26,12 +26,12 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
         with:
-            fetch-depth: 20
+            fetch-depth: 2
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build -y
+          sudo apt install ninja-build build-essential -y
 
           
       - name: Build
