@@ -31,9 +31,8 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential -y
+          sudo apt install ninja-build build-essential clang -y
 
-          
       - name: Build
         if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
         shell: bash

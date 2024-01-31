@@ -60,8 +60,12 @@ esac
 # Run `cmake` to configure the project.
 cmake \
   -G Ninja \
+  -DCMAKE_CXX_COMPILER=clang++  \
   -DCMAKE_BUILD_TYPE=Release \
-  -DLLVM_ENABLE_ASSERTIONS=OFF  \
+  -DLLVM_ENABLE_ASSERTIONS=ON  \
+  -DLLVM_OPTIMIZED_TABLEGEN=ON  \
+  -DLLVM_ENABLE_LLD=ON  \
+  -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
   -DLLVM_ENABLE_PROJECTS="clang;lld;libc;libclc;lldb" \
   -DLLVM_ENABLE_RUNTIMES=all  \
@@ -80,8 +84,11 @@ cmake \
   "${CMAKE_ARGUMENTS}" \
   ../llvm
 
+echo "num of processor is ${nproc}"
+
+clang++ --version
 # Showtime!
-cmake --build . --config Release -j${nproc}
+##cmake --build . --config Release -j${nproc}
 DESTDIR=destdir cmake --install . --strip --config Release
 
 # move usr/bin/* to bin/ or llvm-config will be broken
