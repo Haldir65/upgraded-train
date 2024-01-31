@@ -57,10 +57,13 @@ case "${LLVM_CROSS}" in
     *) ;;
 esac
 
+echo "num of processor is ${nproc}"
+
 # Run `cmake` to configure the project.
 cmake \
   -G Ninja \
   -DCMAKE_CXX_COMPILER=clang++  \
+  -DCMAKE_C_COMPILER=clang  \
   -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
