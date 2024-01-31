@@ -57,7 +57,7 @@ case "${LLVM_CROSS}" in
     *) ;;
 esac
 
-echo "num of processor is ${nproc}"
+# echo "num of processor is ${nproc}"
 
 # Run `cmake` to configure the project.
 cmake \
@@ -87,11 +87,11 @@ cmake \
   "${CMAKE_ARGUMENTS}" \
   ../llvm
 
-echo "num of processor is ${nproc}"
+# echo "num of processor is ${nproc}"
 
 clang++ --version
 # Showtime!
-##cmake --build . --config Release -j${nproc}
+cmake --build . --config Release -j4
 DESTDIR=destdir cmake --install . --strip --config Release
 
 # move usr/bin/* to bin/ or llvm-config will be broken
