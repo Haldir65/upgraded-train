@@ -23,9 +23,9 @@ jobs:
           #   os: "ubuntu-latest"
           #  os: ['self-hosted', 'linux', 'RISCV64']
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
-          - id: 'darwin-aarch64'
-            os: 'macos-14'
-            tar_extra_args: ''
+          # - id: 'darwin-aarch64'
+          #   os: 'macos-14'
+          #   tar_extra_args: ''
           - id: 'windows-amd64'
             os: 'windows-2019'
           # When unpacking an archive on Windows, the symlinks can't be
@@ -45,7 +45,7 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v4
         with:
-            fetch-depth: 2
+            fetch-depth: 20
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
