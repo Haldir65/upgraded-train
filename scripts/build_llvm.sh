@@ -27,6 +27,12 @@ then
 fi
 
 
+echo "===== show basic info ====="
+ls -al
+du -sh
+df -h
+pwd
+
 cd llvm-project
 git fetch origin
 git checkout "release/$LLVM_VERSION"
@@ -58,6 +64,12 @@ case "${LLVM_CROSS}" in
     *) ;;
 esac
 
+echo "===== show basic info ====="
+ls -al
+du -sh
+df -h
+pwd
+
 # echo "num of processor is ${nproc}"
 
 # Run `cmake` to configure the project.
@@ -71,8 +83,8 @@ cmake \
   -DLLVM_ENABLE_LLD=ON  \
   -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;lld;libc;libclc;lldb" \
-  -DLLVM_ENABLE_RUNTIMES=all  \
+  -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
+  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind"  \
   -DLLVM_ENABLE_RTTI=ON \
   -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
@@ -91,7 +103,7 @@ cmake \
 
 clang++ --version
 # Showtime!
-cmake --build . --config Release -j4
+cmake --build . --config Release -j2
 DESTDIR=destdir cmake --install . --strip --config Release
 
 # move usr/bin/* to bin/ or llvm-config will be broken
@@ -99,3 +111,8 @@ if [ ! -d destdir/bin ];then
  mkdir destdir/bin
 fi
 mv destdir/usr/bin/* destdir/bin/
+
+echo "===== show basic info ====="
+ls -al
+du -sh
+df -h
