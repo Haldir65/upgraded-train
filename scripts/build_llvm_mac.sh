@@ -76,6 +76,8 @@ pwd
 cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=clang++  \
+  -DCMAKE_C_COMPILER=clang  \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
   -DLLVM_ENABLE_LLD=ON  \
