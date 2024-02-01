@@ -1,0 +1,184 @@
+name: Build cross compilers
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - cng
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    env:
+      TARGET: '${{ matrix.target }}'
+      CROSSTOOL_NG_VERSION: '1.26.0'
+    strategy:
+      matrix:
+        include:
+          # https://distrowatch.com/table.php?distribution=redhat
+          # centos8 same as rhel8
+          - target: aarch64-rhel8-linux-gnu
+            vendor: rhel8
+            glibc: "2.28"
+            linux: "4.18"
+            gcc: "8.5.0"
+          - target: aarch64-rhel9-linux-gnu
+            vendor: rhel9
+            glibc: "2.34"
+            linux: "5.14"
+            gcc: "11.3.0"
+
+          # https://docs.aws.amazon.com/linux/al2022/release-notes/version-compare-al2022.html
+          - target: aarch64-aws2-linux-gnu
+            vendor: aws2
+            glibc: "2.26"
+            linux: "4.14"
+            gcc: "7.3.1"
+          - target: aarch64-aws2023-linux-gnu
+            vendor: aws2023
+            glibc: "2.34"
+            linux: "6.1"
+            gcc: "11.3.0"
+
+          - target: x86_64-alpine-linux-musl
+            vendor: alpine
+            glibc: "musl"
+            gcc: "11.3.0"
+          - target: aarch64-alpine-linux-musl
+            vendor: alpine
+            glibc: "musl"
+            gcc: "11.3.0"
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Cache Packages
+        id: cache-deps
+        uses: actions/cache@v3
+        with:
+          path: |
+            x-tools
+          key: ${{ hashFiles('.github/**/*.yml') }}-${{ matrix.target }}
+          # for testing
+          #key: ${{ matrix.target }}
+
+      - name: 'Install dependencies'
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          sudo sed -i "s/azure.archive.ubuntu.com/mirror.arizona.edu/g" /etc/apt/sources.list
+          sudo apt update
+          sudo apt install build-essential autoconf bison flex texinfo \
+            help2man gawk libtool libtool-bin libtool-doc libncurses5-dev python3-dev \
+            python3-distutils git unzip
+
+      - name: "Download and build crosstool-ng"
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-$CROSSTOOL_NG_VERSION.tar.bz2
+          tar xf crosstool-ng-$CROSSTOOL_NG_VERSION.tar.bz2
+          cd crosstool-ng-$CROSSTOOL_NG_VERSION
+          ./configure --enable-local
+          make
+          sudo make install
+
+      - name: "Configure target ${{ matrix.target }}"
+        if: startsWith(matrix.target, 'aarch64') && steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          cd crosstool-ng-$CROSSTOOL_NG_VERSION
+          ./ct-ng
+
+          config_path=./samples/${{ matrix.target }}
+          cp -r ${{ github.workspace}}/samples/aarch64-unknown-linux-gnu $config_path
+
+          if [[ -n "${{ matrix.vendor }}" ]]; then
+            echo "CT_TARGET_VENDOR=\"${{ matrix.vendor }}\"" >> $config_path/crosstool.config
+          fi
+          
+          if [[ ${{ matrix.glibc }} == "musl" ]]; then
+            # CT_EXPERIMENTAL=y required for musl
+            echo "CT_EXPERIMENTAL=y" >> $config_path/crosstool.config
+            echo "CT_LIBC_MUSL=y" >> $config_path/crosstool.config
+            echo "CT_DEBUG_DUMA=y" >> $config_path/crosstool.config
+
+          else
+            linux_ver=${{ matrix.linux }}
+            echo "CT_LINUX_V_${linux_ver//./_}=y" >> $config_path/crosstool.config
+
+            glibc_ver=${{ matrix.glibc }}
+            echo "CT_GLIBC_V_${glibc_ver//./_}=y" >> $config_path/crosstool.config
+          fi
+
+          gcc_ver=${{ matrix.gcc }}
+          echo "CT_GCC_V_${gcc_ver//./_}=y" >> $config_path/crosstool.config
+
+          echo "CT_LOG_PROGRESS_BAR=n" >> $config_path/crosstool.config
+          
+          cat $config_path/crosstool.config
+
+          ./ct-ng ${{ matrix.target }}
+          
+          # replace the minor/patch version
+          sed -i 's/CT_GCC_VERSION=.*/CT_GCC_VERSION="'${gcc_ver}'"/' .config
+          
+      - name: "Configure target (x86_64 musl)"
+        if: matrix.target == 'x86_64-alpine-linux-musl' && steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          cd crosstool-ng-$CROSSTOOL_NG_VERSION
+
+          config_path=./samples/${{ matrix.target }}
+          cp -r ${{ github.workspace}}/samples/x86_64-alpine-linux-musl $config_path
+
+          echo "CT_LOG_PROGRESS_BAR=n" >> $config_path/crosstool.config
+          
+          cat $config_path/crosstool.config
+
+          ./ct-ng ${{ matrix.target }}
+
+      - name: 'Build ${{ matrix.target }}'
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          cd crosstool-ng-$CROSSTOOL_NG_VERSION
+
+          # XXX https://github.com/crosstool-ng/crosstool-ng/issues/1832
+          sed -i 's/CT_ZLIB_VERSION="1.2.12"/CT_ZLIB_VERSION="1.2.13"/' .config
+
+          export HOME=$GITHUB_WORKSPACE
+
+          ./ct-ng build
+
+          find $HOME/x-tools/
+
+      - name: 'Package ${{ matrix.target }}'
+        id: package
+        run: |-
+          target=${{ matrix.target }}
+          # if [[ "$target" != "x86_64-alpine-linux-musl" ]]; then
+          #   target="aarch64-unknown-linux-gnu"
+          # fi
+          tar -zcvf ${{ matrix.target }}.tar.gz -C $GITHUB_WORKSPACE/x-tools --exclude=build.log.bz2 $target
+
+      - name: 'Set asset name'
+        id: asset_name
+        run: |-
+          asset=${{ matrix.target }}.tar.gz
+          gcc_ver=${{ matrix.gcc }}
+          gcc_major_ver=${gcc_ver//./_}
+          if [[ "$target" != "x86_64-alpine-linux-musl" ]]; then
+            libc="-glibc-${{ matrix.glibc }}"
+            if [[ "${{ matrix.glibc }}" == "musl" ]]; then libc=""; fi
+            asset=${{ matrix.target }}${libc}-gcc-${gcc_major_ver}.tar.gz
+          fi
+
+          echo "asset=$asset" >> $GITHUB_OUTPUT
+
+      - id: upload-artifacts
+        name: Upload artifacts
+        if: '${{ success() }}'
+        continue-on-error: false
+        uses: actions/upload-artifact@v3
+        with:
+          path: '${{ matrix.target }}.tar.gz'
+          name: '${{ steps.asset_name.outputs.asset }}'
+
+
