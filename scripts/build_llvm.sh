@@ -73,18 +73,41 @@ pwd
 # echo "num of processor is ${nproc}"
 
 # Run `cmake` to configure the project.
-cmake \
-  -G Ninja \
-  -DCMAKE_CXX_COMPILER=clang++  \
-  -DCMAKE_C_COMPILER=clang  \
-  -DCMAKE_BUILD_TYPE=Release \
+# cmake \
+#   -G Ninja \
+#   -DCMAKE_CXX_COMPILER=clang++  \
+#   -DCMAKE_C_COMPILER=clang  \
+#   -DCMAKE_BUILD_TYPE=Release \
+#   -DLLVM_ENABLE_ASSERTIONS=ON  \
+#   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
+#   -DLLVM_ENABLE_LLD=ON  \
+#   -DLLVM_ENABLE_LIBCXX=ON  \
+#   -DCMAKE_INSTALL_PREFIX="/" \
+#   -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
+#   -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind"  \
+#   -DLLVM_ENABLE_RTTI=ON \
+#   -DLLVM_ENABLE_TERMINFO=OFF \
+#   -DLLVM_ENABLE_ZLIB=OFF \
+#   -DLLVM_INCLUDE_DOCS=OFF \
+#   -DLLVM_INCLUDE_EXAMPLES=OFF \
+#   -DLLVM_INCLUDE_GO_TESTS=OFF \
+#   -DLLVM_INCLUDE_TESTS=OFF \
+#   -DLLVM_INCLUDE_TOOLS=ON \
+#   -DLLVM_INCLUDE_UTILS=OFF \
+#   -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
+#   "${CROSS_COMPILE}" \
+#   "${CMAKE_ARGUMENTS}" \
+#   ../llvm
+
+
+cmake -G Ninja -S llvm -B ../llvm \
+  -DCMAKE_BUILD_TYPE=Release  \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
-  -DLLVM_ENABLE_LLD=ON  \
-  -DLLVM_ENABLE_LIBCXX=ON  \
-  -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
-  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind"  \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
+  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind" \
+  -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
+  -DLLVM_DEFAULT_TARGET_TRIPLE="arm64-apple-darwin23.2.0" \
   -DLLVM_ENABLE_RTTI=ON \
   -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
@@ -92,13 +115,10 @@ cmake \
   -DLLVM_INCLUDE_EXAMPLES=OFF \
   -DLLVM_INCLUDE_GO_TESTS=OFF \
   -DLLVM_INCLUDE_TESTS=OFF \
-  -DLLVM_INCLUDE_TOOLS=ON \
-  -DLLVM_INCLUDE_UTILS=OFF \
-  -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
-  "${CROSS_COMPILE}" \
-  "${CMAKE_ARGUMENTS}" \
-  ../llvm
 
+ninja runtimes
+ninja check-runtimes 
+ninja install-runtimes 
 # echo "num of processor is ${nproc}"
 
 clang++ --version
