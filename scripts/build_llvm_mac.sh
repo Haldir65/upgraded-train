@@ -26,12 +26,12 @@ then
   git clone "$LLVM_REPO_URL" llvm-project
 fi
 
-
 echo "===== show basic info ====="
 ls -al
 du -sh
 df -h
 pwd
+
 
 cd llvm-project
 git fetch origin
@@ -60,38 +60,15 @@ CROSS_COMPILE=""
 case "${LLVM_CROSS}" in
     aarch64*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=aarch64-linux-gnu" ;;
     riscv64*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=riscv64-linux-gnu" ;;
-    mipsel*) CROSS_COMPILE="-DLLVM_HOST_TRIPLE=mipsel-linux-gnu" ;;
     *) ;;
 esac
-
-echo "===== show basic info ====="
-ls -al
-du -sh
-df -h
-pwd
-
-
-BREW_PREXI=`brew --prefix llvm`
-
-export LDFLAGS="-L${BREW_PREXI}/lib"
-export CPPFLAGS="-I${BREW_PREXI}/include"
-
-# echo "num of processor is ${nproc}"
 
 # Run `cmake` to configure the project.
 cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER=${BREW_PREXI}/bin/clang++  \
-  -DCMAKE_C_COMPILER=${BREW_PREXI}/bin/clang \
-  -DLLVM_ENABLE_ASSERTIONS=ON  \
-  -DLLVM_OPTIMIZED_TABLEGEN=ON  \
-  -DLLVM_ENABLE_LLD=ON  \
-  -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
-  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind"  \
-  -DLLVM_ENABLE_RTTI=ON \
+  -DLLVM_ENABLE_PROJECTS="clang;lld" \
   -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
   -DLLVM_INCLUDE_DOCS=OFF \
@@ -100,43 +77,30 @@ cmake \
   -DLLVM_INCLUDE_TESTS=OFF \
   -DLLVM_INCLUDE_TOOLS=ON \
   -DLLVM_INCLUDE_UTILS=OFF \
-  -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
+  -DLLVM_OPTIMIZED_TABLEGEN=ON \
+  -DLLVM_TARGETS_TO_BUILD="X86;AArch64;RISCV;WebAssembly" \
   "${CROSS_COMPILE}" \
   "${CMAKE_ARGUMENTS}" \
   ../llvm
 
-
-# cmake -G Ninja -S ../llvm  \
-#   -DCMAKE_BUILD_TYPE=Release  \
-#   -DLLVM_ENABLE_ASSERTIONS=ON  \
-#   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
-#   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" \
-#   -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind" \
-#   -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
-#   -DLLVM_DEFAULT_TARGET_TRIPLE="arm64-apple-darwin23.2.0" \
-#   -DLLVM_ENABLE_RTTI=ON \
-#   -DLLVM_ENABLE_TERMINFO=OFF \
-#   -DLLVM_ENABLE_ZLIB=OFF \
-#   -DLLVM_INCLUDE_DOCS=OFF \
-#   -DLLVM_INCLUDE_EXAMPLES=OFF \
-#   -DLLVM_INCLUDE_GO_TESTS=OFF \
-#   -DLLVM_INCLUDE_TESTS=OFF \
-
-# ninja runtimes
-# ninja check-runtimes 
-# ninja install-runtimes 
-# echo "num of processor is ${nproc}"
-
-clang++ --version
 # Showtime!
-cmake --build . --config Release -j2
-DESTDIR=destdir cmake --install . --strip --config Release
+cmake --build . --config Release
+DESTDIR=destdir cmake --install . --strip --config MinSizeRel
+
+
+
+echo "===== show basic info ====="
+ls -al
+du -sh
+df -h
+pwd
 
 # move usr/bin/* to bin/ or llvm-config will be broken
 if [ ! -d destdir/bin ];then
  mkdir destdir/bin
 fi
 mv destdir/usr/bin/* destdir/bin/
+
 
 echo "===== show basic info ====="
 ls -al
