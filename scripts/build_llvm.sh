@@ -100,7 +100,7 @@ pwd
 #   ../llvm
 
 
-cmake -G Ninja -S llvm -B ../llvm \
+cmake -G Ninja -S ../llvm -B \
   -DCMAKE_BUILD_TYPE=Release  \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
