@@ -64,9 +64,12 @@ jobs:
           echo "${BREW_INSTALL_PREFIX}/bin"
           echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
           clang --version
+          echo "llvm"
+          /opt/homebrew/opt/llvm/bin/clang --version
 
       - name: Build
-        if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
+        # if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
+        if: matrix.target.id == 'linux-amd64'
         shell: bash
         run: |
           ./scripts/build_llvm.sh ${{ matrix.llvm_version }} ${{ matrix.llvm_repo_url }}

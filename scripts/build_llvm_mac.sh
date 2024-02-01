@@ -70,20 +70,26 @@ du -sh
 df -h
 pwd
 
+
+BREW_PREXI=`brew --prefix llvm`
+
+export LDFLAGS="-L${BREW_PREXI}/lib"
+export CPPFLAGS="-I${BREW_PREXI}/include"
+
 # echo "num of processor is ${nproc}"
 
 # Run `cmake` to configure the project.
 cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER=clang++  \
-  -DCMAKE_C_COMPILER=clang  \
+  -DCMAKE_CXX_COMPILER=${BREW_PREXI}/bin/clang++  \
+  -DCMAKE_C_COMPILER=${BREW_PREXI}/bin/clang \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
   -DLLVM_ENABLE_LLD=ON  \
   -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;lld;lldb" \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
   -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind"  \
   -DLLVM_ENABLE_RTTI=ON \
   -DLLVM_ENABLE_TERMINFO=OFF \
