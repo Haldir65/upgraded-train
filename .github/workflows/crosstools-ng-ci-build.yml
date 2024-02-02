@@ -29,17 +29,20 @@ jobs:
             gcc: "11.3.0"
 
           # https://docs.aws.amazon.com/linux/al2022/release-notes/version-compare-al2022.html
-          - target: aarch64-aws2-linux-gnu
-            vendor: aws2
-            glibc: "2.26"
-            linux: "4.14"
-            gcc: "7.3.1"
+          # - target: aarch64-aws2-linux-gnu
+          #   vendor: aws2
+          #   glibc: "2.26"
+          #   linux: "4.14"
+          #   gcc: "11.3.1"
           - target: aarch64-aws2023-linux-gnu
             vendor: aws2023
             glibc: "2.34"
             linux: "6.1"
             gcc: "11.3.0"
-
+          - target: mipsel-aunknown-linux-gnu
+            vendor: unknown
+            glibc: "2.37"
+            gcc: "13.2.0"  
           - target: x86_64-alpine-linux-musl
             vendor: alpine
             glibc: "musl"
@@ -81,6 +84,45 @@ jobs:
           ./configure --enable-local
           make
           sudo make install
+
+      - name: "Configure target ${{ matrix.target }}"
+        if: startsWith(matrix.target, 'mips') && steps.cache-deps.outputs.cache-hit != 'true'
+        run: |-
+          cd crosstool-ng-$CROSSTOOL_NG_VERSION
+          ./ct-ng
+
+          config_path=./samples/${{ matrix.target }}
+          cp -r ${{ github.workspace}}/samples/mipsel-unknown-linux-gnu $config_path
+
+          if [[ -n "${{ matrix.vendor }}" ]]; then
+            echo "CT_TARGET_VENDOR=\"${{ matrix.vendor }}\"" >> $config_path/crosstool.config
+          fi
+          
+          if [[ ${{ matrix.glibc }} == "musl" ]]; then
+            # CT_EXPERIMENTAL=y required for musl
+            echo "CT_EXPERIMENTAL=y" >> $config_path/crosstool.config
+            echo "CT_LIBC_MUSL=y" >> $config_path/crosstool.config
+            echo "CT_DEBUG_DUMA=y" >> $config_path/crosstool.config
+
+          else
+            linux_ver=${{ matrix.linux }}
+            echo "CT_LINUX_V_${linux_ver//./_}=y" >> $config_path/crosstool.config
+
+            glibc_ver=${{ matrix.glibc }}
+            echo "CT_GLIBC_V_${glibc_ver//./_}=y" >> $config_path/crosstool.config
+          fi
+
+          gcc_ver=${{ matrix.gcc }}
+          echo "CT_GCC_V_${gcc_ver//./_}=y" >> $config_path/crosstool.config
+
+          echo "CT_LOG_PROGRESS_BAR=n" >> $config_path/crosstool.config
+          
+          cat $config_path/crosstool.config
+
+          ./ct-ng ${{ matrix.target }}
+          
+          # replace the minor/patch version
+          sed -i 's/CT_GCC_VERSION=.*/CT_GCC_VERSION="'${gcc_ver}'"/' .config    
 
       - name: "Configure target ${{ matrix.target }}"
         if: startsWith(matrix.target, 'aarch64') && steps.cache-deps.outputs.cache-hit != 'true'
