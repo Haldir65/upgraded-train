@@ -75,7 +75,7 @@ cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_PREFIX="/" \
   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
-  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libunwind;libcxxabi;libcxx;llvm-libgcc"  \
+  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libunwind;libcxxabi;libcxx"  \
   -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
   -DLLVM_INCLUDE_DOCS=OFF \
