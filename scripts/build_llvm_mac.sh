@@ -27,7 +27,7 @@ then
 fi
 
 echo "===== show basic info ====="
-ls -al
+ls -alSh
 du -sh
 df -h
 pwd
@@ -38,6 +38,8 @@ git fetch origin
 git checkout "release/$LLVM_VERSION"
 git reset --hard origin/"release/$LLVM_VERSION"
 
+du -sh ../
+ls -alSh ../
 # Create a directory to build the project.
 mkdir -p build
 cd build
@@ -90,8 +92,9 @@ DESTDIR=destdir cmake --install . --strip --config MinSizeRel
 
 
 echo "===== show basic info ====="
-ls -al
+ls -alSh
 du -sh
+du -sh ../
 df -h
 pwd
 
@@ -103,6 +106,9 @@ mv destdir/usr/bin/* destdir/bin/
 
 
 echo "===== show basic info ====="
-ls -al
-du -sh
+ls -alSh
+du -sh *
+cd ../
+du -sh *
 df -h
+

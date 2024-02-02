@@ -1,4 +1,4 @@
-name: Build
+name: Build llvm toolchain
 
 on:
     workflow_dispatch:
