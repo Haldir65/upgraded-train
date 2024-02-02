@@ -54,7 +54,7 @@ jobs:
           echo "cpu core num is "
           nproc
       
-      - name: Install `ninja` on macOS
+      - name: Install `ninja llvm cmake `  on macOS
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |

@@ -83,7 +83,7 @@ cmake \
   -DLLVM_ENABLE_LLD=ON  \
   -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;lld;libc;libclc;lldb" \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld;libc;libclc;lldb" \
   -DLLVM_ENABLE_RUNTIMES=all  \
   -DLLVM_ENABLE_RTTI=ON \
   -DLLVM_ENABLE_TERMINFO=OFF \

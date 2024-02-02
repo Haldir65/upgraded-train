@@ -43,7 +43,7 @@ cmake `
   -G "Visual Studio 16 2019" `
   -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_INSTALL_PREFIX=destdir `
-  -DLLVM_ENABLE_PROJECTS="clang;lld" `
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" `
   -DLLVM_ENABLE_TERMINFO=OFF `
   -DLLVM_ENABLE_ZLIB=OFF `
   -DLLVM_INCLUDE_DOCS=OFF `
