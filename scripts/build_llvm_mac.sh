@@ -73,7 +73,17 @@ cmake \
   -DCMAKE_CXX_COMPILER=clang++  \
   -DCMAKE_C_COMPILER=clang  \
   -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_ENABLE_ASSERTIONS=ON  \
+  -DLLVM_DEFAULT_TARGET_TRIPLE=mipsel-unknown-linux-musl  \
+  -DLLVM_ENABLE_RTTI=ON \
+  -DLLVM_ENABLE_EH=ON \
+  -DLLVM_TARGET_ARCH="Mips" \
   -DCMAKE_INSTALL_PREFIX="/" \
+  -DLIBCXX_USE_COMPILER_RT=YES  \
+  -DCLANG_DEFAULT_CXX_STDLIB=libc++ \
+  -DCLANG_DEFAULT_RTLIB=compiler-rt \
+  -DLIBCXXABI_USE_COMPILER_RT=ON \
+  -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
   -DLLVM_ENABLE_RUNTIMES="compiler-rt;libunwind;libcxxabi;libcxx"  \
   -DLLVM_ENABLE_TERMINFO=OFF \
@@ -88,7 +98,7 @@ cmake \
   -DLLVM_TARGETS_TO_BUILD="X86;AArch64;RISCV;Mips;ARM;WebAssembly" \
   "${CROSS_COMPILE}" \
   "${CMAKE_ARGUMENTS}" \
-  ../llvm
+  ../llvm  
 
 
 
