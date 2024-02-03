@@ -16,6 +16,11 @@ jobs:
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
             tar_extra_args: ''
+            host: 'x86_64-pc-linux-gnu'
+          # - id: 'linux-amd64-mips'
+          #   os: 'ubuntu-latest'
+          #   tar_extra_args: ''
+          #   host: 'mipsel-unknown-linux-gnu'  
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
@@ -50,7 +55,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential clang coreutils gcc-multilib g++-multilib -y
+          sudo apt install ninja-build build-essential clang coreutils gcc-multilib g++-multilib texinfo -y
           echo "cpu core num is "
           nproc
       
@@ -72,13 +77,32 @@ jobs:
       #   with:
       #       repository: ''
       #       ref: ${{ matrix.llvm_version }}
+      - name: prepare source from tarball
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          ls -alSh
+          mkdir -p build
+          tar xvf assets/gcc-13.2.0.tar.gz -C build
+          mv build/gcc-13.2.0 gcc13source
+          ls -alSh gcc13source
+          tar xvf assets/binutils-2.42.tar.gz -C build
+          mv build/binutils-2.42 binutils-2.42
+          ls -alSh binutils-2.42
 
-      - name: Build
-        if: matrix.target.id == 'linux-amd64'
+      - name: Build for x86_64-pc-linux-gnu host
+        if: matrix.target.host == 'x86_64-pc-linux-gnu'
         shell: bash
         run: |
           ls -alSh
           ./scripts/build_gcc.sh
+
+      - name: Build
+        if: matrix.target.host == 'mipsel-unknown-linux-gnu'
+        shell: bash
+        run: |
+          ls -alSh
+          ./scripts/build_gcc_mips.sh          
 
       # - name: Build (darwin-amd64)
       #   if: startsWith(matrix.target.id, 'darwin-')
