@@ -67,6 +67,12 @@ jobs:
           echo "llvm"
           /opt/homebrew/opt/llvm/bin/clang --version
 
+      - name: Check out llvm source code
+        uses: actions/checkout@v4
+        with:
+            repository: ''
+            ref: ${{ matrix.llvm_version }}
+
       - name: Build
         # if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
         if: matrix.target.id == 'linux-amd64'

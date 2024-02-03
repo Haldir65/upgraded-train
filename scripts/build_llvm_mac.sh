@@ -21,10 +21,10 @@ then
 fi
 
 # Clone the LLVM project.
-if [ ! -d llvm-project ]
-then
-  git clone "$LLVM_REPO_URL" llvm-project
-fi
+# if [ ! -d llvm-project ]
+# then
+#   git clone "$LLVM_REPO_URL" llvm-project
+# fi
 
 echo "===== show basic info ====="
 ls -alSh
