@@ -1,4 +1,4 @@
-name: Build llvm toolchain
+name: Build gcc from source
 
 on:
     workflow_dispatch:
@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build
-    continue-on-error: true
+    continue-on-error: false
     strategy:
       matrix:
         target:
@@ -96,7 +96,7 @@ jobs:
       - name: Inspect gcc version
         shell: bash
         run: |
-          PATH=gcc-13-build/bin:llvm-project/build/destdir/usr/bin:$PATH gcc --version
+          PATH=gcc-13-build/bin:$PATH gcc --version
           PATH=gcc-13-build/bin:PATH g++ --version
 
       - name: Zip
