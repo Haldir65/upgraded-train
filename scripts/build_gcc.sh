@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function main(){
     local current_dir=`pwd`
     sudo apt install -y build-essential
@@ -15,7 +17,8 @@ function main(){
     ./../gcc13source/configure \
     --prefix="${current_dir}/gcc-13-build" \
     --enable-languages="c,c++"  \
-    --host=x86_64-pc-linux-gnu
+    --enable-shared \
+    --enable-threads=posix
     make -j 4
     echo "now install begin"
     make install

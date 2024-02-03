@@ -50,7 +50,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential clang coreutils -y
+          sudo apt install ninja-build build-essential clang coreutils gcc-multilib g++-multilib -y
           echo "cpu core num is "
           nproc
       
