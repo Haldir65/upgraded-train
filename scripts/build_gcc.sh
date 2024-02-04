@@ -21,7 +21,7 @@ function main(){
     --enable-languages="c,c++"  \
     --enable-shared \
     --enable-threads=posix
-    make -j ${nproc}
+    make -j 2
     echo "now install begin"
     make install
     # ls -al ../gcc-13-build
