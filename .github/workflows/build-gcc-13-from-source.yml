@@ -58,8 +58,8 @@ jobs:
       - name: Check out gcc source code
         uses: actions/checkout@v4
         with:
-            repository: 'git://gcc.gnu.org/git/gcc.git'
-            ref: 'releases/gcc-13'
+            repository: gcc-mirror/gcc
+            ref: releases/gcc-13
             path: gcc13source
 
       - name: Install `ninja` on Ubuntu
