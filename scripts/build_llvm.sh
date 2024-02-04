@@ -102,7 +102,7 @@ ls -alSh build/llvm
 clang --version
 clang++ --version
 
-export PATH=${WORKING_DIR}/llvm-project/build/llvm:${WORKING_DIR}/llvm-project/build/llvm/bin:${PATH}
+export PATH=${WORKING_DIR}/llvm-project/build/llvm/bin:${PATH}
 echo "PATH = ${PATH}"
 clang --version
 clang++ --version
