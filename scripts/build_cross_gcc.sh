@@ -16,7 +16,7 @@ INSTALL_PATH=/opt/cross
 TARGET=aarch64-linux
 USE_NEWLIB=0
 LINUX_ARCH=arm64
-CONFIGURATION_OPTIONS="--disable-multilib" # --disable-threads --disable-shared
+CONFIGURATION_OPTIONS="--disable-multilib CFLAGS=-Wno-error" # --disable-threads --disable-shared
 PARALLEL_MAKE=-j4
 BINUTILS_VERSION=binutils-2.24
 GCC_VERSION=gcc-4.9.2
