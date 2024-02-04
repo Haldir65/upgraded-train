@@ -1,6 +1,8 @@
 #!/bin/bash
 
 GCC_HOST=$1
+GCC_TARGET=$2
+
 
 
 if [[ -z "$GCC_HOST" ]]
@@ -26,10 +28,12 @@ function main(){
     cd ../gcc13build
     ls -alSh
     ./../gcc13source/configure \
+    --host=${GCC_HOST}  \
+    --target=${GCC_TARGET}  \
     --prefix="${current_dir}/gcc-13-build" \
     --enable-languages="c,c++"  \
     --enable-shared \
-    --enable-host=${GCC_HOST} \
+    --host=x86_64-pc-linux-gnu  \
     --enable-threads=posix
     make -j 2
     echo "now install begin"

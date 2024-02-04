@@ -1,4 +1,4 @@
-name: Build gcc from source for multiple arch
+name: Build gcc from source
 
 on:
     workflow_dispatch:
@@ -16,11 +16,11 @@ jobs:
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
             tar_extra_args: ''
-            host: 'x86_64-pc-linux-gnu'
-          - id: 'linux-amd64-mips'
-            os: 'ubuntu-latest'
-            tar_extra_args: ''
-            host: 'mipsel-unknown-linux-gnu'  
+            target: 'x86_64-pc-linux-gnu'
+          # - id: 'linux-amd64-mips'
+          #   os: 'ubuntu-latest'
+          #   tar_extra_args: ''
+          #   target: 'mipsel-unknown-linux-gnu'  
           # - id: 'linux-amd64-aarch64'
           #   os: 'ubuntu-latest'
           #   tar_extra_args: ''
@@ -44,7 +44,7 @@ jobs:
           # adds an additional copy per link, but it reliably works and
           # the additional size is not too large on Windows.
             # tar_extra_args: '--dereference'
-        # llvm_version: ['16.x']
+        host: ['x86_64-pc-linux-gnu']
         # llvm_repo_url: ['https://github.com/llvm/llvm-project.git']
       fail-fast: true
 
@@ -99,21 +99,21 @@ jobs:
           mv build/binutils-2.42 binutils-2.42
           ls -alSh binutils-2.42
 
-      - name: Build for x86_64-pc-linux-gnu host
-        if: matrix.target.host == 'x86_64-pc-linux-gnu'
+      - name: Build for x86_64-pc-linux-gnu target that runs on x86_64-pc-linux-gnu
+        if: matrix.target.target == 'x86_64-pc-linux-gnu'
         shell: bash
         run: |
           ls -alSh
           chmod +x ./scripts/build_gcc.sh
-          ./scripts/build_gcc.sh ${{ matrix.target.host }}
+          ./scripts/build_gcc.sh  ${{ matrix.host }} ${{ matrix.target.target }}
 
-      - name: Build for mipsel-unknown-linux-gnu host
-        if: matrix.target.host == 'mipsel-unknown-linux-gnu'
+      - name: Build for mipsel-unknown-linux-gnu target that runs on x86_64-pc-linux-gnu
+        if: matrix.target.target == 'mipsel-unknown-linux-gnu'
         shell: bash
         run: |
           ls -alSh
           chmod +x ./scripts/build_gcc_cross.sh
-          ./scripts/build_gcc_cross.sh ${{ matrix.target.host }}         
+          ./scripts/build_gcc_cross.sh ${{ matrix.host }} ${{ matrix.target.target }} 
 
       - name: Build gcc cross 
         if: matrix.target.host == 'aarch64-linux-gnu'

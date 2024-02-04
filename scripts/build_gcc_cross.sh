@@ -2,6 +2,7 @@
 
 
 GCC_HOST=$1
+GCC_TARGET=$2
 
 
 if [[ -z "$GCC_HOST" ]]
@@ -46,6 +47,8 @@ function main(){
     ls -alSh
     ./../gcc13source/configure \
     --prefix="${current_dir}/gcc-13-build" \
+    --host=${GCC_HOST}  \
+    --target=${GCC_TARGET}  \
     --disable-nls   \
     --without-headers   \
     --enable-languages="c,c++"  \
