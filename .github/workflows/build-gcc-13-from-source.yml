@@ -84,8 +84,8 @@ jobs:
           ls -alSh
           mkdir -p build
           tar xvf assets/gcc-13.2.0.tar.xz -C build
-          mv build/gcc-13.2.0 gcc13source
-          ls -alSh gcc13source
+          mv build/gcc-13.2.0 gcc13source2
+          ls -alSh gcc13source2
           tar xvf assets/binutils-2.42.tar.gz -C build
           mv build/binutils-2.42 binutils-2.42
           ls -alSh binutils-2.42
