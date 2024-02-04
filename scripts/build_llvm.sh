@@ -33,8 +33,6 @@ du -sh
 df -h
 pwd
 
-WORKING_DIR=`pwd`
-
 cd llvm-project
 git fetch origin
 git checkout "release/$LLVM_VERSION"
@@ -42,10 +40,10 @@ git reset --hard origin/"release/$LLVM_VERSION"
 
 # Create a directory to build the project.
 mkdir -p build
-# cd build
+cd build
 
 # Create a directory to receive the complete installation.
-mkdir -p build/install
+mkdir -p install
 
 # Adjust compilation based on the OS.
 CMAKE_ARGUMENTS=""
@@ -77,46 +75,18 @@ pwd
 # Run `cmake` to configure the project.
 cmake \
   -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DLLVM_ENABLE_ASSERTIONS=ON  \
-  -DLLVM_OPTIMIZED_TABLEGEN=ON  \
-  -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
-  -DLLVM_ENABLE_ZLIB=OFF \
-  -DLLVM_INCLUDE_DOCS=OFF \
-  -DLLVM_INCLUDE_EXAMPLES=OFF \
-  -DLLVM_INCLUDE_GO_TESTS=OFF \
-  -DLLVM_INCLUDE_TESTS=OFF \
-  -DLLVM_INCLUDE_TOOLS=ON \
-  -DLLVM_INCLUDE_UTILS=OFF \
-  -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
-  "${CROSS_COMPILE}" \
-  "${CMAKE_ARGUMENTS}" \
-  -B build/llvm -S llvm
-
-ninja -C build/llvm
-
-ls -alSh build/llvm
-
-
-clang --version
-clang++ --version
-
-export PATH=${WORKING_DIR}/llvm-project/build/llvm/bin:${PATH}
-echo "PATH = ${PATH}"
-clang --version
-clang++ --version
-
-
-cmake \
-  -G Ninja \
-  -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CXX_COMPILER=clang++  \
   -DCMAKE_C_COMPILER=clang  \
+  -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
+  -DLLVM_ENABLE_LLD=ON  \
+  -DLLVM_ENABLE_LIBCXX=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
-  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind" \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld;libc;libclc;lldb" \
+  -DLLVM_ENABLE_RUNTIMES=all  \
+  -DLLVM_ENABLE_RTTI=ON \
+  -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
   -DLLVM_INCLUDE_DOCS=OFF \
   -DLLVM_INCLUDE_EXAMPLES=OFF \
@@ -124,13 +94,11 @@ cmake \
   -DLLVM_INCLUDE_TESTS=OFF \
   -DLLVM_INCLUDE_TOOLS=ON \
   -DLLVM_INCLUDE_UTILS=OFF \
+  -DLLVM_OPTIMIZED_TABLEGEN=ON \
   -DLLVM_TARGETS_TO_BUILD="X86;ARM;AArch64;Mips" \
   "${CROSS_COMPILE}" \
   "${CMAKE_ARGUMENTS}" \
-  -B build/runtimes -S runtimes
-
-ninja -C build/runtimes
-
+  ../llvm
 
 
 # cmake -G Ninja -S ../llvm  \
@@ -154,12 +122,10 @@ ninja -C build/runtimes
 # ninja install-runtimes 
 # echo "num of processor is ${nproc}"
 
-# clang++ --versions
-
-
+clang++ --version
 # Showtime!
-# cmake --build . --config Release -j2
-DESTDIR=destdir cmake --install build --strip --config Release
+cmake --build . --config Release -j2
+DESTDIR=destdir cmake --install . --strip --config Release
 
 # move usr/bin/* to bin/ or llvm-config will be broken
 if [ ! -d destdir/bin ];then

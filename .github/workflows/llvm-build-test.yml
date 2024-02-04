@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build
-    continue-on-error: true
+    continue-on-error: false
     strategy:
       matrix:
         target:
