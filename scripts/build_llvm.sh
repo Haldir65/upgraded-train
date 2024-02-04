@@ -33,6 +33,8 @@ du -sh
 df -h
 pwd
 
+WORKING_DIR=`pwd`
+
 cd llvm-project
 git fetch origin
 git checkout "release/$LLVM_VERSION"
@@ -93,6 +95,8 @@ cmake \
   -B build/llvm -S llvm
 
 ninja -C build/llvm
+
+export PATH=${WORKING_DIR}/llvm-project/build/llvm:${PATH}
 
 
 cmake \
