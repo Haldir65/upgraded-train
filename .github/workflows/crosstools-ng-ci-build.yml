@@ -39,9 +39,9 @@ jobs:
             glibc: "2.34"
             linux: "6.1"
             gcc: "11.3.0"
-          - target: mipsel-aunknown-linux-gnu
+          - target: mipsel-unknown-linux-gnu
             vendor: unknown
-            glibc: "2.37"
+            glibc: "2.34"
             gcc: "13.2.0"  
           - target: x86_64-alpine-linux-musl
             vendor: alpine
