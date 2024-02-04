@@ -20,7 +20,7 @@ CONFIGURATION_OPTIONS="--disable-multilib CFLAGS=-Wno-error CXXFLAGS=-std=c++11"
 ## ../../gcc-4.9.2/gcc/reload1.c:89:24: error: use of an operand of type ‘bool’ in ‘operator++’ is forbidden in C++17
 PARALLEL_MAKE=-j4
 BINUTILS_VERSION=binutils-2.24
-GCC_VERSION=gcc-4.9.2
+GCC_VERSION=gcc-6.2.1
 LINUX_KERNEL_VERSION=linux-3.17.2
 GLIBC_VERSION=glibc-2.20
 MPFR_VERSION=mpfr-3.1.2
