@@ -116,7 +116,7 @@ jobs:
           ./scripts/build_gcc_cross.sh ${{ matrix.host }} ${{ matrix.target.target }} 
 
       - name: Build gcc cross 
-        if: matrix.target.host == 'aarch64-linux-gnu'
+        if: matrix.target.target == 'aarch64-linux-gnu'
         shell: bash
         run: |
           ls -alSh
@@ -137,7 +137,7 @@ jobs:
       #     ./scripts/build_llvm.ps1 ${{ matrix.llvm_version }} ${{ matrix.llvm_repo_url }}
 
       - name: Inspect gcc version
-        if: matrix.target.host != 'aarch64-linux-gnu'
+        if: matrix.target.target != 'aarch64-linux-gnu'
         shell: bash
         run: |
           PATH=gcc-13-build/bin:$PATH gcc --version
@@ -148,20 +148,20 @@ jobs:
         run: |
           mkdir -p dist
           ls -alSh 
-          if [ ${{ matrix.target.host }} == 'aarch64-linux-gnu' ]; then
+          if [ ${{ matrix.target.target }} == 'aarch64-linux-gnu' ]; then
             tar --directory /opt/cross --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc_cross.tar.xz .
-          elif [ ${{ matrix.target.host }} == 'x86_64-pc-linux-gnu'  || ${{ matrix.target.host }} == 'mipsel-unknown-linux-gnu' ]; then
-            tar --directory gcc-13-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
+          elif [ ${{ matrix.target.target }} == 'x86_64-pc-linux-gnu'  || ${{ matrix.target.target }} == 'mipsel-unknown-linux-gnu' ]; then
+            tar --directory gcc13build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
           else
             echo "unknown host"
           fi
 
-          ls -lh dist/gcc.tar.xz
+          ls -alSh dist/gcc.tar.xz
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target.id }}-${{ matrix.target.os }}-${{ matrix.target.host }}
+          name: ${{ matrix.target.id }}-${{ matrix.target.os }}-${{ matrix.target.target }}
           path: dist
           if-no-files-found: error
           retention-days: 7
