@@ -85,7 +85,7 @@ cmake \
   -DLIBCXXABI_USE_COMPILER_RT=ON \
   -DLIBCXXABI_USE_LLVM_UNWINDER=ON \
   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
-  -DLLVM_ENABLE_RUNTIMES="compiler-rt;libunwind;libcxxabi;libcxx"  \
+  -DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx"  \
   -DLLVM_ENABLE_TERMINFO=OFF \
   -DLLVM_ENABLE_ZLIB=OFF \
   -DLLVM_INCLUDE_DOCS=OFF \

@@ -40,7 +40,7 @@ $CROSS_COMPILE = ""
 
 # Run `cmake` to configure the project.
 cmake `
-  -G "Visual Studio 16 2019" `
+  -G "Visual Studio 17 202" `
   -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_INSTALL_PREFIX=destdir `
   -DLLVM_DEFAULT_TARGET_TRIPLE=mipsel-unknown-linux-musl `
