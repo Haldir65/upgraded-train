@@ -1,5 +1,14 @@
 #!/bin/bash
 
+GCC_HOST=$1
+
+
+if [[ -z "$GCC_HOST" ]]
+then
+  echo "misssing required arguments host"
+  exit 1
+fi
+
 function main(){
     local current_dir=`pwd`
     sudo apt install -y build-essential
@@ -20,6 +29,7 @@ function main(){
     --prefix="${current_dir}/gcc-13-build" \
     --enable-languages="c,c++"  \
     --enable-shared \
+    --enable-host=${GCC_HOST} \
     --enable-threads=posix
     make -j 2
     echo "now install begin"

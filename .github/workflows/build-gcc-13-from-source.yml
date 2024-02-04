@@ -1,4 +1,4 @@
-name: Build gcc from source
+name: Build gcc from source for multiple arch
 
 on:
     workflow_dispatch:
@@ -17,10 +17,10 @@ jobs:
             os: 'ubuntu-latest'
             tar_extra_args: ''
             host: 'x86_64-pc-linux-gnu'
-          # - id: 'linux-amd64-mips'
-          #   os: 'ubuntu-latest'
-          #   tar_extra_args: ''
-          #   host: 'mipsel-unknown-linux-gnu'  
+          - id: 'linux-amd64-mips'
+            os: 'ubuntu-latest'
+            tar_extra_args: ''
+            host: 'mipsel-unknown-linux-gnu'  
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
@@ -84,8 +84,8 @@ jobs:
           ls -alSh
           mkdir -p build
           tar xvf assets/gcc-13.2.0.tar.xz -C build
-          mv build/gcc-13.2.0 gcc13source2
-          ls -alSh gcc13source2
+          mv build/gcc-13.2.0 gcc13source
+          ls -alSh gcc13source
           tar xvf assets/binutils-2.42.tar.gz -C build
           mv build/binutils-2.42 binutils-2.42
           ls -alSh binutils-2.42
@@ -95,14 +95,16 @@ jobs:
         shell: bash
         run: |
           ls -alSh
-          ./scripts/build_gcc.sh
+          chmod +x ./scripts/build_gcc.sh
+          ./scripts/build_gcc.sh ${{ matrix.target.host }}
 
-      - name: Build
+      - name: Build for mipsel-unknown-linux-gnu host
         if: matrix.target.host == 'mipsel-unknown-linux-gnu'
         shell: bash
         run: |
           ls -alSh
-          ./scripts/build_gcc_mips.sh          
+          chmod +x ./scripts/build_gcc_cross.sh
+          ./scripts/build_gcc_cross.sh ${{ matrix.target.host }}         
 
       # - name: Build (darwin-amd64)
       #   if: startsWith(matrix.target.id, 'darwin-')
@@ -134,7 +136,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target.id }}-${{ matrix.target.os }}
+          name: ${{ matrix.target.id }}-${{ matrix.target.os }}-${{ matrix.target.host }}
           path: dist
           if-no-files-found: error
           retention-days: 7
