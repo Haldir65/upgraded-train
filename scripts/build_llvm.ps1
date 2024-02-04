@@ -40,7 +40,7 @@ $CROSS_COMPILE = ""
 
 # Run `cmake` to configure the project.
 cmake `
-  -G "Visual Studio 17 2022" `
+  -G "Visual Studio 16 2019" `
   -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_INSTALL_PREFIX=destdir `
   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" `

@@ -29,7 +29,7 @@ jobs:
             tar_extra_args: ''
             llvm_version: '18.x'
           - id: 'windows-amd64'
-            os: 'windows-latest'
+            os: 'windows-2019'
             llvm_version: '17.x'
           # When unpacking an archive on Windows, the symlinks can't be
           # created unless the target path already exists. This causes

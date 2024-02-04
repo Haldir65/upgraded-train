@@ -96,14 +96,23 @@ cmake \
 
 ninja -C build/llvm
 
-export PATH=${WORKING_DIR}/llvm-project/build/llvm:${PATH}
+ls -alSh build/llvm
+
+
+clang --version
+clang++ --version
+
+export PATH=${WORKING_DIR}/llvm-project/build/llvm:${WORKING_DIR}/llvm-project/build/llvm/bin:${PATH}
+echo "PATH = ${PATH}"
+clang --version
+clang++ --version
 
 
 cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_CXX_COMPILER="build/llvm/clang++"  \
-  -DCMAKE_C_COMPILER="build/llvm/clang"  \
+  -DCMAKE_CXX_COMPILER=clang++  \
+  -DCMAKE_C_COMPILER=clang  \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
   -DLLVM_OPTIMIZED_TABLEGEN=ON  \
   -DCMAKE_INSTALL_PREFIX="/" \
