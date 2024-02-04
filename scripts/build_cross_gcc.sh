@@ -16,7 +16,8 @@ INSTALL_PATH=/opt/cross
 TARGET=aarch64-linux
 USE_NEWLIB=0
 LINUX_ARCH=arm64
-CONFIGURATION_OPTIONS="--disable-multilib CFLAGS=-Wno-error" # --disable-threads --disable-shared
+CONFIGURATION_OPTIONS="--disable-multilib CFLAGS=-Wno-error CXXFLAGS=-std=c++11" # --disable-threads --disable-shared
+## ../../gcc-4.9.2/gcc/reload1.c:89:24: error: use of an operand of type ‘bool’ in ‘operator++’ is forbidden in C++17
 PARALLEL_MAKE=-j4
 BINUTILS_VERSION=binutils-2.24
 GCC_VERSION=gcc-4.9.2
