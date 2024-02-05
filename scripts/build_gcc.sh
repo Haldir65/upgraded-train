@@ -35,7 +35,7 @@ function main(){
     --enable-shared \
     --host=x86_64-pc-linux-gnu  \
     --enable-threads=posix
-    make -j 2
+    make -j ${nproc}
     echo "now install begin"
     make install
     # ls -al ../gcc-13-build
