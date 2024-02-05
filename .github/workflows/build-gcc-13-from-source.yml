@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
     push:
       branches:
-        - dev_gcc_build
+        - jvstech_toolchain
 
 jobs:
   build:
@@ -16,7 +16,6 @@ jobs:
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
             tar_extra_args: ''
-            target: 'x86_64-pc-linux-gnu'
           # - id: 'linux-amd64-mips'
           #   os: 'ubuntu-latest'
           #   tar_extra_args: ''
@@ -32,9 +31,9 @@ jobs:
           #   os: "ubuntu-latest"
           #  os: ['self-hosted', 'linux', 'RISCV64']
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
-          # - id: 'darwin-amd64'
-          #   os: 'macos-14'
-          #   tar_extra_args: ''
+          - id: 'darwin-amd64'
+            os: 'macos-14'
+            tar_extra_args: ''
           # - id: 'windows-amd64'
           #   os: 'windows-2019'
           # When unpacking an archive on Windows, the symlinks can't be
@@ -44,7 +43,6 @@ jobs:
           # adds an additional copy per link, but it reliably works and
           # the additional size is not too large on Windows.
             # tar_extra_args: '--dereference'
-        host: ['x86_64-pc-linux-gnu']
         # llvm_repo_url: ['https://github.com/llvm/llvm-project.git']
       fail-fast: true
 
@@ -55,109 +53,42 @@ jobs:
         uses: actions/checkout@v4
         with:
             fetch-depth: 2
-      - name: Check out gcc source code
+      - name: Check out jvstech/llvm-toolchain source code
         uses: actions/checkout@v4
         with:
-            repository: gcc-mirror/gcc
-            ref: releases/gcc-13
-            path: gcc13source
+            repository: jvstech/llvm-toolchain
+            ref: main
+            path: llvm-toolchain
 
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential clang coreutils gcc-multilib g++-multilib texinfo -y
+          sudo apt install ninja-build build-essential tree clang coreutils gcc-multilib g++-multilib texinfo -y
           echo "cpu core num is "
           nproc
       
-      # - name: Install `ninja llvm cmake `  on macOS
-      #   if: startsWith(matrix.target.id, 'darwin-')
-      #   shell: bash
-      #   run: |
-      #     brew install ninja llvm cmake
-      #     clang --version
-      #     echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
-      #     echo "${BREW_INSTALL_PREFIX}/bin"
-      #     echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
-      #     clang --version
-      #     echo "llvm"
-      #     /opt/homebrew/opt/llvm/bin/clang --version
-
-      # - name: Check out llvm source code
-      #   uses: actions/checkout@v4
-      #   with:
-      #       repository: ''
-      #       ref: ${{ matrix.llvm_version }}
-      - name: prepare source from tarball
-        if: startsWith(matrix.target.id, 'linux-')
+      - name: build
         shell: bash
         run: |
-          ls -alSh
           mkdir -p build
-          ls -alSh gcc13source
-          tar xvf assets/binutils-2.42.tar.gz -C build
-          mv build/binutils-2.42 binutils-2.42
-          ls -alSh binutils-2.42
+          tree -L 3
+          cmake -P build-llvm-toolchain.cmake
+          tree -L 3
 
-      - name: Build for x86_64-pc-linux-gnu target that runs on x86_64-pc-linux-gnu
-        if: matrix.target.target == 'x86_64-pc-linux-gnu'
+
+      - name: show content info
         shell: bash
         run: |
-          ls -alSh
-          chmod +x ./scripts/build_gcc.sh
-          ./scripts/build_gcc.sh  ${{ matrix.host }} ${{ matrix.target.target }}
+          tree -L 3
 
-      - name: Build for mipsel-unknown-linux-gnu target that runs on x86_64-pc-linux-gnu
-        if: matrix.target.target == 'mipsel-unknown-linux-gnu'
-        shell: bash
-        run: |
-          ls -alSh
-          chmod +x ./scripts/build_gcc_cross.sh
-          ./scripts/build_gcc_cross.sh ${{ matrix.host }} ${{ matrix.target.target }} 
-
-      - name: Build gcc cross 
-        if: matrix.target.target == 'aarch64-linux-gnu'
-        shell: bash
-        run: |
-          ls -alSh
-          chmod +x ./scripts/build_cross_gcc.sh
-          ./scripts/build_cross_gcc.sh
-
-      # - name: Build (darwin-amd64)
-      #   if: startsWith(matrix.target.id, 'darwin-')
-      #   shell: bash
-      #   run: |
-      #     ./scripts/build_llvm_mac.sh ${{ matrix.llvm_version }} ${{ matrix.llvm_repo_url }}  
-
-      # - name: Build (Windows)
-      #   if: matrix.target.id == 'windows-amd64'
-      #   shell: |
-      #     powershell -Command "& '{0}'"
-      #   run: |
-      #     ./scripts/build_llvm.ps1 ${{ matrix.llvm_version }} ${{ matrix.llvm_repo_url }}
-
-      - name: Inspect gcc version
-        if: matrix.target.target != 'aarch64-linux-gnu'
-        shell: bash
-        run: |
-          PATH=gcc-13-build/bin:$PATH gcc --version
-          PATH=gcc-13-build/bin:PATH g++ --version
 
       - name: Zip
         shell: bash
         run: |
           mkdir -p dist
-          ls -alSh 
-          if [[ "${{ matrix.target.target }}" == 'aarch64-linux-gnu' ]]; then
-            tar --directory /opt/cross --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc_cross.tar.xz .
-          elif [[ "${{ matrix.target.target }}" == 'x86_64-pc-linux-gnu'  || "${{ matrix.target.target }}" == 'mipsel-unknown-linux-gnu' ]]; then
-            tar --directory gcc-13-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
-            ls -alSh dist/gcc.tar.xz
-          else
-            echo "unsupportted target: ${{ matrix.target.target }} "
-            echo "${{ matrix.target.target }}"
-          fi
-          
+          tree -L 3
+          tar --directory llvm-project/install --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/llvm-toolchain.tar.xz .
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
