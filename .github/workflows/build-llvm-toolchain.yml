@@ -1,4 +1,4 @@
-name: Build gcc from source
+name: Build llvm-toochain using https://github.com/jvstech/llvm-toolchain
 
 on:
     workflow_dispatch:
@@ -59,6 +59,19 @@ jobs:
             repository: jvstech/llvm-toolchain
             ref: main
             path: llvm-toolchain
+      
+      - name: Install `ninja llvm cmake `  on macOS
+        if: startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        run: |
+          brew install ninja llvm cmake tree
+          clang --version
+          echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
+          echo "${BREW_INSTALL_PREFIX}/bin"
+          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
+          clang --version
+          echo "llvm"
+          /opt/homebrew/opt/llvm/bin/clang --version
 
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
