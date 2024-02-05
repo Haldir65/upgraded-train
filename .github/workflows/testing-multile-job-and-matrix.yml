@@ -1,0 +1,47 @@
+name: Testing Multiple jobs and matrix
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - test_multiple_jobs_1
+
+jobs:
+    say_hello:
+        runs-on: ubuntu-latest
+        outputs:
+            services: ${{ steps.generate-matrix.outputs.services }}
+            versions: ${{ steps.generate-matrix.outputs.versions }}
+        steps:
+            - name: Generate Matrix
+              id: generate-matrix
+              run: |
+                echo "services=[\"cat\",\"dog\",\"bird\",\"hamster\"]" >> "$GITHUB_OUTPUT"
+                echo "versions=[2,4,6,8]" >> "$GITHUB_OUTPUT"
+
+
+    my_echo:
+        runs-on: ubuntu-latest
+        needs:
+            - say_hello
+        steps:
+             - env:
+                    OUTPUT1: ${{needs.say_hello.outputs.services}}
+                    OUTPUT2: ${{needs.say_hello.outputs.versions}}
+               run: echo "$OUTPUT1 $OUTPUT2"
+                  # ------------------------
+
+    my_matrix:
+        runs-on: ubuntu-latest
+        needs:
+            - my_echo
+            - say_hello
+        strategy:
+            matrix:
+                service: ${{ fromJSON(needs.say_hello.outputs.services) }}
+                version: ${{ fromJSON(needs.say_hello.outputs.versions) }}
+        steps:
+            - name: Matrix => (${{ matrix.service }} ${{ matrix.version}})
+              run: |
+                echo ${{ matrix.service }}
+                echo ${{ matrix.version }}        
