@@ -12,12 +12,23 @@ jobs:
         outputs:
             services: ${{ steps.generate-matrix.outputs.services }}
             versions: ${{ steps.generate-matrix.outputs.versions }}
+            config: ${{ steps.generate-matrix.outputs.config }}
         steps:
+            - name: Check out the code
+              uses: actions/checkout@v4
+              with:
+                    fetch-depth: 20
             - name: Generate Matrix
               id: generate-matrix
               run: |
+                ls -al
+                JSON=$(cat ./assets/package.json)
+                echo "json content is ${JSON}"
                 echo "services=[\"cat\",\"dog\",\"bird\",\"hamster\"]" >> "$GITHUB_OUTPUT"
                 echo "versions=[2,4,6,8]" >> "$GITHUB_OUTPUT"
+                echo "config=$(jq -c . < ./assets/package.json)" >> $GITHUB_OUTPUT
+     
+
 
 
     my_echo:
@@ -28,7 +39,12 @@ jobs:
              - env:
                     OUTPUT1: ${{needs.say_hello.outputs.services}}
                     OUTPUT2: ${{needs.say_hello.outputs.versions}}
-               run: echo "$OUTPUT1 $OUTPUT2"
+                    OUTPUT3: ${{needs.say_hello.outputs.config}}
+               run: |
+                 echo "$OUTPUT1 $OUTPUT2 "
+                 echo "===   $OUTPUT3 ===="
+                 echo "${{ fromJSON(env.OUTPUT3).versions }}"
+
                   # ------------------------
 
     my_matrix:
@@ -38,8 +54,8 @@ jobs:
             - say_hello
         strategy:
             matrix:
-                service: ${{ fromJSON(needs.say_hello.outputs.services) }}
-                version: ${{ fromJSON(needs.say_hello.outputs.versions) }}
+                service: ${{ fromJSON(needs.say_hello.outputs.config).services }}
+                version: ${{ fromJSON(needs.say_hello.outputs.config).versions }}
         steps:
             - name: Matrix => (${{ matrix.service }} ${{ matrix.version}})
               run: |
