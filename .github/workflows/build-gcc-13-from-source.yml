@@ -148,15 +148,14 @@ jobs:
         run: |
           mkdir -p dist
           ls -alSh 
-          if [ "${{ matrix.target.target }}" == 'aarch64-linux-gnu' ]; then
+          if [[ "${{ matrix.target.target }}" == 'aarch64-linux-gnu' ]]; then
             tar --directory /opt/cross --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc_cross.tar.xz .
-          elif [ "${{ matrix.target.target }}" == 'x86_64-pc-linux-gnu'  || "${{ matrix.target.target }}" == 'mipsel-unknown-linux-gnu' ]; then
+          elif [[ "${{ matrix.target.target }}" == 'x86_64-pc-linux-gnu'  || "${{ matrix.target.target }}" == 'mipsel-unknown-linux-gnu' ]]; then
             tar --directory gcc-13-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
             ls -alSh dist/gcc.tar.xz
           else
-            echo "unknown host"
+            echo "unsupportted target: ${{ matrix.target.target }} "
             echo "${{ matrix.target.target }}"
-            tar --directory gcc-13-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
           fi
           
 
