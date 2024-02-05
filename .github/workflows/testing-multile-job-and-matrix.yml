@@ -33,6 +33,8 @@ jobs:
 
     my_echo:
         runs-on: ubuntu-latest
+        container:
+            image: alpine:3.19.1
         needs:
             - say_hello
         steps:
@@ -44,11 +46,15 @@ jobs:
                  echo "$OUTPUT1 $OUTPUT2 "
                  echo "===   $OUTPUT3 ===="
                  echo "${{ fromJSON(env.OUTPUT3).versions }}"
+                 cat /etc/os-release   
+                 cat /proc/version
 
                   # ------------------------
 
     my_matrix:
         runs-on: ubuntu-latest
+        container:
+            image: python:latest
         needs:
             - my_echo
             - say_hello
@@ -60,4 +66,7 @@ jobs:
             - name: Matrix => (${{ matrix.service }} ${{ matrix.version}})
               run: |
                 echo ${{ matrix.service }}
-                echo ${{ matrix.version }}        
+                echo ${{ matrix.version }} 
+                cat /etc/os-release
+                cat /proc/version
+                python3 --version       
