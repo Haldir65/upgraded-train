@@ -85,22 +85,23 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          tree -L 3
+          tree -L 4
+          cd llvm-toolchain
           cmake -P build-llvm-toolchain.cmake
-          tree -L 3
+          tree -L 4
 
 
       - name: show content info
         shell: bash
         run: |
-          tree -L 3
+          tree -L 4
 
 
       - name: Zip
         shell: bash
         run: |
           mkdir -p dist
-          tree -L 3
+          tree -L 4
           tar --directory llvm-project/install --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/llvm-toolchain.tar.xz .
 
       - name: Upload Artifacts
