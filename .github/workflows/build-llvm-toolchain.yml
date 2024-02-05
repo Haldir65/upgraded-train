@@ -57,7 +57,7 @@ jobs:
         uses: actions/checkout@v4
         with:
             repository: jvstech/llvm-toolchain
-            ref: main
+            ref: 14-update-to-llvm-16
             path: llvm-toolchain
       
       - name: Install `ninja llvm cmake `  on macOS
