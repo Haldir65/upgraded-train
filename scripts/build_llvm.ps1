@@ -43,14 +43,6 @@ cmake `
   -G "Visual Studio 17 2022" `
   -DCMAKE_BUILD_TYPE=Release `
   -DCMAKE_INSTALL_PREFIX=destdir `
-  -DLLVM_DEFAULT_TARGET_TRIPLE=mipsel-unknown-linux-musl `
-  -DLLVM_ENABLE_RTTI=ON `
-  -DLLVM_ENABLE_EH=ON `
-  -DLLVM_TARGET_ARCH="Mips" `
-  -DLIBCXX_USE_COMPILER_RT=ON `
-  -DLIBCXXABI_USE_LLVM_UNWINDER=ON `
-  -DCLANG_DEFAULT_CXX_STDLIB=libc++ `
-  -DCLANG_DEFAULT_RTLIB=compiler-rt `
   -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" `
   -DLLVM_ENABLE_TERMINFO=OFF `
   -DLLVM_ENABLE_ZLIB=OFF `
@@ -65,6 +57,7 @@ cmake `
   $CROSS_COMPILE `
   $CMAKE_ARGUMENTS `
   ../llvm
+
 
 # Showtime!
 cmake --build . --config Release
