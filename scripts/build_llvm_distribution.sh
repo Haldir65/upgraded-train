@@ -76,6 +76,8 @@ pwd
 mkdir -p ${ROOT_DIR}/llvm-project/build
 
 cmake -G Ninja -C cmake/caches/DistributionExample.cmake \
+  -DCMAKE_CXX_COMPILER=clang++  \
+  -DCMAKE_C_COMPILER=clang  \
   -DCMAKE_INSTALL_PREFIX="${ROOT_DIR}/llvm-project/build/destdir" \
   -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_ENABLE_ASSERTIONS=ON  \
