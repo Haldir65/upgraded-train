@@ -1,0 +1,56 @@
+name: static build for zsh
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - zsh_build
+
+jobs:
+  build:
+    name: Build
+
+    strategy:
+      matrix:
+        target:
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+            tar_extra_args: ''
+        arch:
+            ["aarch64-linux-musl","mipsel-linux-musln32sf"]    
+      fail-fast: true
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 20
+      - name: Install `ninja` on Ubuntu
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          sudo apt install ninja-build -y
+
+          
+      - name: Build
+        shell: bash
+        run: |
+          ./scripts/build_zsh.sh ${{ matrix.arch }}
+
+     
+      - name: Zip
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar --directory ${{ matrix.arch }} --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/zsh_build.tar.xz .
+          ls -lh dist/zsh_build.tar.xz
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.arch }}-zsh
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
