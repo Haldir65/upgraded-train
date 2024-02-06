@@ -13,10 +13,16 @@ jobs:
     strategy:
       matrix:
         target:
+          - id: 'linux-amd64-distribution'
+            os: 'ubuntu-latest'
+            tar_extra_args: ''
+            llvm_version: '18.x'
+            build_target: 'distribution'
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
             tar_extra_args: ''
             llvm_version: '18.x'
+            build_target: ''  
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
@@ -53,7 +59,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential clang coreutils -y
+          sudo apt install ninja-build build-essential clang coreutils tree -y
           echo "cpu core num is "
           nproc
       
@@ -61,7 +67,7 @@ jobs:
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install ninja llvm cmake
+          brew install ninja llvm cmake tree
           clang --version
           echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
           echo "${BREW_INSTALL_PREFIX}/bin"
@@ -72,10 +78,14 @@ jobs:
 
       - name: Build
         # if: matrix.target.id != 'windows-amd64' && matrix.target.id != 'linux-aarch64' && matrix.target.id != 'linux-riscv64'
-        if: matrix.target.id == 'linux-amd64'
+        if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          ./scripts/build_llvm.sh ${{ matrix.target.llvm_version }} ${{ matrix.llvm_repo_url }}
+          if [[ "${{ matrix.target.build_target }}" == 'distribution' ]]; then
+            ./scripts/build_llvm_distribution.sh ${{ matrix.target.llvm_version }} ${{ matrix.llvm_repo_url }}
+          else
+            ./scripts/build_llvm.sh ${{ matrix.target.llvm_version }} ${{ matrix.llvm_repo_url }}
+          fi
 
       - name: Build (darwin-amd64)
         if: startsWith(matrix.target.id, 'darwin-')
@@ -92,6 +102,7 @@ jobs:
 
       - name: Inspect
         shell: bash
+        if: matrix.target.build_target != 'distribution'
         run: |
           PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH llvm-config --version
           PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH clang --version
@@ -106,7 +117,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target.id }}-${{ matrix.target.llvm_version }}
+          name: ${{ matrix.target.id }}-${{ matrix.target.llvm_version }}-${{ matrix.target.build_target}}
           path: dist
           if-no-files-found: error
           retention-days: 7
