@@ -54,7 +54,7 @@ jobs:
     my_matrix:
         runs-on: ubuntu-latest
         container:
-            image: python:latest
+            image: fedora:latest
         needs:
             - my_echo
             - say_hello
@@ -69,4 +69,13 @@ jobs:
                 echo ${{ matrix.version }} 
                 cat /etc/os-release
                 cat /proc/version
-                python3 --version       
+                cat /etc/os-release > os_release.txt 
+                
+            - name: Upload Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                    name: ${{ matrix.service }}-${{ matrix.version}}-outputs.txt
+                    path: |
+                        os_release.txt 
+                        if-no-files-found: error
+                        retention-days: 7        
