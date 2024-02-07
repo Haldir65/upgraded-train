@@ -1,0 +1,32 @@
+name: testing run each step in individual steps
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - test_run_steps_in_docker
+
+jobs:
+  node-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: node:14.15.0-alpine3.12
+    steps:
+        - name: Log the parent container node version
+          run: |
+            node -v 
+        # Echo the node version of the parent container
+
+
+        - name: Log the step container node version
+          uses: docker://node:12.14.1-alpine3.10
+          with:
+            entrypoint: /usr/local/bin/node
+            args: --version
+        # Echo the node version of this step container based on this 12.14.1-alpine3.10 image
+
+
+        - name: Step with docker to echo a string
+          uses: docker://node:12.14.1-alpine3.10
+          with:
+            entrypoint: /bin/echo
+            args: Hello Docker !
