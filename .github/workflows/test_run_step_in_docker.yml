@@ -11,11 +11,16 @@ jobs:
     container:
       image: node:14.15.0-alpine3.12
     steps:
+        - name: Check out the code
+          uses: actions/checkout@v4
+          with:
+                fetch-depth: 20
+                
         - name: Log the parent container node version
           run: |
             node -v 
+            chmod +x scripts/show_docker_info.sh
         # Echo the node version of the parent container
-
 
         - name: Log the step container node version
           uses: docker://node:12.14.1-alpine3.10
@@ -24,6 +29,12 @@ jobs:
             args: --version
         # Echo the node version of this step container based on this 12.14.1-alpine3.10 image
 
+
+        - name: Log the step container node version
+          uses: docker://node:12.14.1-alpine3.10
+          with:
+           entrypoint: ./scripts/show_docker_info.sh
+           args: --version 
 
         - name: Step with docker to echo a string
           uses: docker://node:12.14.1-alpine3.10
