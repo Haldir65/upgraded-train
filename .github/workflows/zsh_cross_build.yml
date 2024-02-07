@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name: Build
-
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         target:
@@ -17,10 +17,25 @@ jobs:
             os: 'ubuntu-latest'
             tar_extra_args: ''
         arch:
-            ["aarch64-linux-musl","mipsel-linux-musln32sf"]    
-      fail-fast: true
+            ['aarch64-linux-musl',
+            'arm-linux-musleabi',
+            'arm-linux-musleabihf',
+            'armv6-linux-musleabihf',
+            'armv7l-linux-musleabihf',
+            'i686-linux-musl',
+            'mips-linux-musl',
+            'mips64-linux-musl',
+            'mips64el-linux-musl',
+            'mipsel-linux-musl',
+            'powerpc-linux-musl',
+            'powerpc64le-linux-musl',
+            'riscv64-linux-musl',
+            's390x-linux-musl','x86_64-linux-musl'
+            ]    
+      fail-fast: false
 
-    runs-on: ${{ matrix.target.os }}
+    # container:
+    #     image: userdocs/qbt-mcm:${{ matrix.arch }}
 
     steps:
       - name: Check out the code
@@ -31,20 +46,49 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build -y
+          sudo apt install ninja-build tree -y
 
+      - name: prepare toochain and show info
+        shell: bash
+        run: |
+          wget https://github.com/userdocs/qbt-musl-cross-make/releases/download/2406/${{ matrix.arch }}.tar.xz
+          tar xvf ${{ matrix.arch }}.tar.xz
+          gcc --version
+          ${{ matrix.arch }}/bin/${{ matrix.arch }}-gcc --version
+          tree -L 3
           
       - name: Build
         shell: bash
         run: |
           ./scripts/build_zsh.sh ${{ matrix.arch }}
 
+
+      - name: Set up QEMU
+        if: startsWith(matrix.arch, 'aarch64-')
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64 
+
+      - name: Run the build process with Docker
+      ##https://github.com/orgs/community/discussions/38728#discussioncomment-6324428
+        if: startsWith(matrix.arch, 'aarch64-')
+        shell: bash
+        run: |
+          echo "run command in different arch"
+          docker run \
+            --rm \
+            -v $(pwd):/${{ github.workspace }} \
+            -w ${{ github.workspace }} \
+            --platform linux/arm64 \
+            ubuntu:jammy \
+            uname -a ;ls -alSh;ls -alSh ${{ matrix.arch }}_dist/bin;${{ matrix.arch }}_dist/bin/zsh --version\
+
      
       - name: Zip
         shell: bash
         run: |
           mkdir -p dist
-          tar --directory ${{ matrix.arch }} --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/zsh_build.tar.xz .
+          tar --directory ${{ matrix.arch }}_dist --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/zsh_build.tar.xz .
           ls -lh dist/zsh_build.tar.xz
 
       - name: Upload Artifacts
