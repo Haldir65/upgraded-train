@@ -1,0 +1,27 @@
+name: Publish image to Docker hub
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - build_and_publish_docker
+
+jobs:
+    publish_imaage:
+        runs-on: ubuntu-latest
+        steps:
+        - name: checkout
+          uses: actions/checkout@v4
+
+        - name: build
+          run: |
+            docker build . -t haldir65/hello-docker-hub:latest
+
+        - name: publish
+          run: |
+            docker login -u haldir65 -p ${{ secrets.DOCKER_HUB_TOKEN }}
+            docker push haldir65/hello-docker-hub:latest
+
+
+
+
+
