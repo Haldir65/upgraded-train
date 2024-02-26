@@ -3,7 +3,7 @@ echo "Hello from docker "
 uname -a
 
 
-echo "using ghcr "
+echo "using ghcr, but awesome "
 
 cat /etc/os-release
 
