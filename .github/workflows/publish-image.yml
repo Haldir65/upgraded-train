@@ -12,8 +12,9 @@ on:
             - publish_docker_image_to_ghcr
 
 jobs:
-    publish_imaage:
+    publish_image:
         runs-on: ubuntu-latest
+        if: "contains(github.event.head_commit.message, '[Build]')"
         permissions:
           contents: read
           packages: write
