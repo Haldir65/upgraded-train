@@ -1,7 +1,9 @@
 #!/bin/bash
-echo "Hello from docker"
+echo "Hello from docker "
 uname -a
 
+
+echo "using ghcr "
 
 cat /etc/os-release
 

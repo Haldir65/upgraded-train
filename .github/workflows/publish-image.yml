@@ -1,26 +1,50 @@
-name: Publish image to Docker hub
+name: Create and publish a Docker image to ghcr
+
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 on:
     workflow_dispatch:
     push:
         branches:
-            - build_and_publish_docker
+            - publish_docker_image_to_ghcr
 
 jobs:
     publish_imaage:
         runs-on: ubuntu-latest
+        permissions:
+          contents: read
+          packages: write
+
         steps:
         - name: checkout
           uses: actions/checkout@v4
-
-        - name: build
-          run: |
-            docker build . -t haldir65/hello-docker-hub:latest
-
-        - name: publish
-          run: |
-            docker login -u haldir65 -p ${{ secrets.DOCKER_HUB_TOKEN }}
-            docker push haldir65/hello-docker-hub:latest
-
+        
+        - name: Log in to the Container registry
+          uses: docker/login-action@v3
+          with:
+            registry: ${{ env.REGISTRY }}
+            username: ${{ github.actor }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+    
+        - name: Extract metadata (tags, labels) for Docker
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            tags: |
+              type=ref,event=branch
+              type=sha
+    
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v5
+          with:
+            context: .
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}     
 
 
 
