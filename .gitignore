@@ -30,3 +30,19 @@
 *.exe
 *.out
 *.app
+
+
+# CLion
+/.idea
+/cmake-build*
+
+# Visual Studio
+/.vs
+/out
+/CMakeSettings.json
+
+# Visual Studio Code
+/.vscode
+
+# CMake
+/build*
