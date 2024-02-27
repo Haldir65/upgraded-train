@@ -1,0 +1,44 @@
+name: using ramdisk in action
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - dev_0.4
+
+
+jobs:
+  using_ramdisk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: creating ramdisk
+        run: |
+          df -h
+          mkdir -p /tmp/work/
+          sudo mount -t tmpfs -o size=2G tmpfs /tmp/work/
+          echo "Creating ramdisk" > /tmp/work/raminfo.txt
+          cat /proc/cpuinfo >> /tmp/work/raminfo.txt
+          du -sh /tmp/work/
+          df -h
+
+      # - uses: actions/checkout@v4
+      #   with:
+      #     path: '/tmp/work/repo'
+
+      - name: clone repo
+        working-directory: /tmp/work
+        run: |
+          git clone -b dev_0.4 https://github.com/Haldir65/upgraded-train repo
+          cd repo
+          ls -alSh
+          du -sh
+          df -h
+
+      - name: Create report file
+        working-directory: /tmp/work/repo
+        run: date +%s >> report.txt
+        
+      - name: Commit report
+        working-directory: /tmp/work/repo
+        run: |
+          cat report.txt
+          # cat raminfo.txt
