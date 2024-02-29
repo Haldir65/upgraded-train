@@ -1,4 +1,4 @@
-name: Publish image to Docker hub
+name: build cpp build image
 on:
     workflow_dispatch:
     push:
@@ -8,22 +8,19 @@ on:
 env:
   REGISTRY_IMAGE: haldir65/hello-docker-hub
   DH_UNAME: haldir65
-
-
+  IMAG_TAG: clang17-cmake3.28
 
 
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[BuildDocker]')"
+    if: "contains(github.event.head_commit.message, '[BuildDockerllvm]')"
     strategy:
       fail-fast: false
       matrix:
         platform:
           - linux/amd64
-          - linux/arm/v6
-          - linux/arm/v7
           - linux/arm64
     steps:
       -
@@ -58,6 +55,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: llvm-cmake.Dockerfile
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
@@ -110,8 +108,8 @@ jobs:
           echo $DOCKER_METADATA_OUTPUT_JSON
           echo $DOCKER_METADATA_OUTPUT_JSON | jq -cr '.tags | map("-t " + .) | join(" ")'
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-          $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *) --tag ${{ env.REGISTRY_IMAGE }}:latest \
-          --tag ${{ env.REGISTRY_IMAGE }}:1.0 --tag ${{ env.REGISTRY_IMAGE }}:1.1
+          $(printf '${{ env.REGISTRY_IMAGE }}@sha256:%s ' *) \
+          --tag ${{ env.REGISTRY_IMAGE }}:${{ env.IMAG_TAG }}
       -
         name: Inspect image
         run: |
