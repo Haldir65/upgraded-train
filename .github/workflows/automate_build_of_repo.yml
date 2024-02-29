@@ -1,0 +1,219 @@
+name: multiarch build
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - auto_mated_build
+
+jobs:
+  build:
+    name: Build
+    continue-on-error: false
+    if: "contains(github.event.head_commit.message, '[atomated]')"
+    strategy:
+      matrix:
+        target:
+          # - id: 'linux-amd64-distribution'
+          #   os: 'ubuntu-latest'
+          #   tar_extra_args: ''
+          #   llvm_version: '18.x'
+          #   build_target: 'distribution'
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+            tar_extra_args: ''
+          # - id: 'linux-aarch64'
+          #   os: "ubuntu-latest" 
+          #  os: ['self-hosted', 'linux', 'ARM64']
+          # - id: 'linux-riscv64'
+          #   os: "ubuntu-latest"
+          #  os: ['self-hosted', 'linux', 'RISCV64']
+          ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
+          - id: 'darwin-amd64'
+            os: 'macos-14'
+            tar_extra_args: ''
+          - id: 'windows-amd64'
+            os: 'windows-2022'
+          # When unpacking an archive on Windows, the symlinks can't be
+          # created unless the target path already exists. This causes
+          # problems when the linked file is ordered after the link
+          # inside the archive. Dereferencing the files when packing them
+          # adds an additional copy per link, but it reliably works and
+          # the additional size is not too large on Windows.
+            tar_extra_args: '--dereference'
+        # llvm_version: ['17.x']
+      fail-fast: true
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
+            repository: Haldir65/ronan
+            token: ${{ secrets.ACCESS_TOKEN }}
+            ref: 'master'
+            path: ronan
+
+      - name: Install LLVM and Clang on linux
+        if: startsWith(matrix.target.id, 'linux-')
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+            version: "17.0"
+
+      - name: Install `ninja` on Ubuntu
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          clang --version
+          sudo apt install ninja-build build-essential coreutils tree -y
+          echo "cpu core num is "
+          nproc      
+      
+      - name: Install `ninja llvm cmake `  on macOS
+        if: startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        run: |
+          brew install ninja llvm cmake tree
+          clang --version
+          echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
+          echo "${BREW_INSTALL_PREFIX}/bin"
+          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
+          clang --version
+          echo "llvm"
+          /opt/homebrew/opt/llvm/bin/clang --version
+
+      - name: Build (mac or linux)
+        if: startsWith(matrix.target.id, 'linux-') || startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        working-directory: ronan
+        run: |
+          chmod +x ./scripts/build.sh
+          ./scripts/build.sh
+
+
+      - name: Build (Windows)
+        if: matrix.target.id == 'windows-amd64'
+        working-directory: ronan
+        shell: |
+          powershell -Command "& '{0}'"
+        run: |
+          ./scripts/build.ps1
+
+      - name: show layouts (unix)
+        if: startsWith(matrix.target.id, 'linux-') || startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        working-directory: ronan
+        run: |
+          tree -L 3 build
+
+      - name: Inspect
+        shell: bash
+        working-directory: ronan
+        run: |
+          # for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+          # do
+          # echo "Mendax Current number: $i"
+          # if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
+          #   PATH=build/apps/Release:$PATH main.exe --verbose true --filename "cmake/hello/resources/twitter.json" --dir "cmake/hello/resources" --mode $i
+          # else
+          #   ASAN_OPTIONS=alloc_dealloc_mismatch=0 PATH=build/apps:$PATH main --verbose true --filename "cmake/hello/resources/twitter.json" --dir "cmake/hello/resources" --mode $i
+          # fi
+          # done
+          if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
+            powershell -executionpolicy bypass -File scripts/test.ps1
+          else
+            bash scripts/test.sh
+          fi
+          
+
+    #   - name: Zip
+    #     shell: bash
+    #     run: |
+    #       mkdir -p dist
+    #       if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
+    #         tar -cvzf dist/main-${{ matrix.target.id }}.tar.gz -C build/apps/Release main.exe
+    #       else
+    #         tar -cvzf dist/main-${{ matrix.target.id }}.tar.gz -C build/apps main
+    #       fi
+
+    #   - name: Upload Artifacts
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: ${{ matrix.target.id }}-main
+    #       path: dist
+    #       if-no-files-found: error
+    #       retention-days: 7
+
+  dockerBuild:
+    name: Build project in docker container
+    if: "contains(github.event.head_commit.message, '[atomated]')"
+    continue-on-error: false
+    runs-on: ubuntu-latest
+    container:
+        image: docker://silkeh/clang:17-bookworm
+
+    steps:
+        -   name: Check out the code
+            uses: actions/checkout@v4
+            with:
+                fetch-depth: 2
+                repository: Haldir65/ronan
+                token: ${{ secrets.ACCESS_TOKEN }}
+                ref: 'master'
+                path: ronan
+
+           
+        -   name: Show clang version
+            shell: bash
+            run: |
+                apt update
+                apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev wget
+                clang --version
+                cmake --version 
+    
+        -   name: Show clang version
+            shell: bash
+            run: |
+                clang --version
+                cmake --version
+            
+        -   name: Build (mac or linux)
+            shell: bash
+            working-directory: ronan
+            run: |
+                chmod +x ./scripts/build.sh
+                ./scripts/build.sh
+
+    
+        -   name: show layouts (unix)
+            shell: bash
+            working-directory: ronan
+            run: |
+                tree -L 3 build
+
+        -   name: Inspect
+            shell: bash
+            working-directory: ronan
+            run: |
+                # for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+                # do
+                # echo "Mendax Current number: $i"
+                # ASAN_OPTIONS=alloc_dealloc_mismatch=0 PATH=build/apps:$PATH main --verbose true --filename "cmake/hello/resources/twitter.json" --dir "cmake/hello/resources" --mode $i
+                # done
+                bash scripts/test.sh
+
+        # -   name: Zip
+        #     shell: bash
+        #     run: |
+        #         mkdir -p dist
+        #         tar -cvzf dist/main-app.tar.gz -C build/apps main
+
+        # -   name: Upload Artifacts
+        #     uses: actions/upload-artifact@v4
+        #     with:
+        #         name: app-main
+        #         path: dist
+        #         if-no-files-found: error
+        #         retention-days: 7
