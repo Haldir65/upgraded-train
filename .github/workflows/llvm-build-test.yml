@@ -115,6 +115,7 @@ jobs:
           retention-days: 7
 
       - name: Check out fmt code base
+        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
         uses: actions/checkout@v4
         with:
             fetch-depth: 2
@@ -131,11 +132,12 @@ jobs:
           clang --version
           clang++ --version
   
-      - name: build fmt
+      - name: build fmt using just bult llvm toolchain
+        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
           PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH bash scripts/build_fmt.sh
-          tree -L 4 build    
+          tree -L 4 build
 
           
   buildFmt:
