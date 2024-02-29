@@ -29,15 +29,16 @@ jobs:
         name: Linux Clang (libc++)
         runs-on: ubuntu-22.04
         env:
-            CC: clang-14
-            CXX: clang++-14
+            CC: clang
+            CXX: clang++
             CXXFLAGS: -stdlib=libc++
         steps:
             - uses: actions/checkout@v4
             - run: |
                   sudo apt-get update
-                  sudo apt-get install -y build-essential ninja-build clang-14 libc++-14-dev libc++abi-14-dev
+                  sudo apt-get install -y build-essential ninja-build
             - run: /bin/bash .ci/install-vcpkg.sh
+            - run: /bin/bash scripts/install_llvm.sh
             - run: /bin/bash .ci/build-project.sh
             - run: ./build/src/show_info/show_info
             - run: ./build/src/example/example
@@ -47,22 +48,18 @@ jobs:
         name: Linux Clang (libstdc++)
         runs-on: ubuntu-22.04
         env:
-            CC: clang-14
-            CXX: clang++-14
+            CC: clang
+            CXX: clang++
             CXXFLAGS: -stdlib=libstdc++
         steps:
             - uses: actions/checkout@v4
             - run: |
                   sudo apt-get update
-                  sudo apt-get install -y build-essential ninja-build clang-14 libc++-14-dev libc++abi-14-dev libstdc++-12-dev
-            - name: show clang and version
-              shell: bash
-              run: |
-                   clang --version
-                   clang-14 --version
-                   clang++-14 --version
+                  sudo apt-get install -y build-essential ninja-build wget
             - run: /bin/bash .ci/install-vcpkg.sh
-            - run: /bin/bash .ci/build-project.sh
+            - run: /bin/bash scripts/install_llvm.sh
+            - run: /bin/bash .ci/build-project-cxx.sh
+            
             - run: ./build/src/show_info/show_info
             - run: ./build/src/example/example
             - run: ctest --output-on-failure --test-dir build
@@ -87,7 +84,7 @@ jobs:
             CXX: g++-13
         steps:
             - uses: actions/checkout@v4
-            - run: brew install ninja gcc@13 cmake
+            - run: brew install ninja gcc@13 cmake wget
             - name: show gcc version
               shell: bash
               run: |
@@ -100,7 +97,7 @@ jobs:
                     file `which g++`
                     echo "/usr/local/opt/make/libexec/gnubin" >> $GITHUB_PATH
             - run: /bin/bash .ci/install-vcpkg.sh
-            - run: /bin/bash .ci/build-project.sh
+            - run: /bin/bash .ci/build-project-cxx.sh
             - run: ./build/src/show_info/show_info
             - run: ./build/src/example/example
             - run: ctest --output-on-failure --test-dir build
@@ -114,7 +111,7 @@ jobs:
             CXXFLAGS: -stdlib=libc++
         steps:
             - uses: actions/checkout@v4
-            - run: brew install make ninja llvm@17 cmake
+            - run: brew install make ninja llvm@17 cmake wget
             - run: /bin/bash .ci/install-vcpkg.sh
             - run: /bin/bash .ci/build-project.sh
             - run: ./build/src/show_info/show_info
@@ -133,7 +130,7 @@ jobs:
             - uses: actions/checkout@v4
             - run: brew install make ninja llvm@17 gcc@13 cmake
             - run: /bin/bash .ci/install-vcpkg.sh
-            - run: /bin/bash .ci/build-project.sh
+            - run: /bin/bash .ci/build-project-cxx.sh
             - run: ./build/src/show_info/show_info
             - run: ./build/src/example/example
             - run: ctest --output-on-failure --test-dir build
