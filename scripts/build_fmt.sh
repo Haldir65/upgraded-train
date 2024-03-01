@@ -145,11 +145,32 @@ function _build_nghttp2(){
 
 }
 
+function _build_psl(){
+    wget https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz -O libpsl-0.21.5.tar.gz
+    tar -xzf libpsl-0.21.5.tar.gz
+    rm -rf libpsl-0.21.5.tar.gz
+    pushd libpsl-0.21.5
+    local libpsl_install_dir=${PREBUILT_DIR}/libpsl
+    mkdir -p ${libpsl_install_dir}
+    ./configure --prefix=${libpsl_install_dir}  \
+    --disable-runtime
+    make -j$CORES
+    make check
+    make install
+    popd 
+     _green "done build libpsl = ${libpsl_install_dir} \n"
+    # rm -rf libpsl-0.21.5
+}
+
+
+
 function _build_curl(){
     local OPENSSL_INSTALL_DIR=${PREBUILT_DIR}/openssl
     local prebuilt_zlib_root=${PREBUILT_DIR}/zlib
     local prebuilt_nghttp2_root=${PREBUILT_DIR}/nghttp2
     local prebuilt_brotli_root=${PREBUILT_DIR}/brotli
+    local libpsl_install_dir=${PREBUILT_DIR}/libpsl
+
 
     # git clone --depth 1 --branch curl-8_6_0 https://github.com/curl/curl
     wget https://github.com/curl/curl/releases/download/curl-8_6_0/curl-8.6.0.tar.gz -O curl-8.6.0.tar.gz
@@ -163,8 +184,8 @@ function _build_curl(){
 
     ##When using static dependencies, the build scripts will mostly assume that you, the user, will provide all the necessary additional dependency libraries as additional arguments in the build. 
     ## With configure, by setting LIBS or LDFLAGS on the command line.
-    export CPPFLAGS="-I${OPENSSL_INSTALL_DIR}/include -I${prebuilt_zlib_root}/include -I${prebuilt_brotli_root}/include"
-    export LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib64 -L${prebuilt_zlib_root}/lib -L${prebuilt_brotli_root}/lib"
+    export CPPFLAGS="-I${OPENSSL_INSTALL_DIR}/include -I${prebuilt_zlib_root}/include -I${prebuilt_brotli_root}/include -I${libpsl_install_dir}/include"
+    export LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib64 -L${prebuilt_zlib_root}/lib -L${prebuilt_brotli_root}/lib -L${libpsl_install_dir}/lib"
     export LIBS="-lbrotlicommon" ##  LDFLAGS note: LDFLAGS should only be used to specify linker flags, not libraries. Use LIBS for: -lbrotlicommon
    
 #  https://github.com/curl/curl/blob/master/docs/HTTP3.md 
@@ -246,6 +267,22 @@ function _inspect_all(){
     tree -L 4 ${PREBUILT_DIR}/zlib
     _Cyan "\n show layouts end \n"
 
+    _green "\n testing binary \n\n"
+
+    file ./prebuilt/brotli/bin/brotli
+    ./prebuilt/brotli/bin/brotli --version
+
+    file ./prebuilt/libpsl/bin/psl
+    ./prebuilt/libpsl/bin/psl --version
+
+    file ./prebuilt/openssl/bin/openssl
+    ./prebuilt/openssl/bin/openssl --version
+
+}
+
+function _zip_output(){
+    mkdir -p dist 
+    tar --directory ${PREBUILT_DIR} --create --xz --verbose --file dist/prebuilt.tar.xz .
 }
 
 
@@ -265,7 +302,11 @@ function main(){
 
     _build_nghttp2
 
+    _build_psl
+
     _build_curl
+
+    _zip_output
 
     _inspect_all
 
