@@ -151,8 +151,12 @@ jobs:
     if: "contains(github.event.head_commit.message, '[atomated]')"
     continue-on-error: false
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        container: [ "silkeh/clang:17-bookworm" , "haldir65/hello-docker-hub:clang17-cmake3.28","haldir65/hello-docker-hub:clang19-cmake3.28"]
+       
     container:
-        image: docker://silkeh/clang:17-bookworm
+        image: docker://${{ matrix.container }}
 
     steps:
         -   name: Check out the code
