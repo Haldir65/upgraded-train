@@ -15,14 +15,13 @@ function _build_fmt(){
     BUILD_DIR=build
     local prebuilt_fmt_root=${PREBUILT_DIR}/fmt
     mkdir -p ${prebuilt_fmt_root}
-    # cmake --build "$BUILD_DIR" -j
     pushd fmt
     cmake -S . -G Ninja -DCMAKE_INSTALL_PREFIX=${prebuilt_fmt_root} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_STANDARD=17 -DUSE_SANITIZER=address -B "$BUILD_DIR"
-    # cmake --install . --config Release --strip --verbose
-    cmake --build . --target install --config Release
-    popd
+    _green "configure cmake done \n"
+    cmake --build "$BUILD_DIR" --target install
+    _green "build and install via cmake done \n"
     tree -L 4 ${prebuilt_fmt_root}
-
+    popd
 }
 
 
