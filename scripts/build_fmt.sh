@@ -236,7 +236,9 @@ function _build_curl(){
 }
 
 function _prepare(){
-    local DIRECTORY=llvm-project/build/destdir/usr/bin
+    local basedir=`pwd`
+    tree -L 2
+    local DIRECTORY=${basedir}/llvm-project/build/destdir/usr/bin
     if [ -d "$DIRECTORY" ]; then
         _green "$DIRECTORY does exist. \n"
         export CC=${DIRECTORY}/clang
