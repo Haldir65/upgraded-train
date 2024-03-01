@@ -1,4 +1,4 @@
-FROM teeks99/clang-ubuntu:17
+FROM teeks99/clang-ubuntu:19
 
 RUN apt update && \ 
     apt install -y sudo ninja-build git unzip build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl
