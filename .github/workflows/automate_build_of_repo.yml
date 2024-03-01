@@ -153,7 +153,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: [ "silkeh/clang:17-bookworm" , "haldir65/hello-docker-hub:clang17-cmake3.28","haldir65/hello-docker-hub:clang19-cmake3.28"]
+        container: [ "silkeh/clang:17-bookworm" , 
+          "haldir65/hello-docker-hub:clang17-cmake3.28",
+          "haldir65/hello-docker-hub:clang19-cmake3.28",
+          "haldir65/hello-docker-hub:llvm-17"
+          ]
        
     container:
         image: docker://${{ matrix.container }}
