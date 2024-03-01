@@ -184,14 +184,14 @@ jobs:
         with:
             fetch-depth: 2
 
-      - name: Check out fmt code base
-        uses: actions/checkout@v4
-        with:
-            fetch-depth: 2
-            repository: fmtlib/fmt
-            ref: 9.1.0
-            path: fmt
-            fetch-tags: true
+      # - name: Check out fmt code base
+      #   uses: actions/checkout@v4
+      #   with:
+      #       fetch-depth: 2
+      #       repository: fmtlib/fmt
+      #       ref: 9.1.0
+      #       path: fmt
+      #       fetch-tags: true
 
       - name: Install `deps` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
@@ -227,5 +227,5 @@ jobs:
         shell: bash
         run: |
           bash scripts/build_fmt.sh
-          tree -L 4 build
+          tree -L 4
     
