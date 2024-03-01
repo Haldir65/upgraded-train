@@ -21,7 +21,6 @@ jobs:
             matrix:
                 platform:
                 - linux/amd64
-                - linux/arm64
         steps:
         -
             name: Prepare
@@ -43,6 +42,7 @@ jobs:
                 images: ${{ env.REGISTRY_IMAGE }}
         -
             name: Set up QEMU
+            if: "contains(github.event.head_commit.message, 'arm')"
             uses: docker/setup-qemu-action@v3
         -
             name: Set up Docker Buildx
