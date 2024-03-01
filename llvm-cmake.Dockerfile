@@ -22,7 +22,7 @@ RUN echo "TARGETPLATFORM = ${TARGETPLATFORM} \n https://nielscautaerts.xyz/makin
 ##  0.068 /bin/sh: 1: [: linux/arm64: unexpected operator  bash string compare with slash ?
 RUN set -eux; \
     cd /home && \
-    if [ "$BUILDPLATFORM" = "linux/amd64" ]; then arch=aarch64; else arch=x86_64; fi && \
+    if [ "$BUILDPLATFORM" = "linux/arm64" ]; then arch=aarch64; else arch=x86_64; fi && \
     curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${arch}.tar.gz && \
     tar xf cmake.tar.gz && \
     cd cmake-${CMAKE_VERSION}-linux-${arch} && \
