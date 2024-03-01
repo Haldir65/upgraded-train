@@ -137,7 +137,7 @@ jobs:
         shell: bash
         run: |
           PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH bash scripts/build_fmt.sh
-          tree -L 4 build
+          tree -L 4
 
           
   buildFmt:
