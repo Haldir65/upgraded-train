@@ -179,6 +179,8 @@ jobs:
                 apt update
                 apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev wget
                 clang --version
+                clang++ --version
+
 
         -   name: install latest version of cmake
             shell: bash
