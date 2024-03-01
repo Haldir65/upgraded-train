@@ -246,13 +246,14 @@ function _prepare(){
         export PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH
         clang --version
         clang++ --version
+        tree -L 4 ${basedir}/llvm-project/build/destdir
     else
         _purple "$DIRECTORY does not exist.\n"
         export CC=clang
         export CXX=clang++
     fi
-    $CC --version
-    $CXX --version
+    # $CC --version
+    # $CXX --version
     export BUILD_ROOT=`pwd`
     export PREBUILT_DIR=${BUILD_ROOT}/prebuilt
 
