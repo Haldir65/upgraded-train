@@ -21,15 +21,30 @@ RUN apt install -y bzip2 zip libedit-dev libxml2-dev libncurses-dev swig lzma g+
 # make sure bash is used instead of /bin/sh for RUN commands
 RUN ln -f -s /usr/bin/bash /bin/sh 
 
+# # download and install CMake
+# RUN cd /home && \
+#     if [ "$BUILDPLATFORM" == "linux/arm64" ]; then arch=aarch64; else arch=x86_64; fi && \
+#     curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${arch}.tar.gz && \
+#     tar xf cmake.tar.gz && \
+#     mv cmake-${CMAKE_VERSION}-linux-${arch} cmake
+
 # download and install CMake
-RUN cd /home && \
-    if [ "$BUILDPLATFORM" == "linux/arm64" ]; then arch=aarch64; else arch=x86_64; fi && \
+##  0.068 /bin/sh: 1: [: linux/arm64: unexpected operator  bash string compare with slash ?
+RUN set -eux; \
+    cd /home && \
+    if [ "$BUILDPLATFORM" = "linux/arm64" ]; then arch=aarch64; else arch=x86_64; fi && \
     curl -o cmake.tar.gz -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${arch}.tar.gz && \
     tar xf cmake.tar.gz && \
-    mv cmake-${CMAKE_VERSION}-linux-${arch} cmake
+    cd cmake-${CMAKE_VERSION}-linux-${arch} && \
+    find . -type d -exec mkdir -p /usr/local/\{} \; && \
+    find . -type f -exec mv \{} /usr/local/\{} \; && \
+    cd .. && \
+    rm -rf cmake.tar.gz cmake-${CMAKE_VERSION}-linux-${arch}
+
+RUN cmake --help
 
 
-ENV PATH="/home/cmake/bin:${PATH}"
+# ENV PATH="/home/cmake/bin:${PATH}"
 
 # clone LLVM
 RUN cd /home/build && \
