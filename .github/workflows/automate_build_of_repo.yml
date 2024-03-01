@@ -179,8 +179,14 @@ jobs:
                 apt update
                 apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev wget
                 clang --version
-                cmake --version 
-    
+
+        -   name: install latest version of cmake
+            shell: bash
+            if: matrix.container == 'haldir65/hello-docker-hub:llvm-17'
+            run: |
+                pip3 install --upgrade cmake
+                cmake --version                
+
         -   name: Show clang version
             shell: bash
             run: |
