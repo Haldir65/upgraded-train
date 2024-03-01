@@ -164,7 +164,7 @@ function _build_curl(){
     ##When using static dependencies, the build scripts will mostly assume that you, the user, will provide all the necessary additional dependency libraries as additional arguments in the build. 
     ## With configure, by setting LIBS or LDFLAGS on the command line.
     export CPPFLAGS="-I${OPENSSL_INSTALL_DIR}/include -I${prebuilt_zlib_root}/include -I${prebuilt_brotli_root}/include"
-    export LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib -L${prebuilt_zlib_root}/lib -L${prebuilt_brotli_root}/lib"
+    export LDFLAGS="-L${OPENSSL_INSTALL_DIR}/lib64 -L${prebuilt_zlib_root}/lib -L${prebuilt_brotli_root}/lib"
     export LIBS="-lbrotlicommon" ##  LDFLAGS note: LDFLAGS should only be used to specify linker flags, not libraries. Use LIBS for: -lbrotlicommon
    
 #  https://github.com/curl/curl/blob/master/docs/HTTP3.md 
