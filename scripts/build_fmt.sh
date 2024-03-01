@@ -236,8 +236,21 @@ function _build_curl(){
 }
 
 function _prepare(){
-    export CC=clang
-    export CXX=clang++
+    local DIRECTORY=lvm-project/build/destdir/usr/bin
+    if [ -d "$DIRECTORY" ]; then
+        _green "$DIRECTORY does exist. \n"
+        export CC=${DIRECTORY}/clang
+        export CXX=${DIRECTORY}/clang++
+        export PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH
+        clang --version
+        clang++ --version
+    else
+        _purple "$DIRECTORY does not exist.\n"
+        export CC=clang
+        export CXX=clang++
+    fi
+    $CC --version
+    $CXX --version
     export BUILD_ROOT=`pwd`
     export PREBUILT_DIR=${BUILD_ROOT}/prebuilt
 

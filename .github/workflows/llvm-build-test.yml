@@ -54,7 +54,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential clang coreutils -y
+          sudo apt install ninja-build build-essential clang coreutils tree -y
           echo "cpu core num is "
           nproc
       
@@ -131,6 +131,12 @@ jobs:
           uname -a
           clang --version
           clang++ --version
+
+      - name: show root layouts
+        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          tree -L 5
   
       - name: build fmt using just bult llvm toolchain
         if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
