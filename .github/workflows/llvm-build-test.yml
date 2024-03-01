@@ -155,7 +155,7 @@ jobs:
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
           # - id: 'linux-riscv64'
-          #   os: "ubuntu-latest"
+          #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'RISCV64']
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
           - id: 'darwin-amd64'
