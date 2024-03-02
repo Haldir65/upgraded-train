@@ -155,8 +155,7 @@ jobs:
       matrix:
         container: [ "silkeh/clang:17-bookworm" , 
           "haldir65/hello-docker-hub:clang17-cmake3.28",
-          "haldir65/hello-docker-hub:clang19-cmake3.28",
-          "haldir65/hello-docker-hub:llvm-17"
+          "haldir65/hello-docker-hub:clang19-cmake3.28"
           ]
        
     container:
@@ -182,12 +181,12 @@ jobs:
                 clang++ --version
 
 
-        -   name: install latest version of cmake
-            shell: bash
-            if: matrix.container == 'haldir65/hello-docker-hub:llvm-17'
-            run: |
-                pip3 install --upgrade cmake
-                cmake --version                
+        # -   name: install latest version of cmake
+        #     shell: bash
+        #     if: matrix.container == 'haldir65/hello-docker-hub:llvm-17'
+        #     run: |
+        #         pip3 install --upgrade cmake
+        #         cmake --version                
 
         -   name: Show clang version
             shell: bash
