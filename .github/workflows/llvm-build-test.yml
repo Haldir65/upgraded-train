@@ -138,8 +138,8 @@ jobs:
         run: |
           tree -L 5
   
-      - name: build fmt using just bult llvm toolchain
-        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
+      - name: build fmt using just built llvm toolchain
+        if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
           PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH bash scripts/build_fmt.sh

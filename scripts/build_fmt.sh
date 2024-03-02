@@ -19,7 +19,7 @@ function _build_fmt(){
     local prebuilt_fmt_root=${PREBUILT_DIR}/fmt
     mkdir -p ${prebuilt_fmt_root}
     pushd fmt-9.1.0
-    cmake -S . -G Ninja -DCMAKE_INSTALL_PREFIX=${prebuilt_fmt_root} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_C_COMPILER="clang" -DCMAKE_CXX_STANDARD=17 -DUSE_SANITIZER=address -B "$BUILD_DIR"
+    cmake -S . -G Ninja -DCMAKE_INSTALL_PREFIX=${prebuilt_fmt_root} -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_STANDARD=17 -DUSE_SANITIZER=address -B "$BUILD_DIR"
     _green "configure cmake done \n"
     cmake --build "$BUILD_DIR" --target install
     _green "build and install via cmake done \n"
@@ -244,13 +244,13 @@ function _prepare(){
         export CC=${DIRECTORY}/clang
         export CXX=${DIRECTORY}/clang++
         export PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH
-        clang --version
-        clang++ --version
+        # clang --version
+        # clang++ --version
         tree -L 4 ${basedir}/llvm-project/build/destdir
     else
         _purple "$DIRECTORY does not exist.\n"
-        export CC=clang
-        export CXX=clang++
+        export CC=`which clang`
+        export CXX=`which clang++`
     fi
     # $CC --version
     # $CXX --version
@@ -268,6 +268,24 @@ function _prepare(){
         export CORES=$((`nproc`+1))
         export TARGET="x86_64-linux"
     fi
+}
+
+function _build_simple_cpp_program(){
+    if [ -f "$CC" ]; then
+        _green "CC ${CC} file exists \n"
+    else
+        _yellow "CC ${CC} file not exists \n"
+    fi
+
+    if [ -f "$CXX" ]; then
+        _green "CXX ${CXX} file exists \n"
+    else
+        _yellow "CXX ${CXX} file not exists \n"
+    fi
+    ${CC} --version
+    ${CXX} --version
+    ${CXX} test/clangTest.cpp -std=c++20 -lpthread -v -Wall -o clangTest
+    ./clangTest
 }
 
 
@@ -305,6 +323,8 @@ function _zip_output(){
 function main(){
 
     _prepare
+
+    _build_simple_cpp_program
 
     _build_fmt
 
