@@ -241,8 +241,8 @@ function _prepare(){
     local DIRECTORY=${basedir}/llvm-project/build/destdir/bin
     if [ -d "$DIRECTORY" ]; then
         _green "$DIRECTORY does exist. \n"
-        export CC=${DIRECTORY}/clang18
-        export CXX=${DIRECTORY}/clang18
+        export CC=${DIRECTORY}/clang-18
+        export CXX=${DIRECTORY}/clang-18
         export PATH=llvm-project/build/destdir/bin:$PATH
         tree -L 4 ${basedir}/llvm-project/build/destdir
     else
