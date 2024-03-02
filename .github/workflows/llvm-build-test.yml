@@ -6,6 +6,9 @@ on:
       branches:
         - test_clang_chain
 
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
   build:
     name: Build
@@ -63,8 +66,10 @@ jobs:
         shell: bash
         run: |
           gh run download 8108968168
+          pwd
+          tree -L 3
           cd linux-amd64-ubuntu-latest-18.x
-          tar -xzf llvm.tar.xz
+          tar -xf llvm.tar.xz
           cd ..
           mv linux-amd64-ubuntu-latest-18.x llvm-project 
           bash ./scripts/build_fmt.sh
