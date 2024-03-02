@@ -284,7 +284,7 @@ function _build_simple_cpp_program(){
     fi
     ${CC} --version
     ${CXX} --version
-    ${CXX} test/clangTest.cpp -std=c++20 -lpthread -v -Wall -o clangTest
+    ${CXX} test/clangTest.cpp -std=c++20 -lpthread -lstdc++ -lm -v -Wall -o clangTest
     ./clangTest
 }
 
