@@ -288,7 +288,7 @@ function _build_simple_cpp_program(){
     # $CC --version
     # $CXX --version
     ls -al ${DIRECTORY}/lib/x86_64-unknown-linux-gnu
-    ${CXX} test/clangTest.cpp -std=c++20 -lpthread -stdlib=libc++ -L ${DIRECTORY}/lib/x86_64-unknown-linux-gnu -v -Wall -o clangTest
+    ${CXX} test/clangTest.cpp -std=c++20 -lpthread -stdlib=libstdc++ -v -Wall -o clangTest
     ./clangTest
 }
 
