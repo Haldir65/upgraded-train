@@ -282,6 +282,8 @@ function _build_simple_cpp_program(){
     else
         _yellow "CXX ${CXX} file not exists \n"
     fi
+    export CLANG_DEFAULT_CXX_STDLIB="libstdc++"
+    export LDFLAGS="-lstdc++"
     ${CC} --version
     ${CXX} --version
     ${CXX} test/clangTest.cpp -std=c++20 -lpthread -lstdc++ -lm -v -Wall -o clangTest
