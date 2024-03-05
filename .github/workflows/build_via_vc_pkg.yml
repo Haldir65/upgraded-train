@@ -101,9 +101,8 @@ jobs:
           if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
             PATH=build/Debug:$PATH fibux.exe
           else
-            PATH=build/Debug:$PATH fibux
+            PATH=build:$PATH fibux
           fi
-          done
           # if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
           #   powershell -executionpolicy bypass -File scripts/test.ps1
           # else

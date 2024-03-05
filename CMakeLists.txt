@@ -17,6 +17,9 @@ find_package(cxxopts REQUIRED)
 
 add_executable(${EXECUTABLE_NAME} src/main.cpp)
 
+
+target_compile_features(${EXECUTABLE_NAME} PRIVATE cxx_std_20)
+
 target_link_libraries(
     ${EXECUTABLE_NAME}
     PRIVATE 
