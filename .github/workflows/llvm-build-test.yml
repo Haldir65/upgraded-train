@@ -1,4 +1,4 @@
-name: Build llvm toolchain
+name: testing llvm toolchain
 
 on:
     workflow_dispatch:
@@ -65,7 +65,7 @@ jobs:
         if: matrix.target.id == 'linux-amd64'
         shell: bash
         run: |
-          gh run download 8108968168
+          gh run download 8126334463
           pwd
           tree -L 3
           cd linux-amd64-ubuntu-latest-18.x
