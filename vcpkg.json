@@ -1,0 +1,15 @@
+{
+  "name": "fiubo",
+  "version-string": "0.1.0",
+  "dependencies": [
+    {
+      "name": "fmt",
+      "version>=": "10.2.1"
+    },
+    "simdjson",
+    "cxxopts",
+    "nlohmann-json",
+    "spdlog",
+    "cpuinfo"
+  ]
+}
