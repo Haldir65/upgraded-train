@@ -27,13 +27,13 @@
             "displayName": "x64 Debug",
             "generator": "Visual Studio 17 2022",
             "description": "Sets debug build type and x64 arch",
-            "inherits": "base",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
             },
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
             }
         }
     ],
@@ -48,12 +48,12 @@
             ]
         },
         {
-          "name": "verbose-build-windows",
-          "displayName": "Verbose Build",
-          "configurePreset": "x64-debug",
-          "targets": [
-            "fibux"
-        ]
+            "name": "verbose-build-windows",
+            "displayName": "Verbose Build",
+            "configurePreset": "x64-debug",
+            "targets": [
+                "fibux"
+            ]
         }
     ]
 }
