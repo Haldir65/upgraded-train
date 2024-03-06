@@ -30,5 +30,7 @@ public:
     bar();
     ~bar();
     void show_libs_version() const;
+    void do_fmt_lib_test() const;
+    void performing_curl_test();
 };
 

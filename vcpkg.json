@@ -4,6 +4,7 @@
   "builtin-baseline": "90542a476c8ef3288039e2443a775e48db279173",
   "dependencies": [
     "cpuinfo",
+    "nghttp2",
     "curl",
     "cxxopts",
     {
@@ -11,6 +12,7 @@
       "version>=": "10.2.1"
     },
     "nlohmann-json",
+    "openssl",
     "simdjson",
     "spdlog",
     "zlib"

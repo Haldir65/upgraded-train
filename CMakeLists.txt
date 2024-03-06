@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(fibux CXX)
 
 set(EXECUTABLE_NAME fibux)
-
 find_package(fmt REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
@@ -12,6 +11,7 @@ find_package(cpuinfo CONFIG REQUIRED)
 find_package(cxxopts REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(CURL REQUIRED)
+
 
 
 

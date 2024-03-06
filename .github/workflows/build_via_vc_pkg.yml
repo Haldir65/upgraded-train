@@ -57,12 +57,14 @@ jobs:
         with:
             version: "17.0"
 
+      - uses: seanmiddleditch/gha-setup-ninja@master       
+
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
           clang --version
-          sudo apt install ninja-build build-essential coreutils tree -y
+          sudo apt install build-essential coreutils tree -y
           echo "cpu core num is "
           nproc
       
@@ -70,14 +72,8 @@ jobs:
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install ninja llvm cmake tree
-          clang --version
-          echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
-          echo "${BREW_INSTALL_PREFIX}/bin"
-          echo "/opt/homebrew/opt/llvm/bin" >> $GITHUB_PATH
-          clang --version
-          echo "llvm"
-          /opt/homebrew/opt/llvm/bin/clang --version
+          brew install tree
+          
 
       - name: configure cmake  and vcpkg 
         shell: bash
