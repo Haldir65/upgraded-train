@@ -3,10 +3,13 @@ cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 project(fibux CXX)
 
 set(EXECUTABLE_NAME fibux)
-find_package(PkgConfig)
-if(PKG_CONFIG_FOUND)
-    pkg_check_modules(NGHTTP2 REQUIRED libnghttp2)
-endif()
+if(NOT WIN32)
+    find_package(PkgConfig)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(NGHTTP2 REQUIRED libnghttp2)
+    endif()
+endif(NOT WIN32)
+
 find_package(fmt REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(simdjson CONFIG REQUIRED)
@@ -56,7 +59,6 @@ target_link_libraries(
             fmt::fmt
             spdlog::spdlog
             CURL::libcurl
-            ${NGHTTP2_LINK_LIBRARIES}
             OpenSSL::SSL OpenSSL::Crypto
             cpuinfo::cpuinfo
             cxxopts::cxxopts)
