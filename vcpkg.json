@@ -1,15 +1,18 @@
 {
   "name": "fiubo",
   "version-string": "0.1.0",
+  "builtin-baseline": "90542a476c8ef3288039e2443a775e48db279173",
   "dependencies": [
+    "cpuinfo",
+    "curl",
+    "cxxopts",
     {
       "name": "fmt",
       "version>=": "10.2.1"
     },
-    "simdjson",
-    "cxxopts",
     "nlohmann-json",
+    "simdjson",
     "spdlog",
-    "cpuinfo"
+    "zlib"
   ]
 }

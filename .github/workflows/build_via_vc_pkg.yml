@@ -82,7 +82,7 @@ jobs:
       - name: configure cmake  and vcpkg 
         shell: bash
         run: |
-          cmake --preset=default
+          cmake --preset=debug
 
       - name: build via cmake
         shell: bash
