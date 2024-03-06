@@ -59,7 +59,7 @@ jobs:
       #   with:
       #       version: "17.0"
 
-      - uses: seanmiddleditch/gha-setup-ninja@master       
+      - uses: seanmiddleditch/gha-setup-ninja@v4  
 
       - name: Install `ninja and tree` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
