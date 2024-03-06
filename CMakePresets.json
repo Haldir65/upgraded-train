@@ -25,6 +25,7 @@
         {
             "name": "x64-debug",
             "displayName": "x64 Debug",
+            "binaryDir": "${sourceDir}/build",
             "generator": "Visual Studio 17 2022",
             "description": "Sets debug build type and x64 arch",
             "architecture": {
