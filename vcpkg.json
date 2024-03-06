@@ -5,7 +5,10 @@
   "dependencies": [
     "cpuinfo",
     "nghttp2",
-    "curl",
+    {
+     "name": "curl",
+     "features":["brotli","c-ares","http2","openssl","zstd"]
+    },
     "cxxopts",
     {
       "name": "fmt",

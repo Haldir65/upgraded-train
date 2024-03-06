@@ -2,12 +2,38 @@
     "version": 6,
     "configurePresets": [
         {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build-${presetName}",
+            "installDir": "${sourceDir}/install/${presetName}",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
             "name": "debug",
             "binaryDir": "${sourceDir}/build",
             "generator": "Ninja",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE":"Debug",
+                "CMAKE_BUILD_TYPE": "Debug",
                 "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "x64-debug",
+            "displayName": "x64 Debug",
+            "generator": "Visual Studio 17 2022",
+            "description": "Sets debug build type and x64 arch",
+            "inherits": "base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ],
@@ -17,9 +43,17 @@
             "displayName": "Verbose Build",
             "description": "Passes -v to Ninja",
             "configurePreset": "debug",
-            "targets":[
+            "targets": [
                 "fibux"
             ]
+        },
+        {
+          "name": "verbose-build-windows",
+          "displayName": "Verbose Build",
+          "configurePreset": "x64-debug",
+          "targets": [
+            "fibux"
+        ]
         }
     ]
 }

@@ -78,7 +78,12 @@ jobs:
       - name: configure cmake  and vcpkg 
         shell: bash
         run: |
-          cmake --preset=debug
+          cmake --list-presets=all .
+          if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
+            cmake --preset=x64-debug
+          else
+            cmake --preset=debug
+          fi
 
       - name: build via cmake
         shell: bash

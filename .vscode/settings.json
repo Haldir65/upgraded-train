@@ -72,6 +72,9 @@
         "concepts": "cpp",
         "memory": "cpp",
         "type_traits": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "forward_list": "cpp",
+        "valarray": "cpp",
+        "numeric": "cpp"
     }
 }
