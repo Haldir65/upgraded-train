@@ -1,4 +1,4 @@
-name: multiarch build
+name: multiarch build on dispatch
 
 on:
     workflow_dispatch:
@@ -152,7 +152,8 @@ jobs:
       matrix:
         container: [ "silkeh/clang:17-bookworm" , 
           "haldir65/hello-docker-hub:clang17-cmake3.28",
-          "haldir65/hello-docker-hub:clang19-cmake3.28"
+          "haldir65/hello-docker-hub:clang19-cmake3.28",
+          "gcc:13.2.0"
           ]
        
     container:
@@ -168,30 +169,38 @@ jobs:
                 ref: 'master'
                 path: ronan
 
-           
-        -   name: Show clang version
+        -   name: install dependency on debinan
             shell: bash
             run: |
                 apt update
                 apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev wget
-                clang --version
-                clang++ --version
-
-
+           
         -   name: install latest version of cmake
             shell: bash
-            if: matrix.container == 'haldir65/hello-docker-hub:llvm-17'
+            if: matrix.container == 'gcc:13.2.0'
             run: |
-                pip3 install --upgrade cmake
+                wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
+                /usr/local/bin/cmake --version
+                echo $PATH
                 cmake --version                
 
         -   name: Show clang version
             shell: bash
+            if: matrix.container != 'gcc:13.2.0'
             run: |
                 clang --version
                 cmake --version
+                which clang    
+                which cmake            
+
+        -   name: Show compiler info [gcc]
+            shell: bash
+            run: |
+                gcc --version     
+                g++ --version
+                which gcc            
             
-        -   name: Build (mac or linux)
+        -   name: Build in docker conatiners
             shell: bash
             working-directory: ronan
             run: |
@@ -199,7 +208,7 @@ jobs:
                 ./scripts/build.sh
 
     
-        -   name: show layouts (unix)
+        -   name: show layouts
             shell: bash
             working-directory: ronan
             run: |
