@@ -1,13 +1,19 @@
 {
   "name": "fiubo",
   "version-string": "0.1.0",
-  "builtin-baseline": "90542a476c8ef3288039e2443a775e48db279173",
+  "builtin-baseline": "fbf25ddd1119211278c257f2e19c96a9d5a6ede7",
   "dependencies": [
     "cpuinfo",
     "nghttp2",
     {
-     "name": "curl",
-     "features":["brotli","c-ares","http2","openssl","zstd"]
+      "name": "curl",
+      "features": [
+        "brotli",
+        "c-ares",
+        "http2",
+        "openssl",
+        "zstd"
+      ]
     },
     "cxxopts",
     {
