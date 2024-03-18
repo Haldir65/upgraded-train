@@ -44,3 +44,15 @@ jobs:
             shell: bash
             run: |
                 tree -L 5 prebuilt
+        
+        - name: Zip
+          shell: bash
+          run: |
+                tar --directory prebuilt --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file prebult_libs.tar.xz .
+
+        - name: Upload Artifacts
+          uses: actions/upload-artifact@v4
+          with:
+                path: prebult_libs.tar.xz
+                if-no-files-found: error
+                retention-days: 7                    

@@ -12,7 +12,7 @@ function _build_zlib_static_and_dynamic(){
     wget https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz -O zlib-1.3.1.tar.gz
     tar xzvf zlib-1.3.1.tar.gz -C ${BUILD_ROOT}
     tree -L 4
-    pushd ${BUILD_ROOT}/zlib-1.3
+    pushd ${BUILD_ROOT}/zlib-1.3.1
     # CXXLAGS="-fPIC"  \
     ## # configure script for zlib.
     #
