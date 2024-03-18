@@ -1,0 +1,46 @@
+name: build openwrt-toolchian 19.07.1
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - openwrt-toolchians-19.07.1
+
+
+env:
+    REGISTRY_IMAGE: haldir65/hello-docker-hub
+    DH_UNAME: haldir65
+    IMAG_TAG: openwrt-toolchians-19.07.1
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        if: "contains(github.event.head_commit.message, '[Build-cross]')"
+        container:
+          image: docker://haldir65/hello-docker-hub:openwrt-toolchians-19.07.1
+        strategy:
+            fail-fast: false
+
+        steps:
+
+        -   name: Checkout
+            uses: actions/checkout@v4    
+                
+        -   name: Install `ninja` on Ubuntu
+            shell: bash
+            run: |
+                sudo apt install ninja-build build-essential clang coreutils tree -y
+                echo "cpu core num is "
+                echo "${STAGING_DIR}"
+                echo "${PATH}"
+                nproc
+        -   name: build test
+            shell: bash
+            run: |
+                chmod +x scripts/build_zlib_and_openssl_mipsel.sh
+                bash scripts/build_zlib_and_openssl_mipsel.sh
+                
+        -   name: show layouts after build
+            shell: bash
+            run: |
+                tree -L 5 prebuilt

@@ -5,7 +5,7 @@ ARG SDK_URL="https://downloads.openwrt.org/releases/19.07.1/targets/ramips/mt762
 RUN apt update
 
 RUN apt update && \ 
-    apt install -y sudo ninja-build git unzip build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl tree sudo
+    apt install -y sudo ninja-build git unzip build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl tree sudo coreutils
 
 RUN pip install cmake
 
