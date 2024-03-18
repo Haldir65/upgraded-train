@@ -52,6 +52,7 @@ jobs:
                 file: Dockerfile
                 push: true
                 platforms: ${{ matrix.platform }}
+                tags: "${{ env.REGISTRY_IMAGE }}:${{ env.IMAG_TAG }}"
                 labels: ${{ steps.meta.outputs.labels }}
                 build-args: |
                     BUILDPLATFORM=${{ matrix.platform }}
