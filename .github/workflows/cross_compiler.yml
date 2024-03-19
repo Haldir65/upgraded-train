@@ -1,4 +1,4 @@
-name: build openwrt-toolchian 19.07.1
+name: openwrt 19.07.1 prebuilt binary and libs
 
 on:
     workflow_dispatch:
@@ -37,8 +37,8 @@ jobs:
         -   name: build test
             shell: bash
             run: |
-                chmod +x scripts/build_zlib_and_openssl_mipsel.sh
-                bash scripts/build_zlib_and_openssl_mipsel.sh
+                chmod +x scripts/build_openwrt_bin_libs.sh
+                bash scripts/build_openwrt_bin_libs.sh
                 
         -   name: show layouts after build
             shell: bash
@@ -55,4 +55,5 @@ jobs:
           with:
                 path: prebult_libs.tar.xz
                 if-no-files-found: error
-                retention-days: 7                    
+                retention-days: 7
+                name: prebult_libs.tar.xz         
