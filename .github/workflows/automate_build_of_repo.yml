@@ -213,6 +213,14 @@ jobs:
             working-directory: ronan
             run: |
                 tree -L 3 build
+        
+                
+        # https://twitter.com/zeuxcg/status/1769957028167111096
+        -   name: work round for address sanitizer
+            if: startsWith(matrix.container, 'haldir65/hello-docker-hub')
+            shell: bash
+            run: |
+                sysctl -w vm.mmap_rnd_bits=28
 
         -   name: Inspect
             shell: bash
