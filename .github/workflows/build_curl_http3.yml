@@ -8,7 +8,7 @@ on:
 
 jobs:        
   buildCurlhttp3:
-    name: Build fmt
+    name: Build curl with http3
     if: "contains(github.event.head_commit.message, '[curlBuild]')"
     continue-on-error: false
     strategy:
@@ -16,8 +16,8 @@ jobs:
         target:
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
-            tar_extra_args: ''
-            llvm_version: '18.x'
+            # tar_extra_args: ''
+            # llvm_version: '18.x'
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
@@ -27,8 +27,8 @@ jobs:
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
           - id: 'darwin-amd64'
             os: 'macos-14'
-            tar_extra_args: ''
-            llvm_version: '18.x'
+            # tar_extra_args: ''
+            # llvm_version: '18.x'
           # - id: 'windows-amd64'
           #   os: 'windows-2022'
           #   llvm_version: '16.x'
@@ -40,7 +40,7 @@ jobs:
           # the additional size is not too large on Windows.
             # tar_extra_args: '--dereference'
         # llvm_version: ['17.x']
-        llvm_repo_url: ['https://github.com/llvm/llvm-project.git']
+        # llvm_repo_url: ['https://github.com/llvm/llvm-project.git']
       fail-fast: true
 
     runs-on: ${{ matrix.target.os }}    

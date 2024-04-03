@@ -233,7 +233,7 @@ function _build_psl(){
     wget https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz -O libpsl-0.21.5.tar.gz
     tar -xzvf libpsl-0.21.5.tar.gz -C ${build_dir}
     pushd ${build_dir}/libpsl-0.21.5
-    CPPFLAGS="-I${prebuilt_libunistring_root}/include" LDFLAGS="-L${prebuilt_libunistring_root}/${lib_folder}" ./configure --prefix=${prebuilt_psl_root}
+    CPPFLAGS="-I${prebuilt_libunistring_root}/include" LDFLAGS="-L${prebuilt_libunistring_root}/lib" ./configure --prefix=${prebuilt_psl_root}
     make -j${CORES}
     make install
     rm -rf libpsl-0.21.5.tar.gz
