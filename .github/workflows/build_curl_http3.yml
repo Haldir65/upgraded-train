@@ -27,7 +27,7 @@ jobs:
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
           - id: 'darwin-amd64'
             # os: 'macos-14-xlarge' ## failed
-            os: 'macos-latest-large'
+            os: 'macos-latest'
             ## https://docs.github.com/en/actions/using-github-hosted-runners/about-larger-runners/about-larger-runners#about-macos-larger-runners
             # tar_extra_args: ''
             # llvm_version: '18.x'
