@@ -94,7 +94,12 @@ jobs:
         shell: bash
         run: |
           bash scripts/build_curl_http3.sh
-          tree -L 4
+     
+      - name: show layouts
+        shell: bash
+        run: |
+            tree -L 2
+            ls -al
     
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

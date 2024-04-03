@@ -5,9 +5,9 @@ set -o errexit
 set -o errtrace
 
 function _prepare(){
-    local now_dir=`pwd`
+    export now_dir=`pwd`
     # readonly BUILD_ROOT=`pwd`/build/manual
-    readonly PREBUILT_DIR=`pwd`/prebuilt
+    export PREBUILT_DIR=`pwd`/prebuilt
     if [[ "$OSTYPE" == "darwin"* ]]; then
         export CORES=$((`sysctl -n hw.logicalcpu`+1))
         export CFLAGS="-arch arm64 -isysroot $(xcrun -sdk macosx --show-sdk-path) -mmacosx-version-min=$(xcrun -sdk macosx --show-sdk-version)"
@@ -84,8 +84,8 @@ function _build_brotli(){
     cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${prebuilt_brotli_root} ..
     cmake --build . --config Release --target install -j${CORES}
     tree -L 4 ${brotli_INSTALL_DIR}
-    popd
     rm -rf ${build_dir}/brotli-1.1.0
+    popd
     # rm -rf brotli_v1.1.0.tar.gz
 
 }
@@ -159,9 +159,10 @@ function _build_nghttp2(){
     make -j$CORES
     make install
     make clean
-    popd
     rm -rf ${build_dir}/nghttp2-1.59.0
     rm -rf ${prebuilt_nghttp2_root}/share
+    popd
+   
 
 }
 
@@ -224,6 +225,7 @@ function _build_libunistring(){
     make -j${CORES}
     make install
     _purple "_build_libunistring done \n"
+    popd
 
 }
 
@@ -287,8 +289,13 @@ function test_curl(){
 }
 
 function _zip_output(){
-    mkdir -p dist 
+    cd ${now_dir}
+    _purple "zip outputs \n"
+    mkdir -p dist
     tar --directory ${PREBUILT_DIR} --create --xz --verbose --file dist/prebuilt.tar.xz .
+    tree -L 3 dist
+    _purple "zip outputs  done \n"
+
 }
 
 
