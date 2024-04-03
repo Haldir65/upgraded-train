@@ -72,7 +72,7 @@ jobs:
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install ninja llvm cmake tree libunistring libidn2 pkg-config autoconf automake
+          brew install ninja llvm cmake tree libunistring libidn2 pkg-config autoconf automake libtool
           clang --version
           echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
           echo "${BREW_INSTALL_PREFIX}/bin"
