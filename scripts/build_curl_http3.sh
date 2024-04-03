@@ -50,6 +50,10 @@ function _prepare(){
     mkdir -p ${prebuilt_zstd_root}
     mkdir -p ${prebuilt_psl_root}
     mkdir -p ${prebuilt_c_ares_root}
+
+    _Cyan "\n CC = ${CC}   \n"
+    _Cyan "CXX = ${CXX} \n"
+
 }
 
 

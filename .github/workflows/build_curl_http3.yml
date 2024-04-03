@@ -64,7 +64,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential autoconf automake clang coreutils libidn2-0-dev pkg-config -y
+          sudo apt install ninja-build build-essential autoconf automake tree clang coreutils libidn2-0-dev pkg-config -y
           echo "cpu core num is "
           nproc
       
@@ -108,3 +108,31 @@ jobs:
           path: dist
           if-no-files-found: error
           retention-days: 7
+
+
+  buildCurlHttp3Openwrt:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[curlBuild]')"
+    container:
+    #   image: docker://haldir65/hello-docker-hub:openwrt-toolchians-19.07.1
+      image: ghcr.io/haldir65/upgraded-train:openwrt-19.07.1        
+    steps:
+      -   name: Checkout
+          uses: actions/checkout@v4    
+              
+      -   name: Install `ninja` on Ubuntu
+          shell: bash
+          run: |
+            sudo apt install ninja-build build-essential autoconf automake clang coreutils tree libidn2-0-dev pkg-config -y
+            echo "cpu core num is "
+            echo "cpu core num is "
+            echo "${STAGING_DIR}"
+            echo "${PATH}"
+            nproc
+      -   name: build test
+          shell: bash
+          run: |
+              tree -L 2
+              chmod +x scripts/build_curl_http3.sh
+              CC=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-gcc \
+              CXX=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-g++ scripts/build_curl_http3.sh
