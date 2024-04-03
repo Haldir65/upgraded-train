@@ -1,0 +1,24 @@
+From bb98eeabbe5ef6f29503aa2f79ca3e8f029e739a Mon Sep 17 00:00:00 2001
+From: Remi Gacogne <rgacogne[at]nuagelabs[dot]fr>
+Date: Wed, 26 Mar 2014 10:54:58 +0100
+Subject: [PATCH] Fix compilation with --disable-manual
+
+---
+ src/tool_hugehelp.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/tool_hugehelp.h b/src/tool_hugehelp.h
+index 442579e..29e5c88 100644
+--- a/src/tool_hugehelp.h
++++ b/src/tool_hugehelp.h
+@@ -23,6 +23,8 @@
+  ***************************************************************************/
+ #include "tool_setup.h"
+
++#ifdef USE_MANUAL
+ void hugehelp(void);
++#endif /* USE_MANUAL */
+
+ #endif /* HEADER_CURL_TOOL_HUGEHELP_H */
+--
+1.9.1

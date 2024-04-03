@@ -1,4 +1,5 @@
 #!/bin/bash
+ARCH=`uname -m`
 
 _green() {
     printf '\033[1;31;32m'
