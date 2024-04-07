@@ -4,16 +4,7 @@
 set -o errexit
 set -o errtrace
 
-function _download_if_not_exists(){
-    local url=$1
-    local FILE=$2
-    if [ ! -f "$FILE" ]; then
-        _blue "$FILE already exists\n"
-        wget $url -O $FILE
-    else
-        _green "$FILE already exists\n"
-    fi
-}
+
 
 function _prepare(){
     export now_dir=`pwd`

@@ -60,7 +60,7 @@ function _prepare(){
 function _build_zlib(){
     _purple "building zlib \n"
     # git clone --depth 1 --branch v1.3.1 https://github.com/madler/zlib
-    wget https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz -O zlib-1.3.1.tar.gz
+    _download_if_not_exists https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.gz zlib-1.3.1.tar.gz
     mkdir -p $prebuilt_zlib_root
     tar -xzvf zlib-1.3.1.tar.gz -C ${build_dir}
     pushd ${build_dir}/zlib-1.3.1
@@ -80,7 +80,7 @@ function _build_zlib(){
 function _build_brotli(){
     _green "building brotli \n"
     # git clone --depth 1 --branch v1.1.0 https://github.com/google/brotli
-    wget https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz -O brotli_v1.1.0.tar.gz
+    _download_if_not_exists https://github.com/google/brotli/archive/refs/tags/v1.1.0.tar.gz brotli_v1.1.0.tar.gz
     mkdir -p ${prebuilt_brotli_root}
     tar -xzvf brotli_v1.1.0.tar.gz -C ${build_dir}
     pushd ${build_dir}/brotli-1.1.0
@@ -97,7 +97,7 @@ function _build_brotli(){
 function _build_quictls(){
     _green "_build_quictls begin \n"
     # git clone --depth 1 -b openssl-3.1.4+quic https://github.com/quictls/openssl ${build_dir}/openssl
-    wget https://github.com/quictls/openssl/archive/refs/tags/opernssl-3.1.5-quic1.tar.gz -O openssl-opernssl-3.1.5-quic1.tar.gz
+    _download_if_not_exists https://github.com/quictls/openssl/archive/refs/tags/opernssl-3.1.5-quic1.tar.gz openssl-opernssl-3.1.5-quic1.tar.gz
     rm -rf ${build_dir}/openssl
     rm -rf ${build_dir}/openssl-opernssl-3.1.5-quic1
     tar -xzvf openssl-opernssl-3.1.5-quic1.tar.gz -C ${build_dir}
@@ -122,7 +122,7 @@ function _build_quictls(){
 function _build_zstd(){
     _green "_build_zstd begin \n"
     rm -rf ${build_dir}/zstd
-    wget https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz -O zstd-1.5.6.tar.gz
+    _download_if_not_exists https://github.com/facebook/zstd/releases/download/v1.5.6/zstd-1.5.6.tar.gz zstd-1.5.6.tar.gz
     tar -xzvf zstd-1.5.6.tar.gz -C ${build_dir}
     mv ${build_dir}/zstd-1.5.6 ${build_dir}/zstd
     pushd ${build_dir}/zstd
@@ -138,7 +138,7 @@ function _build_zstd(){
 function _build_nghttp2(){
     _green "building nghttp2 \n"
     mkdir -p ${prebuilt_nghttp2_root}
-    wget https://github.com/nghttp2/nghttp2/releases/download/v1.59.0/nghttp2-1.59.0.tar.gz -O nghttp2-1.59.0.tar.gz
+    _download_if_not_exists https://github.com/nghttp2/nghttp2/releases/download/v1.59.0/nghttp2-1.59.0.tar.gz nghttp2-1.59.0.tar.gz
     tar -xzf nghttp2-1.59.0.tar.gz -C ${build_dir}
     rm -rf nghttp2-1.59.0.tar.gz
     pushd ${build_dir}/nghttp2-1.59.0
@@ -174,7 +174,7 @@ function _build_nghttp2(){
 function _build_nghttp3(){
     _green "_build_nghttp3 begin \n"
     rm -rf ${build_dir}/nghttp3-1.2.0
-    wget https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz -O nghttp3-1.2.0.tar.gz
+    _download_if_not_exists https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz nghttp3-1.2.0.tar.gz
     tar -xzvf nghttp3-1.2.0.tar.gz -C ${build_dir}
     pushd ${build_dir}/nghttp3-1.2.0
     autoreconf -fi
@@ -189,7 +189,7 @@ function _build_nghttp3(){
 function _build_c_areas(){
     _green "_build_c_areas begin \n"
     local c_ares_version=1.28.1
-    wget https://github.com/c-ares/c-ares/releases/download/cares-1_28_1/c-ares-1.28.1.tar.gz -O c-ares-1.28.1.tar.gz
+    _download_if_not_exists https://github.com/c-ares/c-ares/releases/download/cares-1_28_1/c-ares-1.28.1.tar.gz c-ares-1.28.1.tar.gz
     rm -rf ${build_dir}/c-ares-${c_ares_version}
      rm -rf ${build_dir}/c-ares-${c_ares_version}
     tar -xzvf c-ares-${c_ares_version}.tar.gz -C ${build_dir}
@@ -207,7 +207,7 @@ function _build_c_areas(){
 function _build_ngtcp2(){
     _green "_build_ngtcp2 begin \n"
     rm -rf ${build_dir}/ngtcp2-1.4.0
-    wget https://github.com/ngtcp2/ngtcp2/releases/download/v1.4.0/ngtcp2-1.4.0.tar.gz -O ngtcp2-1.4.0.tar.gz
+    _download_if_not_exists https://github.com/ngtcp2/ngtcp2/releases/download/v1.4.0/ngtcp2-1.4.0.tar.gz ngtcp2-1.4.0.tar.gz
     tar -xzvf ngtcp2-1.4.0.tar.gz -C ${build_dir}
     pushd ${build_dir}/ngtcp2-1.4.0   
     autoreconf -fi
@@ -221,7 +221,7 @@ function _build_ngtcp2(){
 
 function _build_libunistring(){
     _green "_build_libunistring begin \n"
-    wget https://ftp.gnu.org/gnu/libunistring/libunistring-1.2.tar.gz -O libunistring-1.2.tar.gz
+    _download_if_not_exists https://ftp.gnu.org/gnu/libunistring/libunistring-1.2.tar.gz libunistring-1.2.tar.gz
     rm -rf ${build_dir}/libunistring-1.2
     tar -xzvf libunistring-1.2.tar.gz -C ${build_dir}
     pushd ${build_dir}/libunistring-1.2
@@ -236,7 +236,7 @@ function _build_libunistring(){
 function _build_psl(){
     _green "_build_psl begin \n"
     rm -rf ${build_dir}/libpsl-0.21.5
-    wget https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz -O libpsl-0.21.5.tar.gz
+    _download_if_not_exists https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz libpsl-0.21.5.tar.gz
     tar -xzvf libpsl-0.21.5.tar.gz -C ${build_dir}
     pushd ${build_dir}/libpsl-0.21.5
     CPPFLAGS="-I${prebuilt_libunistring_root}/include" LDFLAGS="-L${prebuilt_libunistring_root}/lib" ./configure --prefix=${prebuilt_psl_root}
@@ -250,7 +250,7 @@ function _build_psl(){
 
 function _build_curl(){
     _green "_build_curl begin \n"
-    wget https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.gz -O curl-8.7.1.tar.gz
+    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.gz curl-8.7.1.tar.gz
     tar xzvf curl-8.7.1.tar.gz -C ${build_dir}
     # cp scripts/0001-Fix-compilation-with-disable-manual.patch ${build_dir}/curl-8.7.1/commit_38d582ff5.patch
     ## https://sourceforge.net/p/curl/bugs/1350/
@@ -299,7 +299,6 @@ function _zip_output(){
     tar --directory ${PREBUILT_DIR} --create --xz --verbose --file dist/prebuilt.tar.xz .
     tree -L 3 dist
     _purple "zip outputs  done \n"
-
 }
 
 
