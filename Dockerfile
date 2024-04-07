@@ -17,10 +17,12 @@ RUN mkdir -p /builder/shared-workdir/build
 
 RUN curl -o openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64.tar.xz -L ${SDK_URL_MIRROR} && \
     tar xf openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C /builder/shared-workdir/build && \
-    ls -al /builder/shared-workdir/build && \
-    tree -L 5 /builder/shared-workdir/build
+    mv /builder/shared-workdir/build/openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64/staging_dir /builder/shared-workdir/build/staging_dir && \
+    rm -rf /builder/shared-workdir/build/openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64 && \
+    ls -al /builder/shared-workdir/build/staging_dir /&& \
+    tree -L 4 /builder/shared-workdir/build/staging_dir
 
-ENV STAGING_DIR="/builder/shared-workdir/build/openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64/staging_dir"
+ENV STAGING_DIR="/builder/shared-workdir/build/staging_dir"
 
 RUN echo ${STAGING_DIR}
 
