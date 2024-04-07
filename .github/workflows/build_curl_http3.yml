@@ -125,7 +125,7 @@ jobs:
       -   name: Install `related deps` on Ubuntu
           shell: bash
           run: |
-            sudo apt install ninja-build build-essential autoconf automake clang coreutils tree libidn2-0-dev pkg-config -y
+            sudo apt install ninja-build build-essential autoconf automake libtool coreutils tree libidn2-0-dev pkg-config -y
             echo "cpu core num is "
             echo "cpu core num is "
             echo "${STAGING_DIR}"
