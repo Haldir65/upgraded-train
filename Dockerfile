@@ -13,14 +13,14 @@ RUN pip install cmake
 
 RUN cmake --version
 
-RUN mkdir -p /home/toolchains
+RUN mkdir -p /builder/shared-workdir/build
 
 RUN curl -o openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64.tar.xz -L ${SDK_URL_MIRROR} && \
-    tar xf openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C /home/toolchains && \
-    ls -al /home/toolchains && \
-    tree -L 5 /home/toolchains
+    tar xf openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64.tar.xz -C /builder/shared-workdir/build && \
+    ls -al /builder/shared-workdir/build && \
+    tree -L 5 /builder/shared-workdir/build
 
-ENV STAGING_DIR="/home/toolchains/openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64/staging_dir"
+ENV STAGING_DIR="/builder/shared-workdir/build/openwrt-sdk-19.07.1-ramips-mt7621_gcc-7.5.0_musl.Linux-x86_64/staging_dir"
 
 RUN echo ${STAGING_DIR}
 
