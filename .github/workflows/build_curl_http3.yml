@@ -135,7 +135,7 @@ jobs:
           shell: bash
           run: |
             tree ${STAGING_DIR} -L 3
-            
+
       -   name: build curl static binary
           shell: bash
           run: |
@@ -148,7 +148,6 @@ jobs:
         run: |
             tree prebuilt -L 2 
             ls -al
-            file prebuilt/curlh3/bin/curl
     
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4

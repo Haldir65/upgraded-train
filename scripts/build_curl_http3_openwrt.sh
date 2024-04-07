@@ -348,6 +348,7 @@ function _build_curl(){
     --with-brotli=$prebuilt_brotli_root \
     --enable-ares=${prebuilt_c_ares_root} --with-libidn2=${prebuilt_idn2_root} --prefix=${curl_http3_dir} \
     --with-pic \
+    --with-ca-path=/etc/ssl/certs \
     --disable-shared \
     --enable-pthreads \
     --disable-manual    \
