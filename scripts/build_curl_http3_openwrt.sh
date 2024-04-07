@@ -25,7 +25,7 @@ function _prepare(){
         export lib_folder=lib
     else
         export CORES=$((`nproc`+1))
-        export lib_folder=lib64
+        export lib_folder=lib
     fi
     export ARCH="mipsel"
     export TARGET="mipsel"
@@ -48,7 +48,12 @@ function _prepare(){
 
     export CC=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-gcc
     export CXX=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-g++
-
+    export ROOTDIR="${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin"
+    export AR=${ROOTDIR}/mipsel-openwrt-linux-ar
+    export AS=${ROOTDIR}/mipsel-openwrt-linux-as
+    export LD=${ROOTDIR}/mipsel-openwrt-linux-ld
+    export RANLIB=${ROOTDIR}/mipsel-openwrt-linux-ranlib
+    export NM=${ROOTDIR}/mipsel-openwrt-linux-nm
 
 
     # rm -rf  ${build_dir}
@@ -183,7 +188,6 @@ function _build_nghttp2(){
     if [[ "$OSTYPE" == "darwin"* ]]; then
         export LDFLAGS="${LDFLAGS} -framework SystemConfiguration -framework CoreFoundation"
     fi
-
     ./configure --host=$TARGET \
         --enable-lib-only \
         --with-openssl=${quictls_install_dir} \
@@ -244,11 +248,12 @@ function _build_ngtcp2(){
     tar -xzvf ngtcp2-1.4.0.tar.gz -C ${build_dir}
     pushd ${build_dir}/ngtcp2-1.4.0   
     autoreconf -fi
-    ./configure --host="${TARGET}" PKG_CONFIG_PATH=${quictls_install_dir}/${lib_folder}/pkgconfig:${nghttp3_install_dir}/${lib_folder}/pkgconfig LDFLAGS="-L${prebuilt_zlib_root}/lib -L${quictls_install_dir}/${lib_folder}" --prefix=${ngtcp_install_dir} --enable-lib-only
+    LDFLAGS="-L${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib -L${prebuilt_zlib_root}/lib -L${quictls_install_dir}/${lib_folder}" LIBS="-latomic -lz" ./configure --host="${TARGET}" PKG_CONFIG_PATH=${quictls_install_dir}/${lib_folder}/pkgconfig:${nghttp3_install_dir}/lib/pkgconfig  --prefix=${ngtcp_install_dir} --enable-lib-only
+    # ./configure --host="${TARGET}" PKG_CONFIG_PATH=${quictls_install_dir}/${lib_folder}/pkgconfig:${nghttp3_install_dir}/${lib_folder}/pkgconfig LDFLAGS="-L${prebuilt_zlib_root}/lib -L${quictls_install_dir}/${lib_folder}" --prefix=${ngtcp_install_dir} --enable-lib-only
     make -j${CORES}
     make install
     _Cyan "_build_ngtcp2 completed \n"
-    rm -rf ngtcp2-1.4.0.tar.gz
+    # rm -rf ngtcp2-1.4.0.tar.gz
     popd
 }
 
@@ -325,14 +330,23 @@ function _build_curl(){
     ## https://sourceforge.net/p/curl/bugs/1350/
     pushd ${build_dir}/curl-8.7.1
     # patch -p1 < commit_38d582ff5.patch
-    rm src/tool_hugehelp.c
-    # _green "prebuilt_zstd_root = ${prebuilt_zstd_root}\n"
+    rm -rf src/tool_hugehelp.c
     autoreconf -fi
     # https://github.com/curl/curl/issues/8733#issuecomment-1891847573
     # OpensSSL-3.0.3+quic, replace lib/pkgconfig ===> lib64/pkgconfig when you build ngtcp2.
+    atomic_lib=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib/libatomic.a 
     # LDFLAGS="-Wl,-rpath,${quictls_install_dir}/${lib_folder}" ./configure --with-openssl=${quictls_install_dir} --with-nghttp3=${nghttp3_install_dir} --with-ngtcp2=${ngtcp_install_dir} --prefix=${curl_http3_dir}
-    mv ${ngtcp_install_dir}/lib ${ngtcp_install_dir}/lib64
-    CPPFLAGS="-I${prebuilt_psl_root}/include" LIBS="-lbrotlicommon -latomic" LDFLAGS="-L${quictls_install_dir}/${lib_folder} -L${prebuilt_brotli_root}/lib -L${prebuilt_psl_root}/lib" ./configure --host=$TARGET PKG_CONFIG_PATH=${ngtcp_install_dir}/lib64/pkgconfig --with-zlib=${prebuilt_zlib_root} --with-zstd=${prebuilt_zstd_root} --with-openssl=${quictls_install_dir} --with-nghttp3=${nghttp3_install_dir} --with-ngtcp2=${ngtcp_install_dir} --with-nghttp2=${prebuilt_nghttp2_root} --with-brotli=${prebuilt_brotli_root} --enable-ares=${prebuilt_c_ares_root} --with-libidn2=${prebuilt_idn2_root} --prefix=${curl_http3_dir} \
+    CPPFLAGS="-I$prebuilt_psl_root/include" LIBS="-latomic -lssl -lbrotlicommon -lcrypto" LDFLAGS="-L${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib -L$quictls_install_dir/$lib_folder -L${prebuilt_brotli_root}/lib -L${prebuilt_psl_root}/lib" ./configure --host=$TARGET \
+    --build=x86_64-pc-linux-gnu \
+    PKG_CONFIG_PATH=$ngtcp_install_dir/lib/pkgconfig \
+    --with-zlib=$prebuilt_zlib_root \
+    --with-zstd=$prebuilt_zstd_root \
+    --with-openssl=$quictls_install_dir \
+    --with-nghttp3=$nghttp3_install_dir \
+    --with-ngtcp2=$ngtcp_install_dir \
+    --with-nghttp2=$prebuilt_nghttp2_root \
+    --with-brotli=$prebuilt_brotli_root \
+    --enable-ares=${prebuilt_c_ares_root} --with-libidn2=${prebuilt_idn2_root} --prefix=${curl_http3_dir} \
     --with-pic \
     --disable-shared \
     --enable-pthreads \
@@ -343,6 +357,7 @@ function _build_curl(){
     --disable-docs  \
     --enable-threaded-resolver \
     --enable-dict \
+    --enable-alt-svc --enable-websockets   \
     --enable-unix-sockets \
     --enable-cookies    \
     --enable-http-auth  \
