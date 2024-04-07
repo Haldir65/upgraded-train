@@ -131,7 +131,11 @@ jobs:
             echo "${STAGING_DIR}"
             echo "${PATH}"
             nproc
-
+      -   name: show compiler layouts
+          shell: bash
+          run: |
+            tree ${STAGING_DIR} -L 3
+            
       -   name: build curl static binary
           shell: bash
           run: |
