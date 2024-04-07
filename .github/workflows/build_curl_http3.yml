@@ -114,7 +114,7 @@ jobs:
 
   buildCurlHttp3Openwrt:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[curlBuild2]')"
+    if: "contains(github.event.head_commit.message, '[curlBuild]')"
     container:
     #   image: docker://haldir65/hello-docker-hub:openwrt-toolchians-19.07.1
       image: ghcr.io/haldir65/upgraded-train:openwrt-19.07.1        
@@ -122,7 +122,7 @@ jobs:
       -   name: Checkout
           uses: actions/checkout@v4    
               
-      -   name: Install `ninja` on Ubuntu
+      -   name: Install `related deps` on Ubuntu
           shell: bash
           run: |
             sudo apt install ninja-build build-essential autoconf automake clang coreutils tree libidn2-0-dev pkg-config -y
@@ -131,10 +131,25 @@ jobs:
             echo "${STAGING_DIR}"
             echo "${PATH}"
             nproc
-      -   name: build test
+
+      -   name: build curl static binary
           shell: bash
           run: |
               tree -L 2
-              chmod +x scripts/build_curl_http3.sh
-              CC=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-gcc \
-              CXX=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-g++ scripts/build_curl_http3.sh
+              chmod +x scripts/build_curl_http3_openwrt.sh
+              bash scripts/build_curl_http3_openwrt.sh
+
+      - name: show binary info
+        shell: bash
+        run: |
+            tree prebuilt -L 2 
+            ls -al
+            file prebuilt/curlh3/bin/curl
+    
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openwrt-prebuilt-curl-with-http3
+          path: dist
+          if-no-files-found: error
+          retention-days: 7 
