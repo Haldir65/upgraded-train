@@ -260,7 +260,16 @@ function _build_curl(){
     # _green "prebuilt_zstd_root = ${prebuilt_zstd_root}\n"
     autoreconf -fi
     # LDFLAGS="-Wl,-rpath,${quictls_install_dir}/${lib_folder}" ./configure --with-openssl=${quictls_install_dir} --with-nghttp3=${nghttp3_install_dir} --with-ngtcp2=${ngtcp_install_dir} --prefix=${curl_http3_dir}
-    CPPFLAGS="-I${prebuilt_psl_root}/include" LIBS="-lbrotlicommon" LDFLAGS="-Wl,-rpath,${quictls_install_dir}/${lib_folder} -L${prebuilt_brotli_root}/lib -L${prebuilt_psl_root}/lib" ./configure --with-zlib=${prebuilt_zlib_root} --with-zstd=${prebuilt_zstd_root} --with-openssl=${quictls_install_dir} --with-nghttp3=${nghttp3_install_dir} --with-ngtcp2=${ngtcp_install_dir} --with-nghttp2=${prebuilt_nghttp2_root} --with-brotli=${prebuilt_brotli_root} --enable-ares=${prebuilt_c_ares_root} --prefix=${curl_http3_dir} \
+    CPPFLAGS="-I${prebuilt_psl_root}/include" LIBS="-lbrotlicommon" LDFLAGS="-Wl,-rpath,${quictls_install_dir}/${lib_folder} -L${prebuilt_brotli_root}/lib -L${prebuilt_psl_root}/lib" ./configure --prefix=${curl_http3_dir} \
+    --with-zlib=$prebuilt_zlib_root \
+    --with-libps=$prebuilt_psl_root \
+    --with-zstd=$prebuilt_zstd_root \
+    --with-openssl=$quictls_install_dir \
+    --with-nghttp3=$nghttp3_install_dir \
+    --with-ngtcp2=$ngtcp_install_dir \
+    --with-nghttp2=$prebuilt_nghttp2_root \
+    --with-brotli=$prebuilt_brotli_root \
+    --enable-ares=$prebuilt_c_ares_root \
     --with-pic \
     --disable-shared \
     --enable-pthreads \
