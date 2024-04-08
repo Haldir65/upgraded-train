@@ -297,16 +297,22 @@ function test_curl(){
     cd $now_dir
     _purple "reset http_proxy since HTTP/3 is not supported over a HTTP proxy \n"
     export http_proxy=""; export https_proxy=""
-    
     _purple "try grab binary using our curl \n"
-    ${curl_http3_dir}/bin/curl -L https://github.com/fmtlib/fmt/archive/refs/tags/9.1.0.tar.gz -o fmt-9.1.0.tar.gz
+    ${curl_http3_dir}/bin/curl -L https://github.com/fmtlib/fmt/archive/refs/tags/9.1.0.tar.gz -o fmt-9.1.0.tar.gz -v
     tar -xzf fmt-9.1.0.tar.gz
     tree -L 4 fmt-9.1.0
     local BUILD_DIR=build
     mkdir -p fmt_build
-    _orange "CC = ${CC}\n"
-    _orange "CXX = ${CXX}\n"
     pushd fmt-9.1.0
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        export CXX="clang++"
+        export CC="clang"
+    else
+        export CXX="g++"
+        export CC="gcc"
+    fi
+     _orange "CC = ${CC}\n"
+    _orange "CXX = ${CXX}\n"
     cmake -S . -G Ninja -DCMAKE_INSTALL_PREFIX=$now_dir/fmt_build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_STANDARD=17 -DUSE_SANITIZER=address -B "$BUILD_DIR"
     _green "configure cmake done \n"
     cmake --build "$BUILD_DIR" --target install
