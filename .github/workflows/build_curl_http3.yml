@@ -66,7 +66,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install ninja-build build-essential autoconf automake tree clang coreutils libidn2-0-dev pkg-config -y
+          sudo apt install ninja-build build-essential autoconf automake tree clang cmake coreutils libidn2-0-dev pkg-config -y
           echo "cpu core num is "
           nproc
       

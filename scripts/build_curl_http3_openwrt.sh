@@ -332,6 +332,7 @@ function _build_curl(){
     PKG_CONFIG_PATH=$ngtcp_install_dir/lib/pkgconfig \
     --with-zlib=$prebuilt_zlib_root \
     --with-zstd=$prebuilt_zstd_root \
+    --with-libps=$prebuilt_psl_root \
     --with-openssl=$quictls_install_dir \
     --with-nghttp3=$nghttp3_install_dir \
     --with-ngtcp2=$ngtcp_install_dir \
