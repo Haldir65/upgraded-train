@@ -10,7 +10,7 @@ jobs:
   downloadYoutubeVideo:
     name: download video from youtube
     continue-on-error: false
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out the code
@@ -18,36 +18,31 @@ jobs:
         with:
             fetch-depth: 2
 
-      - name: Install `ffmpeg`  on macOS
-        shell: bash
-        run: |
-          brew install ffmpeg
-     
+      - name: Setup yt-dlp
+        uses: AnimMouse/setup-yt-dlp@v1
+        with:
+          with-ffmpeg: true
       - name: show ffmpeg info
         shell: bash
         run: |
-          ffmpeg -version     
+          ffmpeg -version  
 
-      - name: Setup yt-dlp
-        uses: AnimMouse/setup-yt-dlp@v1
-          
       - name: actual download
         shell: bash
         run: |
-          yt-dlp --downloader aria2c https://www.youtube.com/watch?v=p0H1buMsXwE
-      
+          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=zCLOJ9j1k2Y
+          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=FCPdIvXo2rU
 
-      - name: convert all video file to av1 format
-        shell: bash
-        run: |
-          bash scripts/convert_video_to_av1.sh
-      
-      # - name: move video assets to folder and archive
+      # - name: convert all video file to av1 format
       #   shell: bash
       #   run: |
-      #     mkdir -p dist
-      #     find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
-
+      #     bash scripts/convert_video_to_av1.sh
+      
+      - name: move video assets to folder and archive
+        shell: bash
+        run: |
+          mkdir -p dist
+          find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
  
       - name: show layouts
         shell: bash
