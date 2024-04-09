@@ -26,7 +26,6 @@ jobs:
       - name: actual download
         shell: bash
         run: |
-          yt-dlp --downloader aria2c https://www.youtube.com/watch?v=0l9QT5yL2wA
           yt-dlp --downloader aria2c https://www.youtube.com/watch?v=p0H1buMsXwE
       
 
