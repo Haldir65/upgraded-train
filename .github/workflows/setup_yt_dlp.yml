@@ -27,12 +27,19 @@ jobs:
         shell: bash
         run: |
           yt-dlp --downloader aria2c https://www.youtube.com/watch?v=0l9QT5yL2wA
+          yt-dlp --downloader aria2c https://www.youtube.com/watch?v=p0H1buMsXwE
       
-      - name: move video assets to folder and archive
+
+      - name: convert all video file to av1 format
         shell: bash
         run: |
-          mkdir -p dist
-          find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
+          bash scripts/convert_video_to_av1.sh
+      
+      # - name: move video assets to folder and archive
+      #   shell: bash
+      #   run: |
+      #     mkdir -p dist
+      #     find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
 
       - name: show ffmpeg info
         shell: bash
