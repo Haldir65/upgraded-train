@@ -1,0 +1,42 @@
+name: yt-dlp in action
+
+on:
+    workflow_dispatch:
+    push:
+      branches:
+        - dev_yt_dlp_action
+
+jobs:        
+  downloadYoutubeVideo:
+    name: download video from youtube
+    continue-on-error: false
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
+
+      - name: Setup yt-dlp
+        uses: AnimMouse/setup-yt-dlp@v1
+        with:
+          with-ffmpeg: true
+          
+      - name: actual download
+        shell: bash
+        run: |
+          yt-dlp https://www.youtube.com/watch?v=fJvPBHErF2U
+      
+      - name: show ffmpeg info
+        shell: bash
+        run: |
+          ffmpeg -version
+     
+      - name: show layouts
+        shell: bash
+        run: |
+            tree -L 2
+            ls -al
+    
+  
