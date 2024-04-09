@@ -6,7 +6,7 @@ set -o errtrace
 
 function convert_all_video_to_av1_format(){
     mkdir -p dist
-    
+
     _green " creating directory now"
     # 开启nullglob选项以防止在没有匹配文件的情况下进入循环
     shopt -s nullglob
@@ -31,9 +31,22 @@ function convert_all_video_to_av1_format(){
     done
 }
 
+function _prepare(){
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        _green "====== build script running on macos  ======\n"
+        brew install tree
+    else
+        sudo apt update 
+        sudo apt install tree -y
+        _green "====== build script running on linux start ======\n"
+    fi
+
+}
+
 
 
 function main(){
+    _prepare
     convert_all_video_to_av1_format
     _red "all done\n"
 }

@@ -10,7 +10,7 @@ jobs:
   downloadYoutubeVideo:
     name: download video from youtube
     continue-on-error: false
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
       - name: Check out the code
@@ -18,10 +18,18 @@ jobs:
         with:
             fetch-depth: 2
 
+      - name: Install `ffmpeg`  on macOS
+        shell: bash
+        run: |
+          brew install ffmpeg
+     
+      - name: show ffmpeg info
+        shell: bash
+        run: |
+          ffmpeg -version     
+
       - name: Setup yt-dlp
         uses: AnimMouse/setup-yt-dlp@v1
-        with:
-          with-ffmpeg: true
           
       - name: actual download
         shell: bash
@@ -40,11 +48,7 @@ jobs:
       #     mkdir -p dist
       #     find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
 
-      - name: show ffmpeg info
-        shell: bash
-        run: |
-          ffmpeg -version
-     
+ 
       - name: show layouts
         shell: bash
         run: |
