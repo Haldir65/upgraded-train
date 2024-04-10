@@ -123,7 +123,13 @@ jobs:
           else
             bash scripts/test.sh
           fi
-          
+
+      - name: run benchmark (unix)
+        if: startsWith(matrix.target.id, 'darwin-')
+        shell: bash
+        working-directory: ronan
+        run: |
+          bash scripts/run_benchmark.sh
 
     #   - name: Zip
     #     shell: bash
