@@ -125,7 +125,7 @@ jobs:
           fi
 
       - name: run benchmark (unix)
-        if: startsWith(matrix.target.id, 'darwin-')
+        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
         shell: bash
         working-directory: ronan
         run: |
@@ -219,7 +219,6 @@ jobs:
             working-directory: ronan
             run: |
                 tree -L 3 build
-        
                 
         # https://twitter.com/zeuxcg/status/1769957028167111096
         -   name: work round for address sanitizer
@@ -238,6 +237,12 @@ jobs:
                 # ASAN_OPTIONS=alloc_dealloc_mismatch=0 PATH=build/apps:$PATH main --verbose true --filename "cmake/hello/resources/twitter.json" --dir "cmake/hello/resources" --mode $i
                 # done
                 bash scripts/test.sh
+
+        - name: run benchmark (unix)
+          shell: bash
+          working-directory: ronan
+          run: |
+            bash scripts/run_benchmark.sh    
 
         # -   name: Zip
         #     shell: bash
