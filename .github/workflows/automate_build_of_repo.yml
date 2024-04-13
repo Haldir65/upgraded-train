@@ -159,7 +159,7 @@ jobs:
         container: [ "silkeh/clang:17-bookworm" , 
           "haldir65/hello-docker-hub:clang17-cmake3.28",
           "haldir65/hello-docker-hub:clang19-cmake3.28",
-          "gcc:13.2.0","ubuntu:24.04"
+          "ubuntu:24.04"
           ]
        
     container:
