@@ -93,10 +93,10 @@ function _build_h2o(){
     pushd ${build_dir}/h2o-2.2.6
     mkdir -p build
     cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
+    cmake -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
     -DWITH_MRUBY=off \
     -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Release    \
-    -DOPENSSL_ROOT_DIR=/path/to/openssl
+    -DOPENSSL_ROOT_DIR=/path/to/openssl ..
     make -j${CORES}
     make install
     # local prebuilt_h2o_dir=${prebuilt_h2o_dir}
