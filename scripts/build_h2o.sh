@@ -94,6 +94,7 @@ function _build_h2o(){
     mkdir -p build
     cd build
     cmake .. -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
+    -DWITH_MRUBY=off \
     -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Release    \
     -DOPENSSL_ROOT_DIR=/path/to/openssl
     make -j${CORES}
