@@ -124,8 +124,8 @@ jobs:
             bash scripts/test.sh
           fi
 
-      - name: run benchmark (unix)
-        if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
+      - name: run benchmark 
+        # if: startsWith(matrix.target.id, 'darwin-') || startsWith(matrix.target.id, 'linux-')
         shell: bash
         working-directory: ronan
         run: |
@@ -239,7 +239,7 @@ jobs:
                 # done
                 bash scripts/test.sh
 
-        - name: run benchmark (unix)
+        - name: run benchmark 
           shell: bash
           working-directory: ronan
           run: |
