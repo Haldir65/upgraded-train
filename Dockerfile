@@ -7,7 +7,7 @@ ARG SDK_URL_MIRROR="https://ftp.snt.utwente.nl/pub/software/lede/releases/19.07.
 RUN apt update
 
 RUN apt update && \ 
-    apt install -y sudo ninja-build git unzip build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl tree sudo coreutils
+    apt install -y sudo ninja-build git unzip build-essential checkinstall python3 python3-pip zlib1g-dev wget curl tree coreutils autoconf automake libtool libidn2-0-dev pkg-config
 
 RUN pip install cmake
 
