@@ -18,7 +18,7 @@ jobs:
           - id: 'linux-amd64'
             os: 'ubuntu-latest'
           - id: 'darwin-amd64'
-            # os: 'macos-14-xlarge' ## failed
+            # os: 'macos-14-xlarge'  ## failed
             os: 'macos-14'
       fail-fast: true
 
@@ -111,11 +111,12 @@ jobs:
               chmod +x scripts/build_h2o_openwrt.sh
               bash scripts/build_h2o_openwrt.sh
 
-      - name: show binary info
+      - name: examine binary info
         shell: bash
         run: |
             tree prebuilt -L 2 
-            ls -al
+            $STAGING_DIR/toolchain-mipsel_24kc_gcc-7.5.0_musl/bin/mipsel-openwrt-linux-readelf -a prebuilt/h2o/mipsel/bin/h2o | grep "NEEDED"
+
     
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
