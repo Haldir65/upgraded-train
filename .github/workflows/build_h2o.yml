@@ -74,7 +74,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target.id }}-${{ matrix.target.os }}-prebuilt
+          name: ${{ matrix.target.id }}-${{ matrix.target.os }}-prebuilt-h2o-server
           path: dist
           if-no-files-found: error
           retention-days: 7
@@ -104,7 +104,7 @@ jobs:
           run: |
             tree ${STAGING_DIR} -L 3
 
-      -   name: build curl static binary
+      -   name: build h2o static binary
           shell: bash
           run: |
               tree -L 2
@@ -120,7 +120,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: openwrt-prebuilt-curl-with-http3
+          name: openwrt-prebuilt-h2o-server
           path: dist
           if-no-files-found: error
           retention-days: 7 

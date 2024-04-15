@@ -46,7 +46,7 @@ function _build_libuv(){
     tar -xzvf v1.48.0.tar.gz -C ${build_dir}
     pushd ${build_dir}/libuv-1.48.0
     mkdir -p build
-    cd build && cmake .. -DCMAKE_SYSTEM_NAME=linux-musl-mipsel -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="$prebuilt_libuv_root"
+    cd build && cmake .. -DCMAKE_SYSTEM_NAME=linux-musl-mipsel -DCMAKE_C_FLAGS="-I$STAGING_DIR/toolchain-mipsel_24kc_gcc-7.5.0_musl/include -D_GNU_SOURCE=1" -DCMAKE_C_COMPILER=$CC -DCMAKE_CXX_COMPILER=$CXX -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="$prebuilt_libuv_root"
     make -j${CORES}
     make install 
     popd
@@ -116,10 +116,9 @@ function _build_h2o(){
     mkdir -p build
     cd build
     # export CPPFLAGS="-I${prebuilt_zlib_root}/include"
-    # export CFLAGS=$CPPFLAGS
     # export LDFLAGS="-L${prebuilt_zlib_root}/lib"
-    cmake -DCMAKE_CXX_FLAGS=-latomic -DCMAKE_C_FLAGS=-latomic -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DLIBUV_LIBRARIES=$prebuilt_libuv_root/lib/libuv.a -DLIBUV_VERSION=1.48.0 -DLIBUV_INCLUDE_DIR=$prebuilt_libuv_root/include -DZLIB_USE_STATIC_LIBS=on -DZLIB_ROOT=$prebuilt_zlib_root -DOPENSSL_ROOT_DIR=$prebuilt_openssl_root -DWITH_MRUBY=off -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
-    -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Relearmse ..
+    cmake -DCMAKE_CXX_FLAGS="-latomic" -DCMAKE_C_FLAGS="-latomic" -DCMAKE_CXX_COMPILER=$CXX -DCMAKE_C_COMPILER=$CC -DLIBUV_LIBRARIES=$prebuilt_libuv_root/lib/libuv.a -DLIBUV_VERSION=1.48.0 -DLIBUV_INCLUDE_DIR=$prebuilt_libuv_root/include -DZLIB_USE_STATIC_LIBS=on -DZLIB_ROOT=$prebuilt_zlib_root -DOPENSSL_ROOT_DIR=$prebuilt_openssl_root -DWITH_MRUBY=off -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
+    -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Release ..
     make -j${CORES}
     make install
     popd
