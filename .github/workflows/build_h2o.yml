@@ -80,4 +80,47 @@ jobs:
           retention-days: 7
 
 
-  
+  buildh2oOpenwrt:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[h2oBuild]')"
+    container:
+    #   image: docker://haldir65/hello-docker-hub:openwrt-toolchians-19.07.1
+      image: ghcr.io/haldir65/upgraded-train:openwrt-19.07.1        
+    steps:
+      -   name: Checkout
+          uses: actions/checkout@v4    
+              
+      -   name: Install `related deps` on Ubuntu
+          shell: bash
+          run: |
+            sudo apt install ninja-build build-essential autoconf automake libtool coreutils tree libidn2-0-dev pkg-config -y
+            echo "cpu core num is "
+            echo "cpu core num is "
+            echo "${STAGING_DIR}"
+            echo "${PATH}"
+            nproc
+      -   name: show compiler layouts
+          shell: bash
+          run: |
+            tree ${STAGING_DIR} -L 3
+
+      -   name: build curl static binary
+          shell: bash
+          run: |
+              tree -L 2
+              chmod +x scripts/build_h2o_openwrt.sh
+              bash scripts/build_h2o_openwrt.sh
+
+      - name: show binary info
+        shell: bash
+        run: |
+            tree prebuilt -L 2 
+            ls -al
+    
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openwrt-prebuilt-curl-with-http3
+          path: dist
+          if-no-files-found: error
+          retention-days: 7 
