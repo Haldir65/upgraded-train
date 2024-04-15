@@ -19,19 +19,35 @@ function _prepare(){
         export CORES=$((`nproc`+1))
         export TARGET="x86_64-linux"
     fi
-    rm -rf  ${build_dir}
+    # rm -rf  ${build_dir}
     mkdir -p ${build_dir}
     export prebuilt_h2o_dir=${PREBUILT_DIR}/h2o/${ARCH}
     export prebuilt_zlib_root=${PREBUILT_DIR}/zlib/${ARCH}
     export prebuilt_openssl_root=${PREBUILT_DIR}/openssl/${ARCH}
+    export prebuilt_libuv_root=${PREBUILT_DIR}/uv/${ARCH}
     mkdir -p ${prebuilt_h2o_dir}
     mkdir -p ${prebuilt_zlib_root}
+    mkdir -p ${prebuilt_libuv_root}
     mkdir -p ${prebuilt_openssl_root}
     _Cyan "\n CC = ${CC}   \n"
     _Cyan "CXX = ${CXX} \n"
 
 }
 
+
+function _build_libuv(){
+    _purple "building libuv \n"
+    _download_if_not_exists https://github.com/libuv/libuv/archive/refs/tags/v1.48.0.tar.gz v1.48.0.tar.gz
+    mkdir -p $prebuilt_libuv_root
+    tar -xzvf v1.48.0.tar.gz -C ${build_dir}
+    pushd ${build_dir}/libuv-1.48.0
+    mkdir -p build
+    cd build && cmake .. -DBUILD_TESTING=OFF -DCMAKE_INSTALL_PREFIX="$prebuilt_libuv_root" 
+    make -j${CORES}
+    make install 
+    popd
+    _purple "building libuv done \n"
+}
 
 
 function _build_zlib(){
@@ -93,21 +109,13 @@ function _build_h2o(){
     pushd ${build_dir}/h2o-2.2.6
     mkdir -p build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
-    -DWITH_MRUBY=off \
-    -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Release    \
-    -DOPENSSL_ROOT_DIR=/path/to/openssl ..
+    # export CPPFLAGS="-I${prebuilt_zlib_root}/include"
+    # export CFLAGS=$CPPFLAGS
+    # export LDFLAGS="-L${prebuilt_zlib_root}/lib"
+    cmake -DLIBUV_LIBRARIES=$prebuilt_libuv_root/lib/libuv.a -DLIBUV_VERSION=1.48.0 -DLIBUV_INCLUDE_DIR=$prebuilt_libuv_root/include -DZLIB_USE_STATIC_LIBS=on -DZLIB_ROOT=$prebuilt_zlib_root -DOPENSSL_ROOT_DIR=$prebuilt_openssl_root -DWITH_MRUBY=off -DCMAKE_INSTALL_PREFIX="$prebuilt_h2o_dir" \
+    -DWITH_DTRACE=off -DCMAKE_BUILD_TYPE=Release ..
     make -j${CORES}
     make install
-    # local prebuilt_h2o_dir=${prebuilt_h2o_dir}
-    # mkdir -p ${prebuilt_h2o_dir}
-    # ./configure --prefix=${prebuilt_h2o_dir}
-    # make -j${CORES}
-    # make install
-    # _green "\n  done build zlib  \n"
-    # _green "\n  zlib are binary can be found in ${zlib_install_dir} \n"
-    # tree -L 4 ${zlib_install_dir}
-    # rm -rf ${build_dir}/zlib-1.3.1
     popd
 }
 
@@ -136,6 +144,7 @@ function main(){
     _prepare
     _build_zlib
     _build_openssl
+    _build_libuv
     _build_h2o
     test_h2o
     _zip_output
