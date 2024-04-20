@@ -2,6 +2,8 @@ name: multiarch build on dispatch
 
 on:
     workflow_dispatch:
+    schedule:
+      - cron: "0 */12 * * *" ## every 12 hours
  
 
 jobs:
