@@ -158,7 +158,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: [ "silkeh/clang:17-bookworm" , 
+        container: [ "silkeh/clang:18-bookworm" , 
           "haldir65/hello-docker-hub:clang17-cmake3.28",
           "haldir65/hello-docker-hub:clang19-cmake3.28",
           "ubuntu:24.04"
@@ -185,7 +185,7 @@ jobs:
               
         -   name: install latest version of cmake
             shell: bash
-            # if: matrix.container == 'gcc:13.2.0' || matrix.container == 'ubuntu:24.04'
+            # if: matrix.container == 'silkeh/clang:17-bookworm' || matrix.container == 'ubuntu:24.04'
             run: |
                 wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.28.3/cmake-3.28.3-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
                 /usr/local/bin/cmake --version
