@@ -57,7 +57,7 @@ jobs:
 
       - name: Install LLVM and Clang on linux
         if: startsWith(matrix.target.id, 'linux-')
-        uses: KyleMayes/install-llvm-action@v1
+        uses: KyleMayes/install-llvm-action@v2
         with:
             version: "17.0"
 
