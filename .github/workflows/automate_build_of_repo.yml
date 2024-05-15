@@ -19,7 +19,7 @@ jobs:
           #   llvm_version: '18.x'
           #   build_target: 'distribution'
           - id: 'linux-amd64'
-            os: 'ubuntu-latest'
+            os: 'ubuntu-24.04'
             tar_extra_args: ''
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
