@@ -30,8 +30,8 @@ jobs:
       - name: actual download
         shell: bash
         run: |
-          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=zCLOJ9j1k2Y
-          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=FCPdIvXo2rU
+          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=rkM-dTr89kQ
+          # yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=FCPdIvXo2rU
 
       # - name: convert all video file to av1 format
       #   shell: bash
@@ -41,6 +41,7 @@ jobs:
       - name: move video assets to folder and archive
         shell: bash
         run: |
+          ls -alSh
           mkdir -p dist
           find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
  
