@@ -2,9 +2,15 @@ name: yt-dlp in action
 
 on:
     workflow_dispatch:
-    push:
-      branches:
-        - dev_yt_dlp_action
+      inputs:
+        video_url:
+          description: 'video url to be download'
+          required: true
+          default: 'foo'
+          type: string
+    # push:
+    #   branches:
+    #     - dev_yt_dlp_action
 
 jobs:        
   downloadYoutubeVideo:
@@ -30,7 +36,9 @@ jobs:
       - name: actual download
         shell: bash
         run: |
-          yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=rkM-dTr89kQ
+          # yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=rkM-dTr89kQ
+          echo "began downloading ${{ github.event.inputs.video_url }} "
+          yt-dlp --downloader aria2c -S "+codec:av01" ${{ github.event.inputs.video_url }}
           # yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=FCPdIvXo2rU
 
       # - name: convert all video file to av1 format
