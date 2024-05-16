@@ -8,7 +8,7 @@ on:
           required: true
           default: 'foo'
         audio_only:
-          description: 'saudio only'
+          description: 'audio only'
           required: false
           default: 'false'  
     # push:
@@ -55,8 +55,13 @@ jobs:
             yt-dlp -f "ba" ${{ github.event.inputs.video_url }} -o "%(title)s.f%(format_id)s.%(ext)s"
           else
             echo "video and audio with best format"
-            yt-dlp -f "bv,ba" ${{ github.event.inputs.video_url }} -o "%(title)s.f%(format_id)s.%(ext)s"
+            yt-dlp ${{ github.event.inputs.video_url }} -o "%(title)s.f%(format_id)s.%(ext)s"
+           
           fi
+
+          # WARNING: "-f best" selects the best pre-merged format which is often not the best option.
+          # To let yt-dlp download and merge the best available formats, simply do not pass any format selection.
+          # If you know what you are doing and want only the best pre-merged format, use "-f b" instead to suppress this warning
           
       # - name: convert all video file to av1 format
       #   shell: bash
@@ -76,10 +81,18 @@ jobs:
             tree -L 2
             ls -al
 
+      - name: figure out video name
+        shell: bash
+        id: video-name
+        run: |
+            cd dist
+            find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" -o -name "*.m4a" \) -exec basename {}  \;
+            # echo "vname=${find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" -o -name "*.m4a" \) -exec basename {}  \;}" >> $GITHUB_OUTPUT
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: video_assets
+          name:  video-assets-${{ github.run_id }} 
           path: dist
           if-no-files-found: error
           retention-days: 1     
