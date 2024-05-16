@@ -7,7 +7,10 @@ on:
           description: 'video url to be download'
           required: true
           default: 'foo'
-          type: string
+        audio_only:
+          description: 'saudio only'
+          required: false
+          default: 'false'  
     # push:
     #   branches:
     #     - dev_yt_dlp_action
@@ -44,11 +47,17 @@ jobs:
         run: |
           # yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=rkM-dTr89kQ
           echo "began downloading ${{ github.event.inputs.video_url }} "
-          yt-dlp -f best ${{ github.event.inputs.video_url }}
           # yt-dlp -f 22 ${{ github.event.inputs.video_url }}  // based on -F outputs
           # yt-dlp --downloader aria2c -S "+codec:av01" ${{ github.event.inputs.video_url }}
           # yt-dlp --downloader aria2c -S "+codec:av01" https://www.youtube.com/watch?v=FCPdIvXo2rU
-
+          if [[ ${{ inputs.audio_only }} == 'true' ]]; then
+            echo "audio only"
+            yt-dlp -f "ba" ${{ github.event.inputs.video_url }} -o "%(title)s.f%(format_id)s.%(ext)s"
+          else
+            echo "video and audio with best format"
+            yt-dlp -f "bv,ba" ${{ github.event.inputs.video_url }} -o "%(title)s.f%(format_id)s.%(ext)s"
+          fi
+          
       # - name: convert all video file to av1 format
       #   shell: bash
       #   run: |
@@ -59,7 +68,7 @@ jobs:
         run: |
           ls -alSh
           mkdir -p dist
-          find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" \) -exec mv {} dist/ \;
+          find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" -o -name "*.m4a" \) -exec mv {} dist/ \;
  
       - name: show layouts
         shell: bash
