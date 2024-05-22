@@ -136,12 +136,13 @@ function _build_zstd(){
 
 
 function _build_nghttp2(){
+    local NGHTTP2_VERSION=1.62.1
     _green "building nghttp2 \n"
     mkdir -p ${prebuilt_nghttp2_root}
-    _download_if_not_exists https://github.com/nghttp2/nghttp2/releases/download/v1.59.0/nghttp2-1.59.0.tar.gz nghttp2-1.59.0.tar.gz
-    tar -xzf nghttp2-1.59.0.tar.gz -C ${build_dir}
-    rm -rf nghttp2-1.59.0.tar.gz
-    pushd ${build_dir}/nghttp2-1.59.0
+    _download_if_not_exists https://github.com/nghttp2/nghttp2/releases/download/v$NGHTTP2_VERSION/nghttp2-$NGHTTP2_VERSION.tar.gz nghttp2-$NGHTTP2_VERSION.tar.gz
+    tar -xzf nghttp2-$NGHTTP2_VERSION.tar.gz -C ${build_dir}
+    rm -rf nghttp2-$NGHTTP2_VERSION.tar.gz
+    pushd ${build_dir}/nghttp2-$NGHTTP2_VERSION
     # export CC="gcc"
     # export CFLAGS==" -o2"
     # export CC=clang
@@ -163,7 +164,7 @@ function _build_nghttp2(){
     make -j$CORES
     make install
     make clean
-    rm -rf ${build_dir}/nghttp2-1.59.0
+    rm -rf ${build_dir}/nghttp2-$NGHTTP2_VERSION
     rm -rf ${prebuilt_nghttp2_root}/share
     popd
    
@@ -173,16 +174,17 @@ function _build_nghttp2(){
 
 function _build_nghttp3(){
     _green "_build_nghttp3 begin \n"
-    rm -rf ${build_dir}/nghttp3-1.2.0
-    _download_if_not_exists https://github.com/ngtcp2/nghttp3/releases/download/v1.2.0/nghttp3-1.2.0.tar.gz nghttp3-1.2.0.tar.gz
-    tar -xzvf nghttp3-1.2.0.tar.gz -C ${build_dir}
-    pushd ${build_dir}/nghttp3-1.2.0
+    local NGHTTP3_VERSION=1.3.0
+    rm -rf ${build_dir}/nghttp3-$NGHTTP3_VERSION
+    _download_if_not_exists https://github.com/ngtcp2/nghttp3/releases/download/v$NGHTTP3_VERSION/nghttp3-$NGHTTP3_VERSION.tar.gz nghttp3-$NGHTTP3_VERSION.tar.gz
+    tar -xzvf nghttp3-$NGHTTP3_VERSION.tar.gz -C ${build_dir}
+    pushd ${build_dir}/nghttp3-$NGHTTP3_VERSION
     autoreconf -fi
     ./configure --prefix=${nghttp3_install_dir} --enable-lib-only
     make -j${CORES}
     make install
     _green "_build_nghttp3 completed \n"
-    rm -rf nghttp3-1.2.0.tar.gz
+    rm -rf nghttp3-$NGHTTP3_VERSION.tar.gz
     popd
 }
 
@@ -205,17 +207,18 @@ function _build_c_areas(){
 
 
 function _build_ngtcp2(){
+    local NGTCP2_VERSION=1.5.0
     _green "_build_ngtcp2 begin \n"
-    rm -rf ${build_dir}/ngtcp2-1.4.0
-    _download_if_not_exists https://github.com/ngtcp2/ngtcp2/releases/download/v1.4.0/ngtcp2-1.4.0.tar.gz ngtcp2-1.4.0.tar.gz
-    tar -xzvf ngtcp2-1.4.0.tar.gz -C ${build_dir}
-    pushd ${build_dir}/ngtcp2-1.4.0   
+    rm -rf ${build_dir}/ngtcp2-$NGTCP2_VERSION
+    _download_if_not_exists https://github.com/ngtcp2/ngtcp2/releases/download/v$NGTCP2_VERSION/ngtcp2-$NGTCP2_VERSION.tar.gz ngtcp2-$NGTCP2_VERSION.tar.gz
+    tar -xzvf ngtcp2-$NGTCP2_VERSION.tar.gz -C ${build_dir}
+    pushd ${build_dir}/ngtcp2-$NGTCP2_VERSION 
     autoreconf -fi
     ./configure PKG_CONFIG_PATH=${quictls_install_dir}/${lib_folder}/pkgconfig:${nghttp3_install_dir}/${lib_folder}/pkgconfig LDFLAGS="-L${quictls_install_dir}/${lib_folder}" --prefix=${ngtcp_install_dir} --enable-lib-only
     make -j${CORES}
     make install
     _green "_build_ngtcp2 completed \n"
-    rm -rf ngtcp2-1.4.0.tar.gz
+    rm -rf ngtcp2-$NGTCP2_VERSION.tar.gz
     popd
 }
 
