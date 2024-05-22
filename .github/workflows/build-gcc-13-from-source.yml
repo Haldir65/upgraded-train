@@ -6,6 +6,9 @@ on:
       branches:
         - dev_gcc_build
 
+env:
+  GCC_VERSION: 14
+
 jobs:
   build:
     name: Build
@@ -59,8 +62,8 @@ jobs:
         uses: actions/checkout@v4
         with:
             repository: gcc-mirror/gcc
-            ref: releases/gcc-13
-            path: gcc13source
+            ref: releases/gcc-14.1.0
+            path: gcc${{ env.GCC_VERSION }}source
 
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
@@ -94,7 +97,7 @@ jobs:
         run: |
           ls -alSh
           mkdir -p build
-          ls -alSh gcc13source
+          ls -alSh gcc${{ env.GCC_VERSION }}source
           tar xvf assets/binutils-2.42.tar.gz -C build
           mv build/binutils-2.42 binutils-2.42
           ls -alSh binutils-2.42
@@ -140,8 +143,8 @@ jobs:
         if: matrix.target.target != 'aarch64-linux-gnu'
         shell: bash
         run: |
-          PATH=gcc-13-build/bin:$PATH gcc --version
-          PATH=gcc-13-build/bin:PATH g++ --version
+          PATH=gcc-14-build/bin:$PATH gcc --version
+          PATH=gcc-14-build/bin:PATH g++ --version
 
       - name: Zip
         shell: bash
@@ -151,7 +154,7 @@ jobs:
           if [[ "${{ matrix.target.target }}" == 'aarch64-linux-gnu' ]]; then
             tar --directory /opt/cross --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc_cross.tar.xz .
           elif [[ "${{ matrix.target.target }}" == 'x86_64-pc-linux-gnu'  || "${{ matrix.target.target }}" == 'mipsel-unknown-linux-gnu' ]]; then
-            tar --directory gcc-13-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
+            tar --directory gcc-${{ env.GCC_VERSION }}-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
             ls -alSh dist/gcc.tar.xz
           else
             echo "unsupportted target: ${{ matrix.target.target }} "
@@ -162,7 +165,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target.id }}-${{ matrix.target.os }}
+          name: gcc${{ env.GCC_VERSION }}-${{ matrix.target.id }}-${{ matrix.target.os }}
           path: dist
           if-no-files-found: error
           retention-days: 7

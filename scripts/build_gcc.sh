@@ -18,19 +18,19 @@ function main(){
 
     # git clone git://gcc.gnu.org/git/gcc.git gcc13source
 
-    mkdir -p gcc13build
-    mkdir -p ${current_dir}/gcc-13-build
-    cd gcc13source
+    mkdir -p gcc14build
+    mkdir -p ${current_dir}/gcc-14-build
+    cd gcc14source
     # git checkout releases/gcc-13
-    echo "[step] : checkout releases/gcc-13 , show gcc source"
+    echo "[step] : checkout releases/gcc-14 , show gcc source"
     ls -alSh
     ./contrib/download_prerequisites
-    cd ../gcc13build
+    cd ../gcc14build
     ls -alSh
-    ./../gcc13source/configure \
+    ./../gcc14source/configure \
     --host=${GCC_HOST}  \
     --target=${GCC_TARGET}  \
-    --prefix="${current_dir}/gcc-13-build" \
+    --prefix="${current_dir}/gcc-14-build" \
     --enable-languages="c,c++"  \
     --enable-shared \
     --host=x86_64-pc-linux-gnu  \
