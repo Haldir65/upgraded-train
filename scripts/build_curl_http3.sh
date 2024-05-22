@@ -136,7 +136,6 @@ function _build_zstd(){
 
 
 function _build_nghttp2(){
-    local NGHTTP2_VERSION=1.62.1
     _green "building nghttp2 \n"
     mkdir -p ${prebuilt_nghttp2_root}
     _download_if_not_exists https://github.com/nghttp2/nghttp2/releases/download/v$NGHTTP2_VERSION/nghttp2-$NGHTTP2_VERSION.tar.gz nghttp2-$NGHTTP2_VERSION.tar.gz
@@ -174,7 +173,6 @@ function _build_nghttp2(){
 
 function _build_nghttp3(){
     _green "_build_nghttp3 begin \n"
-    local NGHTTP3_VERSION=1.3.0
     rm -rf ${build_dir}/nghttp3-$NGHTTP3_VERSION
     _download_if_not_exists https://github.com/ngtcp2/nghttp3/releases/download/v$NGHTTP3_VERSION/nghttp3-$NGHTTP3_VERSION.tar.gz nghttp3-$NGHTTP3_VERSION.tar.gz
     tar -xzvf nghttp3-$NGHTTP3_VERSION.tar.gz -C ${build_dir}
@@ -207,7 +205,6 @@ function _build_c_areas(){
 
 
 function _build_ngtcp2(){
-    local NGTCP2_VERSION=1.5.0
     _green "_build_ngtcp2 begin \n"
     rm -rf ${build_dir}/ngtcp2-$NGTCP2_VERSION
     _download_if_not_exists https://github.com/ngtcp2/ngtcp2/releases/download/v$NGTCP2_VERSION/ngtcp2-$NGTCP2_VERSION.tar.gz ngtcp2-$NGTCP2_VERSION.tar.gz
@@ -238,14 +235,14 @@ function _build_libunistring(){
 
 function _build_psl(){
     _green "_build_psl begin \n"
-    rm -rf ${build_dir}/libpsl-0.21.5
-    _download_if_not_exists https://github.com/rockdaboot/libpsl/releases/download/0.21.5/libpsl-0.21.5.tar.gz libpsl-0.21.5.tar.gz
-    tar -xzvf libpsl-0.21.5.tar.gz -C ${build_dir}
-    pushd ${build_dir}/libpsl-0.21.5
+    rm -rf ${build_dir}/libpsl-$PSL_VERSION
+    _download_if_not_exists https://github.com/rockdaboot/libpsl/releases/download/$PSL_VERSION/libpsl-$PSL_VERSION.tar.gz libpsl-$PSL_VERSION.tar.gz
+    tar -xzvf libpsl-$PSL_VERSION.tar.gz -C ${build_dir}
+    pushd ${build_dir}/libpsl-$PSL_VERSION
     CPPFLAGS="-I${prebuilt_libunistring_root}/include" LDFLAGS="-L${prebuilt_libunistring_root}/lib" ./configure --prefix=${prebuilt_psl_root}
     make -j${CORES}
     make install
-    rm -rf libpsl-0.21.5.tar.gz
+    rm -rf libpsl-$PSL_VERSION.tar.gz
     _green "_build_psl completed \n"
     rm -rf ${prebuilt_libunistring_root}/share
     popd
@@ -253,11 +250,12 @@ function _build_psl(){
 
 function _build_curl(){
     _green "_build_curl begin \n"
-    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.gz curl-8.7.1.tar.gz
-    tar xzvf curl-8.7.1.tar.gz -C ${build_dir}
+    local CURL_VERSION_NUMERIC=8.8.0
+    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_8_0/curl-$CURL_VERSION_NUMERIC.tar.gz curl-$CURL_VERSION_NUMERIC.tar.gz
+    tar xzvf curl-$CURL_VERSION_NUMERIC.tar.gz -C ${build_dir}
     # cp scripts/0001-Fix-compilation-with-disable-manual.patch ${build_dir}/curl-8.7.1/commit_38d582ff5.patch
     ## https://sourceforge.net/p/curl/bugs/1350/
-    pushd ${build_dir}/curl-8.7.1
+    pushd ${build_dir}/curl-$CURL_VERSION_NUMERIC
     # patch -p1 < commit_38d582ff5.patch
     rm src/tool_hugehelp.c
     # _green "prebuilt_zstd_root = ${prebuilt_zstd_root}\n"
@@ -292,7 +290,7 @@ function _build_curl(){
     make install
     _green "_build_curl completed \n"
     rm -rf ${curl_http3_dir}/share
-    rm -rf curl-8.7.1.tar.gz
+    rm -rf curl-$CURL_VERSION_NUMERIC.tar.gz
     popd
 }
 

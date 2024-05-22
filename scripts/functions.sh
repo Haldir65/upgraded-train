@@ -46,3 +46,9 @@ function _download_if_not_exists(){
         _green "$FILE already exists\n"
     fi
 }
+
+readonly NGHTTP2_VERSION=1.62.1
+readonly NGHTTP3_VERSION=1.3.0
+readonly NGTCP2_VERSION=1.5.0
+readonly PSL_VERSION=0.21.5
+
