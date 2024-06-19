@@ -215,7 +215,7 @@ function _build_nghttp3(){
 function _build_c_areas(){
     cd ${now_dir}
     _green "_build_c_areas begin \n"
-    _download_if_not_exists https://github.com/c-ares/c-ares/releases/download/cares-1_28_1/c-ares-1.28.1.tar.gz  c-ares-1.28.1.tar.gz
+    _download_if_not_exists https://github.com/c-ares/c-ares/releases/download/v${c_ares_version}/c-ares-${c_ares_version}.tar.gz c-ares-${c_ares_version}.tar.gz
     rm -rf ${build_dir}/c-ares-${c_ares_version}
      rm -rf ${build_dir}/c-ares-${c_ares_version}
     tar -xzvf c-ares-${c_ares_version}.tar.gz -C ${build_dir}
