@@ -41,14 +41,16 @@ function _download_if_not_exists(){
     local FILE=$2
     if [ ! -f "$FILE" ]; then
         _blue "$FILE doesn't exists\n"
-        wget $url -O $FILE
+        # wget $url -O $FILE
+        curl -L $url -o $FILE
     else
         _green "$FILE already exists\n"
     fi
 }
 
 readonly NGHTTP2_VERSION=1.62.1
-readonly NGHTTP3_VERSION=1.3.0
-readonly NGTCP2_VERSION=1.5.0
+readonly NGHTTP3_VERSION=1.4.0
+readonly NGTCP2_VERSION=1.6.0
 readonly PSL_VERSION=0.21.5
+readonly c_ares_version=1.31.0
 
