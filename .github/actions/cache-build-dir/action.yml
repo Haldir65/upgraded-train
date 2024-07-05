@@ -1,0 +1,28 @@
+name: 'Cache Build'
+description: 'Cache build paths'
+inputs:
+  key:
+    description: 'Cache key'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Cache Boost artifact
+      id: cache-boost
+      uses: actions/cache@v4
+      with:
+        path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
+        key: ${{ runner.os }}-boost-1.85.0
+    - name: Retrieve boost cache
+      shell: bash
+      if: steps.cache-boost.outputs.cache-hit != 'true'
+      run: echo "boost cache is not found locally"
+
+    - name: Cache build artifacts
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${GITHUB_WORKSPACE}/ronan/build/_deps
+        key: ${{ inputs.key }}
+        restore-keys: |
+          ${{ inputs.key }}

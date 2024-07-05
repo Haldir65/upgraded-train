@@ -54,17 +54,14 @@ jobs:
             token: ${{ secrets.ACCESS_TOKEN }}
             ref: 'master'
             path: ronan
-      - name: Cache Boost artifact
-        id: cache-boost
-        uses: actions/cache@v4
+      -   name: Checkout
+          uses: actions/checkout@v4    
+
+      - name: Cache Cmake packages
+        uses: .github/actions/cache-build-dir
         with:
-          path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
-          key: ${{ runner.os }}-boost-1.85.0
-
-      - name: Retrieve boost cache
-        if: steps.cache-boost.outputs.cache-hit != 'true'
-        run: echo "boost cache is not found locally"
-
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/*.cmake*', '**/CMakeLists.txt') }}
+                
       - name: Install LLVM and Clang on linux
         if: startsWith(matrix.target.id, 'linux-')
         uses: KyleMayes/install-llvm-action@v2
@@ -186,21 +183,19 @@ jobs:
                 token: ${{ secrets.ACCESS_TOKEN }}
                 ref: 'master'
                 path: ronan
-        - name: Cache Boost artifact
-          id: cache-boost
-          uses: actions/cache@v4
+
+        - name: Cache Cmake packages
+          uses: ronan/.github/actions/cache-build-dir
           with:
-            path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
-            key: ${{ runner.os }}-boost-1.85.0
-        - name: Retrieve boost cache
-          if: steps.cache-boost.outputs.cache-hit != 'true'
-          run: echo "boost cache is not found locally"
+            key: ${{ runner.os }}-cmake-${{ hashFiles('**/*.cmake*', '**/CMakeLists.txt') }}
+                        
+   
         -   name: install dependency on debian
             shell: bash
             run: |
                 apt update
                 apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev libtbb-dev wget
-              
+         
         -   name: install latest version of cmake
             shell: bash
             # if: matrix.container == 'silkeh/clang:17-bookworm' || matrix.container == 'ubuntu:24.04'
