@@ -54,13 +54,23 @@ jobs:
             token: ${{ secrets.ACCESS_TOKEN }}
             ref: 'master'
             path: ronan
-      -   name: Checkout
-          uses: actions/checkout@v4    
-
-      - name: Cache Cmake packages
-        uses: .github/actions/cache-build-dir
+      - name: Cache Boost artifact
+        id: cache-boost
+        uses: actions/cache@v4
         with:
-          key: ${{ runner.os }}-cmake-${{ hashFiles('**/*.cmake*', '**/CMakeLists.txt') }}
+          path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
+          key: ${{ runner.os }}-boost-1.85.0
+    
+      - name: Retrieve boost cache
+        if: steps.cache-boost.outputs.cache-hit != 'true'
+        run: echo "boost cache is not found locally"
+
+      - name: Cache build cache
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path: ronan/build/_deps
+          key: ${{ runner.os }}-build_deps-v1     
                 
       - name: Install LLVM and Clang on linux
         if: startsWith(matrix.target.id, 'linux-')
@@ -184,12 +194,24 @@ jobs:
                 ref: 'master'
                 path: ronan
 
-        - name: Cache Cmake packages
-          uses: ronan/.github/actions/cache-build-dir
+        - name: Cache Boost artifact
+          id: cache-boost
+          uses: actions/cache@v4
           with:
-            key: ${{ runner.os }}-cmake-${{ hashFiles('**/*.cmake*', '**/CMakeLists.txt') }}
-                        
+            path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
+            key: ${{ runner.os }}-boost-1.85.0
+    
+        - name: Retrieve boost cache
+          if: steps.cache-boost.outputs.cache-hit != 'true'
+          run: echo "boost cache is not found locally"
    
+        - name: Cache build cache
+          id: cache-deps
+          uses: actions/cache@v4
+          with:
+            path: ronan/build/_deps
+            key: ${{ runner.os }}-build_deps-v1    
+
         -   name: install dependency on debian
             shell: bash
             run: |
