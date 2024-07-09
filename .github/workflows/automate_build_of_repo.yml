@@ -72,11 +72,11 @@ jobs:
           path: ronan/build/_deps
           key: ${{ runner.os }}-build_deps-v1     
                 
-      - name: Install LLVM and Clang on linux
-        if: startsWith(matrix.target.id, 'linux-')
-        uses: KyleMayes/install-llvm-action@v2
-        with:
-            version: "17.0"
+      # - name: Install LLVM and Clang on linux
+      #   if: startsWith(matrix.target.id, 'linux-')
+      #   uses: KyleMayes/install-llvm-action@v2
+      #   with:
+      #       version: "17.0"
 
       - name: Install `ninja` on Ubuntu
         if: startsWith(matrix.target.id, 'linux-')
