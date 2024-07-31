@@ -314,11 +314,12 @@ function _build_psl(){
 function _build_curl(){
     cd ${now_dir}
     _green "_build_curl begin \n"
-    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_7_1/curl-8.7.1.tar.gz curl-8.7.1.tar.gz
-    tar xzvf curl-8.7.1.tar.gz -C ${build_dir}
+    local CURL_VERSION_NUMERIC=8.9.1
+    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_9_1/curl-$CURL_VERSION_NUMERIC.tar.gz curl-$CURL_VERSION_NUMERIC.tar.gz
+    tar xzvf curl-$CURL_VERSION_NUMERIC.tar.gz -C ${build_dir}
     # cp scripts/0001-Fix-compilation-with-disable-manual.patch ${build_dir}/curl-8.7.1/commit_38d582ff5.patch
     ## https://sourceforge.net/p/curl/bugs/1350/
-    pushd ${build_dir}/curl-8.7.1
+    pushd ${build_dir}/curl-$CURL_VERSION_NUMERIC
     # patch -p1 < commit_38d582ff5.patch
     rm -rf src/tool_hugehelp.c
     autoreconf -fi
@@ -359,7 +360,7 @@ function _build_curl(){
     make install
     _green "_build_curl completed \n"
     rm -rf ${curl_http3_dir}/share
-    rm -rf curl-8.7.1.tar.gz
+    rm -rf curl-$CURL_VERSION_NUMERIC.tar.gz
     popd
 }
 
