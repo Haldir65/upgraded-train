@@ -49,8 +49,8 @@ function _download_if_not_exists(){
 }
 
 readonly NGHTTP2_VERSION=1.62.1
-readonly NGHTTP3_VERSION=1.4.0
-readonly NGTCP2_VERSION=1.6.0
+readonly NGHTTP3_VERSION=1.5.0
+readonly NGTCP2_VERSION=1.7.0
 readonly PSL_VERSION=0.21.5
-readonly c_ares_version=1.31.0
+readonly c_ares_version=1.33.1
 
