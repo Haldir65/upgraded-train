@@ -82,7 +82,7 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
-          sudo apt install libncurses5 ninja-build build-essential coreutils tree libtbb-dev -y
+          sudo apt install ninja-build build-essential coreutils tree libtbb-dev -y
           clang --version
           echo "cpu core num is "
           nproc      
