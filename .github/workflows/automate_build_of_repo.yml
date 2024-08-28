@@ -216,7 +216,7 @@ jobs:
             shell: bash
             run: |
                 apt update
-                apt install -y sudo libncurses5 ninja-build git unzip build-essential tree checkinstall zlib1g-dev libtbb-dev wget
+                apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev libtbb-dev wget
          
         -   name: install latest version of cmake
             shell: bash
