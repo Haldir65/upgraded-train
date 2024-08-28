@@ -19,7 +19,7 @@ jobs:
           #   llvm_version: '18.x'
           #   build_target: 'distribution'
           - id: 'linux-amd64'
-            os: 'ubuntu-24.04'
+            os: 'ubuntu-latest'
             tar_extra_args: ''
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
@@ -29,10 +29,10 @@ jobs:
           #  os: ['self-hosted', 'linux', 'RISCV64']
           ## https://github.blog/changelog/2024-01-30-github-actions-introducing-the-new-m1-macos-runner-available-to-open-source/
           - id: 'darwin-amd64'
-            os: 'macos-14'
+            os: 'macos-latest'
             tar_extra_args: ''
           - id: 'windows-amd64'
-            os: 'windows-2022'
+            os: 'windows-latest'
           # When unpacking an archive on Windows, the symlinks can't be
           # created unless the target path already exists. This causes
           # problems when the linked file is ordered after the link
@@ -58,8 +58,8 @@ jobs:
         id: cache-boost
         uses: actions/cache@v4
         with:
-          path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
-          key: ${{ runner.os }}-boost-1.85.0
+          path: ronan/cmake/vendor/boost-1.86.0-cmake.tar.xz
+          key: ${{ runner.os }}-boost-1.86.0
     
       - name: Retrieve boost cache
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ronan/build/_deps
-          key: ${{ runner.os }}-build_deps-v1     
+          key: ${{ runner.os }}-build_deps-v1    
                 
       # - name: Install LLVM and Clang on linux
       #   if: startsWith(matrix.target.id, 'linux-')
@@ -82,8 +82,8 @@ jobs:
         if: startsWith(matrix.target.id, 'linux-')
         shell: bash
         run: |
+          sudo apt install libncurses5 ninja-build build-essential coreutils tree libtbb-dev -y
           clang --version
-          sudo apt install ninja-build build-essential coreutils tree libtbb-dev -y
           echo "cpu core num is "
           nproc      
       
@@ -198,8 +198,8 @@ jobs:
           id: cache-boost
           uses: actions/cache@v4
           with:
-            path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
-            key: ${{ runner.os }}-boost-1.85.0
+            path: ronan/cmake/vendor/boost-1.86.0-cmake.tar.xz
+            key: ${{ runner.os }}-boost-1.86.0
     
         - name: Retrieve boost cache
           if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -216,7 +216,7 @@ jobs:
             shell: bash
             run: |
                 apt update
-                apt install -y sudo ninja-build git unzip build-essential tree checkinstall zlib1g-dev libtbb-dev wget
+                apt install -y sudo libncurses5 ninja-build git unzip build-essential tree checkinstall zlib1g-dev libtbb-dev wget
          
         -   name: install latest version of cmake
             shell: bash
