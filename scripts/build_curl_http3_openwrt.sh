@@ -327,7 +327,7 @@ function _build_curl(){
     # OpensSSL-3.0.3+quic, replace lib/pkgconfig ===> lib64/pkgconfig when you build ngtcp2.
     atomic_lib=${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib/libatomic.a 
     # LDFLAGS="-Wl,-rpath,${quictls_install_dir}/${lib_folder}" ./configure --with-openssl=${quictls_install_dir} --with-nghttp3=${nghttp3_install_dir} --with-ngtcp2=${ngtcp_install_dir} --prefix=${curl_http3_dir}
-    CPPFLAGS="-I$prebuilt_psl_root/include" LIBS="-latomic -lssl -lbrotlicommon -lcrypto" LDFLAGS="-L${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib -L$quictls_install_dir/$lib_folder -L${prebuilt_brotli_root}/lib -L${prebuilt_psl_root}/lib" ./configure --host=$TARGET \
+    CPPFLAGS="-I$prebuilt_psl_root/include" LIBS="-latomic -lssl -lbrotlicommon -lcrypto -lidn2 -lunistring" LDFLAGS="-L${STAGING_DIR}/toolchain-mipsel_24kc_gcc-7.5.0_musl/lib -L$quictls_install_dir/$lib_folder -L${prebuilt_brotli_root}/lib -L${prebuilt_idn2_root}/lib -L${prebuilt_libunistring_root}/lib -L${prebuilt_psl_root}/lib" ./configure --host=$TARGET \
     --build=x86_64-pc-linux-gnu \
     PKG_CONFIG_PATH=$ngtcp_install_dir/lib/pkgconfig \
     --with-zlib=$prebuilt_zlib_root \
