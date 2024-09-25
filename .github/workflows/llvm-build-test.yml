@@ -17,7 +17,7 @@ jobs:
           - id: 'linux-amd64'
             os: 'ubuntu-24.04'
             tar_extra_args: ''
-            llvm_version: '19.x'
+            llvm_version: '18.x'
           # - id: 'linux-aarch64'
           #   os: "ubuntu-latest" 
           #  os: ['self-hosted', 'linux', 'ARM64']
@@ -28,7 +28,7 @@ jobs:
           - id: 'darwin-amd64'
             os: 'macos-14'
             tar_extra_args: ''
-            llvm_version: '19.x'
+            llvm_version: '18.x'
           - id: 'windows-amd64'
             os: 'windows-2022'
             llvm_version: '16.x'
@@ -62,7 +62,7 @@ jobs:
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install ninja llvm tree
+          brew install ninja llvm cmake tree
           clang --version
           echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
           echo "${BREW_INSTALL_PREFIX}/bin"
@@ -219,7 +219,7 @@ jobs:
         if: startsWith(matrix.target.id, 'darwin-')
         shell: bash
         run: |
-          brew install ninja llvm tree libunistring libidn2
+          brew install ninja llvm cmake tree libunistring libidn2
           clang --version
           echo "BREW_INSTALL_PREFIX=$(brew --prefix llvm)" >> $GITHUB_ENV
           echo "${BREW_INSTALL_PREFIX}/bin"
