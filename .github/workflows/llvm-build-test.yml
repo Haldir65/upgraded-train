@@ -137,13 +137,21 @@ jobs:
         shell: bash
         run: |
           tree -L 5
+
+      - name: prepre layout of new toolchain
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          mv dist/llvm.tar.xz llvm.tar.xz
+          tar -xf llvm.tar.xz
+          tree -L 3
   
-      # - name: build fmt using just built llvm toolchain
-      #   if: startsWith(matrix.target.id, 'linux-')
-      #   shell: bash
-      #   run: |
-      #     PATH=llvm-project/build/destdir/bin:llvm-project/build/destdir/usr/bin:$PATH bash scripts/build_fmt.sh
-      #     tree -L 4
+      - name: build fmt using custom llvm toolchain
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          bash scripts/build_fmt.sh
+          tree -L 3
 
           
   buildFmt:

@@ -238,13 +238,13 @@ function _build_curl(){
 function _prepare(){
     local basedir=`pwd`
     tree -L 2
-    local DIRECTORY=${basedir}/llvm-project/build/destdir/bin
+    local DIRECTORY=${basedir}/bin
     if [ -d "$DIRECTORY" ]; then
         _green "$DIRECTORY does exist. \n"
-        export CC=${DIRECTORY}/clang-18
-        export CXX=${DIRECTORY}/clang-18
-        export PATH=llvm-project/build/destdir/bin:$PATH
-        tree -L 4 ${basedir}/llvm-project/build/destdir
+        export CC=${DIRECTORY}/clang
+        export CXX=${DIRECTORY}/clang++
+        export PATH=${DIRECTORY}:$PATH
+        # tree -L 4 ${basedir}/llvm-project/build/destdir
     else
         _purple "$DIRECTORY does not exist.\n"
         export CC=`which clang`
