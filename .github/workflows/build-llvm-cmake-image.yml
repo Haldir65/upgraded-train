@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY_IMAGE: haldir65/hello-docker-hub
   DH_UNAME: haldir65
-  IMAG_TAG: clang19-cmake3.28
+  IMAG_TAG: clang20-cmake3.30.4
 
 
 

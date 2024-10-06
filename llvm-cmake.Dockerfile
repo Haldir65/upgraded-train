@@ -1,10 +1,10 @@
-FROM teeks99/clang-ubuntu:19
+FROM teeks99/clang-ubuntu:20
 
 RUN apt update && \ 
     apt install -y sudo ninja-build git unzip build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl
 
 
-ARG CMAKE_VERSION=3.28.3
+ARG CMAKE_VERSION=3.30.4
 ARG BUILDPLATFORM=linux/amd64
 
 ARG argname=false   #default argument when not provided in the --build-arg
