@@ -249,8 +249,8 @@ function _build_psl(){
 
 function _build_curl(){
     _green "_build_curl begin \n"
-    local CURL_VERSION_NUMERIC=8.10.0
-    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_10_0/curl-$CURL_VERSION_NUMERIC.tar.gz curl-$CURL_VERSION_NUMERIC.tar.gz
+    local CURL_VERSION_NUMERIC=8.10.1
+    _download_if_not_exists https://github.com/curl/curl/releases/download/curl-8_10_1/curl-$CURL_VERSION_NUMERIC.tar.gz curl-$CURL_VERSION_NUMERIC.tar.gz
     tar xzvf curl-$CURL_VERSION_NUMERIC.tar.gz -C ${build_dir}
     # cp scripts/0001-Fix-compilation-with-disable-manual.patch ${build_dir}/curl-8.7.1/commit_38d582ff5.patch
     ## https://sourceforge.net/p/curl/bugs/1350/

@@ -2,14 +2,14 @@ name: curl build with http3 support
 
 on:
     workflow_dispatch:
-    push:
-      branches:
-        - main
+    # push:
+    #   branches:
+    #     - main
 
 jobs:        
   buildCurlhttp3:
     name: Build curl with http3
-    if: "contains(github.event.head_commit.message, '[curlBuild]')"
+    # if: "contains(github.event.head_commit.message, '[curlBuild]')"
     continue-on-error: false
     strategy:
       matrix:
@@ -114,7 +114,7 @@ jobs:
 
   buildCurlHttp3Openwrt:
     runs-on: ubuntu-latest
-    if: "contains(github.event.head_commit.message, '[curlBuild]')"
+    # if: "contains(github.event.head_commit.message, '[curlBuild]')"
     container:
     #   image: docker://haldir65/hello-docker-hub:openwrt-toolchians-19.07.1
       image: ghcr.io/haldir65/upgraded-train:openwrt-19.07.1        
