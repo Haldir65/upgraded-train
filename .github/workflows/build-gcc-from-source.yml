@@ -1,0 +1,102 @@
+name: Build gcc from source
+
+on:
+    workflow_dispatch:
+
+
+env:
+  GCC_VERSION: 14
+
+jobs:
+  build:
+    name: Build
+    continue-on-error: false
+    strategy:
+      matrix:
+        target:
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+            target: 'x86_64-pc-linux-gnu'
+            host: 'x86_64-pc-linux-gnu'
+
+          - id: 'linux-aarch64'
+            os: 'ubuntu-24.04-arm'
+            target: 'aarch64-linux-gnu'
+            host: 'aarch64-linux-gnu'
+
+      fail-fast: true
+
+    runs-on: ${{ matrix.target.os }}
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
+      - name: Check out gcc source code
+        uses: actions/checkout@v4
+        with:
+            repository: gcc-mirror/gcc
+            ref: releases/gcc-14.2.0
+            path: gcc${{ env.GCC_VERSION }}source
+
+      - name: Install `ninja` on Ubuntu
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          sudo apt install ninja-build build-essential curl clang coreutils texinfo xz-utils -y
+          uname -a
+          echo "cpu core num is "
+          nproc
+
+      # - name: prepare source from tarball
+      #   if: startsWith(matrix.target.id, 'linux-')
+      #   shell: bash
+      #   run: |
+      #     ls -alSh
+      #     mkdir -p build
+      #     ls -alSh gcc${{ env.GCC_VERSION }}source
+      #     curl -L https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.gz -o binutils-2.44.tar.gz
+      #     tar xvf binutils-2.44.tar.gz -C build
+      #     mv build/binutils-2.44 binutils-2.44
+      #     ls -alSh binutils-2.44
+
+      - name: Build gcc
+        shell: bash
+        run: |
+          ls -alSh
+          chmod +x ./scripts/build_gcc.sh
+          ./scripts/build_gcc.sh  ${{ matrix.target.host }} ${{ matrix.target.target }}
+
+
+      - name: Inspect gcc version and show directory layout
+        shell: bash
+        run: |
+          tree -L 4
+          PATH=gcc-14-build/bin:$PATH gcc --version
+          PATH=gcc-14-build/bin:PATH g++ --version
+
+      - name: Zip
+        shell: bash
+        run: |
+          mkdir -p dist
+          ls -alSh 
+          tar -cJvf dist/gcc-${{ env.GCC_VERSION }}-${{ matrix.target.target }}.tar.xz gcc-14-build
+          # if [[ "${{ matrix.target.target }}" == 'aarch64-linux-gnu' ]]; then
+          #   tar --directory /opt/cross --create --xz --verbose --file dist/gcc_${{ matrix.target.target }}_cross.tar.xz .
+          # elif [[ "${{ matrix.target.target }}" == 'x86_64-pc-linux-gnu'  || "${{ matrix.target.target }}" == 'mipsel-unknown-linux-gnu' ]]; then
+          #   tar --directory gcc-${{ env.GCC_VERSION }}-build --create --xz --verbose ${{ matrix.target.tar_extra_args }} --file dist/gcc.tar.xz .
+          #   ls -alSh dist/gcc.tar.xz
+          # else
+          #   echo "unsupportted target: ${{ matrix.target.target }} "
+          #   echo "${{ matrix.target.target }}"
+          # fi
+          
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gcc${{ env.GCC_VERSION }}-${{ matrix.target.id }}-${{ matrix.target.os }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
