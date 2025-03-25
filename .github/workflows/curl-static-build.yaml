@@ -15,6 +15,11 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: prebuild
+        shell: bash
+        run: |
+            cp scripts/curl_build/static-curl/curl-static-cross.sh .
+
       - name: Cross Build Static cURL
         env:
           ARCHES: ${{ vars.ARCHES_LINUX_GLIBC }}
@@ -60,7 +65,7 @@ jobs:
           QBT_MUSL_CROSS_MAKE_VERSION=${QBT_MUSL_CROSS_MAKE_VERSION}
           CONTAINER_IMAGE=${CONTAINER_IMAGE}
           TOKEN_READ=${TOKEN_READ}
-          sh scripts/curl_build/static-curl/curl-static-cross.sh
+          sh curl-static-cross.sh
 
       - name: Set up environment
         run: |
@@ -94,7 +99,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
+      - name: prebuild
+        shell: bash
+        run: |
+            cp scripts/curl_build/static-curl/curl-static-cross.sh .    
+  
       - name: Cross Build Static cURL
         env:
           ARCHES: ${{ vars.ARCHES_LINUX_MUSL }}
@@ -142,7 +151,7 @@ jobs:
           STATIC_LIBRARY=${STATIC_LIBRARY}
           CONTAINER_IMAGE=${CONTAINER_IMAGE}
           TOKEN_READ=${TOKEN_READ}
-          sh scripts/curl_build/static-curl/curl-static-cross.sh
+          sh curl-static-cross.sh
 
       - name: Set up environment
         run: |
@@ -176,6 +185,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: prebuild
+        shell: bash
+        run: |
+           cp scripts/curl_build/static-curl/curl-static-win.sh .
 
       - name: Cross Build Static cURL
         env:
@@ -218,7 +232,7 @@ jobs:
           TRURL_VERSION=${TRURL_VERSION}
           CONTAINER_IMAGE=${CONTAINER_IMAGE}
           TOKEN_READ=${TOKEN_READ}
-          sh scripts/curl_build/static-curl/curl-static-win.sh
+          sh curl-static-win.sh
 
       - name: Set up environment
         run: |
@@ -257,6 +271,11 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: prebuild
+        shell: bash
+        run: |
+          cp scripts/curl_build/static-curl/curl-static-mac.sh .    
+
       - name: Build Static cURL on macOS
         env:
           ARCHES: ${{ vars.ARCHES_MACOS }}
@@ -292,7 +311,7 @@ jobs:
           LIBSSH2_VERSION=${LIBSSH2_VERSION}
           ARES_VERSION=${ARES_VERSION}
           TOKEN_READ=${TOKEN_READ}
-          bash scripts/curl_build/static-curl/curl-static-mac.sh
+          bash curl-static-mac.sh
 
       - name: Set up environment
         run: |
