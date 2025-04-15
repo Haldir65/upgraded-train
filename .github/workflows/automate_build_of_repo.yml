@@ -23,6 +23,8 @@ jobs:
             tar_extra_args: ''
           - id: 'linux-aarch64'
             os: "ubuntu-24.04-arm" 
+          - id: 'windows-arm'
+            os: "windows-11-arm"   
           #  os: ['self-hosted', 'linux', 'ARM64']
           # - id: 'linux-riscv64'
           #   os: "ubuntu-latest"
@@ -110,7 +112,7 @@ jobs:
 
 
       - name: Build (Windows)
-        if: matrix.target.id == 'windows-amd64'
+        if: matrix.target.id == 'windows-amd64' || matrix.target.id == 'windows-arm'
         working-directory: ronan
         shell: |
           powershell -Command "& '{0}'"
@@ -137,7 +139,7 @@ jobs:
           #   ASAN_OPTIONS=alloc_dealloc_mismatch=0 PATH=build/apps:$PATH main --verbose true --filename "cmake/hello/resources/twitter.json" --dir "cmake/hello/resources" --mode $i
           # fi
           # done
-          if [[ "${{ matrix.target.id }}" == 'windows-amd64' ]]; then
+          if [[ "${{ matrix.target.id }}" == 'windows-amd64' || "${{ matrix.target.id }}" == 'windows-arm' ]]; then
             powershell -executionpolicy bypass -File scripts/test.ps1
           else
             bash scripts/test.sh
