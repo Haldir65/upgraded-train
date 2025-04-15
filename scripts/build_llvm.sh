@@ -84,4 +84,4 @@ DESTDIR=destdir cmake --install . --strip --config MinSizeRel
 if [ ! -d destdir/bin ];then
  mkdir destdir/bin
 fi
-mv destdir/usr/bin/* destdir/bin/
+mv destdir/usr/bin/* destdir/bin
