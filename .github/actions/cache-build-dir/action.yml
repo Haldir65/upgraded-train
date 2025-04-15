@@ -11,8 +11,8 @@ runs:
       id: cache-boost
       uses: actions/cache@v4
       with:
-        path: ronan/cmake/vendor/boost-1.85.0-cmake.tar.xz
-        key: ${{ runner.os }}-boost-1.85.0
+        path: ronan/cmake/vendor/boost-1.88.0-cmake.tar.xz
+        key: ${{ runner.os }}-boost-1.88.0
     - name: Retrieve boost cache
       shell: bash
       if: steps.cache-boost.outputs.cache-hit != 'true'
