@@ -39,13 +39,12 @@ jobs:
               type=sha
     
         - name: Build and push Docker image
-          uses: docker/build-push-action@v5
+          uses: docker/build-push-action@v6
           with:
             context: .
-            file: Dockerfile
+            file: Dockerfile.mt7632
             push: true
             tags: |
-                ${{ steps.meta.outputs.tags }}
                 ghcr.io/haldir65/upgraded-train:openwrt-19.07.1
             labels: ${{ steps.meta.outputs.labels }}
 
@@ -77,12 +76,10 @@ jobs:
               type=sha
 
         - name: Build and push Docker image
-          uses: docker/build-push-action@v5
+          uses: docker/build-push-action@v6
           with:
             context: .
             file: 23.05.3-Dockerfile
             push: true
-            tags: |
-                ${{ steps.meta.outputs.tags }}
-                ghcr.io/haldir65/upgraded-train:openwrt-23.05.3-mt7620
+            tags: ghcr.io/haldir65/upgraded-train:openwrt-23.05.3-mt7620
             labels: ${{ steps.meta.outputs.labels }}          
