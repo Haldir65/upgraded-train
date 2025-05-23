@@ -5,14 +5,15 @@ ARG SDK_URL_MIRROR="https://ftp.snt.utwente.nl/pub/software/lede/releases/24.10.
 
 
 
-RUN mkdir -p /home/toolchains && apt update && \ 
+RUN mkdir -p /home/toolchains && mkdir -p /builder/shared-workdir/build && apt update && \ 
     apt install -y sudo ninja-build git cmake zip unzip vim build-essential tree checkinstall python3 python3-pip zlib1g-dev wget curl tree sudo coreutils zstd autoconf pkg-config libtool && \ 
     curl -o openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64.tar.zst -L ${SDK_URL_MIRROR} && \
-    tar --zstd -xvf openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64.tar.zst -C /home/toolchains && \
-    ls -al /home/toolchains && \
-    tree -L 4 /home/toolchains/openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64/staging_dir
+    tar --zstd -xvf openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64.tar.zst -C /home/toolchains && rm -rf openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64.tar.zst && \
+    mv /home/toolchains/openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64/staging_dir /builder/shared-workdir/build/staging_dir && ls -al /home/toolchains && \
+    tree -L 4 /builder/shared-workdir/build/staging_dir
 
-ENV STAGING_DIR="/home/toolchains/openwrt-sdk-24.10.1-mediatek-filogic_gcc-13.3.0_musl.Linux-x86_64/staging_dir"
+ENV STAGING_DIR="/builder/shared-workdir/build/staging_dir"
+
 
 RUN echo ${STAGING_DIR}
 
