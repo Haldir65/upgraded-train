@@ -49,7 +49,7 @@ jobs:
             uses: docker/build-push-action@v6
             with:
                 context: .
-                file: Dockerfile
+                file: Dockerfile.mt7981
                 push: true
                 platforms: ${{ matrix.platform }}
                 tags: "${{ env.REGISTRY_IMAGE }}:${{ env.IMAG_TAG }}"
