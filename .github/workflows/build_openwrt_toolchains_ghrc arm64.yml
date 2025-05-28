@@ -45,6 +45,5 @@ jobs:
             file: Dockerfile.mt7981
             push: true
             tags: |
-                ${{ steps.meta.outputs.tags }}
                 ghcr.io/haldir65/upgraded-train:openwrt-mt7981-24.10.1
             labels: ${{ steps.meta.outputs.labels }} 
