@@ -177,7 +177,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        container: [ "silkeh/clang:19-bookworm" , 
+        container: [ "silkeh/clang:20-bullseye" , 
           "haldir65/hello-docker-hub:clang20-cmake3.30.4",
           "ubuntu:24.04"
           ]
