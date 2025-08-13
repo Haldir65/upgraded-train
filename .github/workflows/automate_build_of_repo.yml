@@ -221,9 +221,9 @@ jobs:
          
         -   name: install latest version of cmake
             shell: bash
-            if: matrix.container == 'silkeh/clang:19-bookworm' || matrix.container == 'ubuntu:24.04'
+            if: matrix.container == 'silkeh/clang:20-bullseye' || matrix.container == 'ubuntu:24.04'
             run: |
-                wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.30.4/cmake-3.30.4-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
+                wget -qO- "https://github.com/Kitware/CMake/releases/download/v4.1.0/cmake-4.1.0-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
                 /usr/local/bin/cmake --version
                 echo $PATH
                 which cmake            
