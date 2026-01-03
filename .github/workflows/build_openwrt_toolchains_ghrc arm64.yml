@@ -20,7 +20,7 @@ jobs:
 
         steps:
         - name: checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@v6
         
         - name: Log in to the Container registry
           uses: docker/login-action@v3
@@ -45,5 +45,5 @@ jobs:
             file: Dockerfile.mt7981
             push: true
             tags: |
-                ghcr.io/haldir65/upgraded-train:openwrt-mt7981-24.10.1
+                ghcr.io/haldir65/upgraded-train:openwrt-mt7981-25.12.0-rc1
             labels: ${{ steps.meta.outputs.labels }} 
