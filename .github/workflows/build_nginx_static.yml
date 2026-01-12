@@ -47,11 +47,11 @@ jobs:
       - name: strip binary
         shell: bash
         run: |
-            readelf /home/nginx_build/local/nginx/sbin/nginx -a | grep "NEEDED"
-            file /home/nginx_build/local/nginx/sbin/nginx
-            strip /home/nginx_build/local/nginx/sbin/nginx
-            file /home/nginx_build/local/nginx/sbin/nginx
-            tar -zcf nginx_static_binary-${{ matrix.target.id }}.tar.gz -C /home/nginx_build/local/nginx
+            readelf ${{ github.workspace }}/local/nginx/sbin/nginx -a | grep "NEEDED"
+            file ${{ github.workspace }}/local/nginx/sbin/nginx
+            strip ${{ github.workspace }}/local/nginx/sbin/nginx
+            file ${{ github.workspace }}/local/nginx/sbin/nginx
+            tar -zcf nginx_static_binary-${{ matrix.target.id }}.tar.gz -C ${{ github.workspace }}/local/nginx
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:

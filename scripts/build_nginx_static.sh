@@ -5,6 +5,12 @@ set -o errexit
 set -o errtrace
 
 
+CURRENT_DIR="${1:-$(pwd)}"   # 如果没传参数就用脚本自己 pwd
+echo "脚本接收到的目录：$CURRENT_DIR"
+echo "脚本自己看到的当前目录：$(pwd)"
+echo "仓库根目录：$GITHUB_WORKSPACE"
+
+
 #!/bin/bash
 #
 # This script fetches "latest" releases from GitHub for PCRE2, zlib, OpenSSL, and Nginx,
@@ -191,8 +197,8 @@ echo "Clean Nginx tag:   $nginx_clean_tag"
 #-----------------------------------------------------------
 # 5) Prepare a location to store & build
 #-----------------------------------------------------------
-SRC_DIR="/home/nginx_build"
-NGINX_PREFIX="/home/nginx_build/local/nginx"
+SRC_DIR="${CURRENT_DIR}/nginx_source"
+NGINX_PREFIX="${CURRENT_DIR}/local/nginx"
 
 mkdir -p "$SRC_DIR"
 
