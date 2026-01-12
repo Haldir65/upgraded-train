@@ -191,8 +191,8 @@ echo "Clean Nginx tag:   $nginx_clean_tag"
 #-----------------------------------------------------------
 # 5) Prepare a location to store & build
 #-----------------------------------------------------------
-SRC_DIR="/usr/local/src"
-NGINX_PREFIX="/usr/local/nginx"
+SRC_DIR="/home/nginx_build"
+NGINX_PREFIX="/home/nginx_build/local/nginx"
 
 mkdir -p "$SRC_DIR"
 
