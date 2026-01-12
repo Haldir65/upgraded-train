@@ -31,11 +31,22 @@ jobs:
           sudo apt install ninja-build build-essential binutils autoconf automake tree clang cmake coreutils libidn2-0-dev pkg-config -y
           echo "cpu core num is "
           nproc
+
+      - name: Setup nginx user and group
+        run: |
+            set -euo pipefail   # 出错就停止
+            echo "创建/确认 nginx 组..."
+            sudo groupadd -f nginx
+            echo "创建 nginx 系统用户..."
+            sudo useradd -r -M -s /sbin/nologin -g nginx -c "Nginx web server user" nginx || true
+            echo "当前 nginx 用户信息："
+            id nginx
+            echo "主组：$(groups nginx | awk '{print $1}')"    
     
       - name: build server
         shell: bash
         run: |
-          bash scripts/build_nginx_static.sh
+          sudo bash scripts/build_nginx_static.sh
      
       - name: show layouts
         shell: bash
