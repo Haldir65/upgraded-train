@@ -50,7 +50,7 @@ jobs:
             fetch-depth: 1
 
       - name: Download and extract nginx
-        run: ./master/scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+        run: ./scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
 
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
@@ -74,7 +74,7 @@ jobs:
           NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
           CFLAGS: ${{ env.CFLAGS }}
           LDFLAGS: ${{ env.LINUX_LDFLAGS }}
-        run: ./master/scripts/build-nginx
+        run: ./scripts/build-nginx
         shell: alpine.sh {0}
 
       - name: Upload nginx binary to artifacts
