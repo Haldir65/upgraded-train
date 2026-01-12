@@ -1,0 +1,64 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR="$(dirname "$0")"
+
+NJS_VERSION=$(sed -En 's|.* ([^ ]*) njs$|\1|p;q' .SOURCES)
+HOST_ARCH=$(uname -m)
+HOST_OS=$(uname -s | tr '[A-Z]' '[a-z]')
+
+case "$HOST_OS" in
+	darwin) alias sha1sum='shasum -a1'; alias sed='gsed';;
+esac
+
+case "$VARIANT" in
+	-debug) DEBUG='YES';;
+	*) DEBUG='NO';;
+esac
+
+case "$NJS_VERSION" in
+	0.[5-7].*) NJS_SHELL_C='src/njs_shell.c';;
+	*) NJS_SHELL_C='external/njs_shell.c';;
+esac
+
+set -x  # log commands
+
+# --no-pcre2 - prefer pcre (8.x) over pcre2 (10.x), it's much smaller
+./configure \
+	--cc-opt="$CFLAGS" \
+	--ld-opt="${LDFLAGS/-static/}" \
+	--no-libxml2 \
+	--no-pcre2 \
+	--debug="$DEBUG"
+NJS_CFLAGS=$(sed -n 's/^NJS_CFLAGS\s*=\s*//p' build/Makefile)
+
+make libnjs
+cc -o build/njs \
+	$NJS_CFLAGS $LDFLAGS \
+	-Isrc -Ibuild -Injs \
+	$NJS_SHELL_C \
+	build/libnjs.a \
+	-lcrypto -lm -lpcre -ledit -lncursesw -lz
+
+ls -lah build/
+[ "$DEBUG" = 'YES' ] || strip build/njs
+file build/njs
+
+case "$HOST_OS" in
+	darwin) otool -L build/njs;;
+esac
+
+./build/njs -V
+
+if [ -f linker.map ]; then
+	"$SCRIPT_DIR"/parse-mapfile-loaded-libs linker.map | tee -a .SOURCES
+fi
+
+BIN_NAME="njs-${NJS_VERSION}${VARIANT}-$HOST_ARCH-$HOST_OS"
+
+mkdir -p artifact/
+install build/njs artifact/$BIN_NAME
+mv .SOURCES artifact/$BIN_NAME.sources
+
+cd artifact/
+sha1sum $BIN_NAME > $BIN_NAME.sha1

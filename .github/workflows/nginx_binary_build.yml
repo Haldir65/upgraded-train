@@ -1,0 +1,85 @@
+name: nginx_binary_build
+on:
+  push:
+    branches:
+      - 'nginx_static_build_pipeline'
+
+
+env:
+  ALPINE_BRANCH: v3.21
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  JOBS: 3
+  CFLAGS: -Os -fomit-frame-pointer -pipe
+  LINUX_LDFLAGS: -static -Wl,--as-needed -Wl,-Map,linker.map
+  DARWIN_LDFLAGS: -Wl,-map,linker.map
+  WIN32_LDFLAGS: -Wl,--as-needed -Wl,-Map,linker.map
+  # List of extra nginx modules to download.
+  # NOTE: nginx/njs is not defined here, but directly in the jobs.
+  NGINX_MODULES: >-
+    kjdev/nginx-auth-jwt
+    kjdev/nginx-keyval
+    vision5/ngx_devel_kit
+    openresty/echo-nginx-module
+    openresty/headers-more-nginx-module
+    openresty/set-misc-nginx-module
+  # The same as above, but for Windows.
+  # - kjdev/nginx-auth-jwt, kjdev/nginx-keyval: a bit complicated to build (TODO)
+  NGINX_MODULES_WIN32: >-
+    vision5/ngx_devel_kit
+    openresty/echo-nginx-module
+    openresty/headers-more-nginx-module
+    openresty/set-misc-nginx-module
+  # Don't update binaries with unchanged sources.
+  SKIP_SAME_SOURCES: true
+
+jobs:
+  nginx-multi-linux-binary:
+    name: nginx-${{ matrix.NGINX_VERSION }}-${{ matrix.ARCH }}-linux
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        NGINX_VERSION:
+          - 1.28.x
+        ARCH:
+          - aarch64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 1
+
+      - name: Download and extract nginx
+        run: ./master/scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+
+
+      - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
+        uses: jirutka/setup-alpine@v1
+        with:
+          arch: ${{ matrix.ARCH }}
+          branch: ${{ env.ALPINE_BRANCH }}
+          packages: >
+            build-base
+            jansson-dev
+            jansson-static
+            linux-headers
+            openssl-dev
+            openssl-libs-static
+            pcre-dev
+            zlib-dev
+            zlib-static
+
+      - name: Build nginx
+        env:
+          NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
+          CFLAGS: ${{ env.CFLAGS }}
+          LDFLAGS: ${{ env.LINUX_LDFLAGS }}
+        run: ./master/scripts/build-nginx
+        shell: alpine.sh {0}
+
+      - name: Upload nginx binary to artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nginx-${{ matrix.NGINX_VERSION }}-${{ matrix.ARCH }}-linux
+          path: artifact/*
+

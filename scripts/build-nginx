@@ -1,0 +1,139 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR="$(dirname "$0")"
+
+find_srcdir() {
+	local name=$1
+	local dir=$(sed -En "s|.* ([^ ]*) ($name)$|\2-\1|p" .SOURCES)
+
+	if ! [ "$dir" ]; then
+		echo "ERROR: Did not find $name in .SOURCES file!" >&2
+	elif ! [ -d "$dir" ]; then
+		echo "ERROR: Directory '$dir' does not exist!" >&2
+	else
+		echo "$dir"
+		return 0
+	fi
+	return 1
+}
+
+add_module() {
+	local dir name
+
+	for name in "$@"; do
+		dir=$(find_srcdir "${name#*/}") || return 1
+
+		case "$name" in
+			nginx/njs) dir="$dir/nginx";;
+		esac
+		printf -- '--add-module=%s\n' "$dir"
+	done
+}
+
+configure() {
+	set -x  # log commands
+
+	NJS_LIBXSLT=NO \
+	./auto/configure \
+		--prefix="." \
+		--sbin-path="nginx" \
+		--conf-path="nginx.conf" \
+		--pid-path="nginx.pid" \
+		--lock-path="nginx.lock" \
+		--error-log-path=stderr \
+		--http-log-path=access.log \
+		--http-client-body-temp-path="client_body_temp" \
+		--http-proxy-temp-path="proxy_temp" \
+		--user=nobody \
+		--group=users \
+		--with-cc="${CC:-cc}" \
+		--with-cc-opt="${CFLAGS:-}" \
+		--with-ld-opt="${LDFLAGS:-}" \
+		--with-debug \
+		--with-http_ssl_module \
+		--with-http_v2_module \
+		--with-http_realip_module \
+		--with-http_auth_request_module \
+		--with-http_secure_link_module \
+		--without-http_mirror_module \
+		--without-http_geo_module \
+		--without-http_split_clients_module \
+		--without-http_fastcgi_module \
+		--without-http_uwsgi_module \
+		--without-http_scgi_module \
+		--without-http_memcached_module \
+		"$@"
+
+	# Don't load openssl.cnf unless the OPENSSL_CONF env. variable is
+	# explicitly set. This is to avoid SSL error on Fedora due to some
+	# incompatible settings in /etc/ssl/openssl.cnf (see #17).
+	cat >> objs/ngx_auto_config.h <<-EOF
+
+		#ifndef NGX_OPENSSL_NO_CONFIG
+		#define NGX_OPENSSL_NO_CONFIG  1
+		#endif
+	EOF
+}
+
+
+NGINX_VERSION=$(sed -En 's|.* ([^ ]*) nginx$|\1|p;q' .SOURCES)
+HOST_ARCH=$(uname -m)
+HOST_OS=$(uname -s | tr '[A-Z]' '[a-z]')
+EXEEXT=''
+
+case "$HOST_OS" in
+	darwin) alias sha1sum='shasum -a1'; alias sed='gsed';;
+	mingw*) HOST_OS='win32'; EXEEXT='.exe';;
+esac
+
+uname -a
+
+module_flags=$(add_module $NGINX_MODULES)
+
+case "$HOST_OS" in
+	linux)
+		configure --with-file-aio --with-threads $module_flags
+	;;
+	darwin)
+		configure --with-threads $module_flags
+	;;
+	win32)
+		openssl_dir=$(find_srcdir openssl)
+		pcre_dir=$(find_srcdir pcre)
+		zlib_dir=$(find_srcdir zlib)
+
+		configure \
+			--with-openssl="$openssl_dir" \
+			--with-pcre="$pcre_dir" \
+			--with-zlib="$zlib_dir" \
+			--with-openssl-opt='no-asm no-tests -D_WIN32_WINNT=0x0501' \
+			$module_flags
+	;;
+esac
+
+make
+
+ls -lah objs
+strip objs/nginx$EXEEXT
+file objs/nginx$EXEEXT
+
+case "$HOST_OS" in
+	darwin) otool -L objs/nginx$EXEEXT;;
+	*) ldd objs/nginx$EXEEXT || true;;
+esac
+
+./objs/nginx$EXEEXT -V
+
+if [ -f linker.map ]; then
+	"$SCRIPT_DIR"/parse-mapfile-loaded-libs linker.map | tee -a .SOURCES
+fi
+
+BIN_NAME="nginx-${NGINX_VERSION}-${HOST_ARCH}-${HOST_OS}${EXEEXT}"
+
+mkdir -p artifact/
+install objs/nginx$EXEEXT artifact/$BIN_NAME
+mv .SOURCES artifact/$BIN_NAME.sources
+
+cd artifact/
+sha1sum $BIN_NAME > $BIN_NAME.sha1

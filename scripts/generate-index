@@ -1,0 +1,214 @@
+#!/usr/bin/env node
+// @ts-check
+/**
+ * @typedef {import('../src/index').IndexEntry} IndexEntry
+ * @typedef {import('../src/index').IndexFile} IndexFile
+ * @typedef {IndexEntry[]} Index
+ */
+const process = require('process')
+const fs = require('fs')
+const path = require('path')
+
+/**
+ * Version of the index file format.
+ * Keep in sync with FORMAT_VERSION in src/repoIndex.ts!
+ */
+const FORMAT_VERSION = 2
+
+/**
+ * @template T
+ * @template {Array<keyof T>} K
+ * @param {T} obj
+ * @param {K} keys
+ * @return {Omit<T, K[number]>}
+ */
+const omit = (obj, ...keys) => {
+  // @ts-ignore
+  return Object.keys(obj).reduce((acc, key) => {
+    // @ts-ignore
+    if (!keys.includes(key)) {
+      acc[key] = obj[key]
+    }
+    return acc
+  }, {})
+}
+
+/**
+ * @param {string} filename
+ * @returns {string}
+ */
+const readFileSha1 = (filename) =>
+  fs.readFileSync(`${filename}.sha1`, 'utf8').split(' ', 1)[0]
+
+/**
+ * @param {string} filename
+ * @returns {string}
+ */
+const fileModifiedDate = (filename) =>
+  fs.statSync(filename).mtime.toISOString().slice(0, -5) + 'Z'
+
+/**
+ * @param {string | undefined} dest
+ * @param {string} data
+ * @returns {void}
+ */
+const write = (dest, data) => dest
+  ? fs.writeFileSync(dest, data, { encoding: 'utf-8' })
+  : console.log(data)
+
+/**
+ * @param {string} filename
+ * @returns {Omit<IndexEntry, 'date' | 'size' | 'checksum'>}
+ */
+const parseBinaryName = (filename) => {
+  const [name, version, ...rest] = filename.replace(/\.exe$/, '').split('-')
+  const [os, arch, ...variant] = rest.reverse()
+
+  return {
+    name,
+    version,
+    variant: variant.join('-'),
+    // @ts-ignore
+    arch,
+    // @ts-ignore
+    os,
+    filename,
+  }
+}
+
+/**
+ * @param {string} text
+ */
+const parseSourcesFile = (text) => {
+  const lines = text.split('\n').filter(Boolean)
+
+  return lines.map(line => {
+    const fields = line.split(' ')
+    if (fields.length !== 5) {
+      throw RangeError(`Expected 5 space-separated fields, but got: '${line}'`)
+    }
+    return {
+      path: fields[0],
+      size: parseInt(fields[1]),
+      checksum: fields[2],
+      version: fields[3],
+      name: fields[4],
+    }
+  })
+}
+
+/**
+ * @param {string} sourcesFile
+ * @param {string} programName
+ * @returns {Record<string, string>}
+ */
+const collectBundledLibs = (sourcesFile, programName) => {
+  const text = fs.readFileSync(sourcesFile, 'utf8')
+
+  return parseSourcesFile(text).reduce((acc, { name, version }) => {
+    if (name === programName || name === 'nginx-build-msys2') {
+      return acc
+    }
+    if (acc[name] && acc[name] !== version) {
+      throw Error(`Found two versions of ${name}: ${acc[name]} and ${version}`)
+    }
+    acc[name] = version
+    return acc
+  }, {})
+}
+
+/**
+ * @returns {Index}
+ */
+const generateIndex = () => fs.readdirSync('.')
+  .filter(filename => fs.existsSync(`${filename}.sha1`))
+  .map(filename => {
+    const entry = parseBinaryName(filename)
+    const checksum = readFileSha1(filename)
+    return {
+      ...entry,
+      date: fileModifiedDate(filename),
+      size: fs.statSync(filename).size,
+      checksum: `sha1:${checksum}`,
+      bundledLibs: collectBundledLibs(`${filename}.sources`, entry.name),
+    }
+  })
+
+/**
+ * Merges `oldIndex` and `newIndex`. If both includes entry with the same
+ * filename and checksum, the old one wins.
+ *
+ * @param {Index} oldIndex
+ * @param {Index} newIndex
+ * @returns {Index}
+ */
+const mergeIndexes = (oldIndex, newIndex) => newIndex.reduce((acc, newEntry) => {
+  const idx = oldIndex.findIndex(entry => entry.filename === newEntry.filename)
+  if (idx < 0) {
+    acc.push(newEntry)
+  } else if (acc[idx].checksum !== newEntry.checksum) {
+    acc[idx] = newEntry
+  }
+  return acc
+}, [...oldIndex])
+
+/**
+ * @param {Index} index
+ * @returns {Index}
+ */
+const sortIndex = (index) =>
+  index.sort((a, b) => a.filename.localeCompare(b.filename))
+
+/**
+ * @param {Record<string, string | number | boolean>[]} array
+ * @returns {string}
+ */
+const stringifyAsCsv = (array) => {
+  if (array.length < 1) return ''
+
+  return [
+    Object.keys(array[0]).join(','),
+    ...array.map(item => Object.values(item).join(','))
+  ].join('\n')
+}
+
+
+const argv = process.argv.slice(2)
+
+if (argv[0] === '-h' || argv[0] === '--help') {
+  console.log('Usage: generate-index [--json | --csv] [<dir-path> [<out-file>]]')
+  process.exit(0)
+}
+const format = argv[0] && argv[0].startsWith('--') ? argv.shift().slice(2) : 'json'
+const outFile = argv[1] && path.resolve(argv[1])
+if (argv[0]) {
+  process.chdir(argv[0])
+}
+
+let index = generateIndex()
+if (fs.existsSync('index.json')) {
+  const indexFile = fs.readFileSync('index.json', 'utf-8')
+  const oldIndex = JSON.parse(indexFile).contents || []
+
+  index = mergeIndexes(oldIndex, index)
+}
+index = sortIndex(index)
+
+switch (format) {
+  case 'json':
+    /** @type {IndexFile} */
+    const data = {
+      formatVersion: FORMAT_VERSION,
+      contents: index,
+    }
+    write(outFile, JSON.stringify(data, null, 2))
+    break
+  case 'csv':
+    write(outFile, stringifyAsCsv(
+      index.map(entry => omit(entry, 'bundledLibs')),
+    ))
+    break
+  default:
+    console.error(`Unsupported format: ${format}`)
+    process.exit(2)
+}

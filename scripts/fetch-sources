@@ -1,0 +1,118 @@
+#!/bin/sh
+set -eu
+
+if ( set -o pipefail 2>/dev/null ); then
+	set -o pipefail
+else
+	# dash shell (/bin/sh on Ubuntu) does not support pipefail.
+	exec bash "$0" "$@"
+fi
+
+. "$(dirname "$0")"/common.sh
+
+
+version_mask_to_regex() {
+	echo "$1" | sed 's/\./\\./g;s/x/[0-9]+/g'
+}
+
+scrape_latest_version() {
+	local url=$1
+	local ver_regex=$2
+	local pattern="s/.*$ver_regex.*/\1/p"
+	local name=$3
+	local ver
+
+	if ver=$(curl -fsS --retry 3 "$url" | sed -En "$pattern" | sort -ruV | head -1) && [ "$ver" ]; then
+		echo "$ver"
+	else
+		echo "ERROR: Failed to find $name version matching /$ver_regex/" >&2
+		return 1
+	fi
+}
+
+github_latest_version_tag() {
+	local repo_slug=$1
+	local ver_regex=$2
+	local tags_url="https://api.github.com/repos/$repo_slug/tags"
+	local tag
+
+	local ver_regex_esc=$(printf '%s\n' "$ver_regex" | sed 's/\\/\\\\/g')
+	local jq_filter_tags=". | map(.name | select(test(\"^$ver_regex_esc$\")))"
+	local jq_latest='max_by(sub("^[^0-9]+"; "") | split(".") | map(tonumber))'
+
+	if tag=$(github_curl "$tags_url" | jq -er "$jq_filter_tags | $jq_latest") && [ "$tag" ]; then
+		echo "$tag"
+	else
+		echo "ERROR: Failed to find $repo_slug version tag matching /$ver_regex/" >&2
+		return 1
+	fi
+}
+
+github_curl() {
+	# Authenticate GitHub requests to avoid rate limits.
+	curl -fsS \
+		--retry 3 \
+		--header 'Accept: application/vnd.github.v3+json' \
+		${GITHUB_TOKEN:+--header "Authorization: Bearer $GITHUB_TOKEN"} \
+		"$@"
+}
+
+
+DEST_DIR=
+case "${1:-}" in
+	-d) DEST_DIR="$2"; shift 2;;
+esac
+
+if [ $# -lt 1 ] || [ "$1" = '--help' ]; then
+	echo "Usage: $0 [-d <dest-dir>] <proj-name>[@<version-mask>] [<proj-name>[@<version-mask>]...]" >&2
+	exit 2
+fi
+
+
+for item in "$@"; do
+	name=${item%@*}
+
+	if [ "$name" = "${item#*@}" ]; then
+		ver_regex='v?([0-9]+\.)+[0-9]+'
+	else
+		ver_regex=$(version_mask_to_regex "${item#*@}")
+	fi
+
+	case "$name" in
+		openssl)
+			tag=$(github_latest_version_tag openssl/openssl 'openssl-([0-9]+\.)+[0-9]+')
+			ver=$(echo "$tag" | grep -o '[0-9].*')
+			url="https://github.com/openssl/openssl/releases/download/$tag/${name#*/}-$ver.tar.gz"
+		;;
+		pcre)
+			base_url='https://sourceforge.net/projects/pcre'
+			ver=$(scrape_latest_version "$base_url/rss?path=/pcre" "pcre-($ver_regex)\." 'pcre')
+			url="$base_url/files/$name/$ver/$name-$ver.tar.gz"
+		;;
+		*)
+			tag=$(github_latest_version_tag "$name" "$ver_regex")
+			ver=$(echo "$tag" | grep -o '[0-9].*')
+			url="https://github.com/$name/archive/$tag/${name#*/}-$ver.tar.gz"
+		;;
+	esac
+
+	filename=$(basename "$url")
+	dir=${DEST_DIR:-${filename%.tar*}}
+
+	echo "Downloading $url" >&2
+	curl -L --retry 3 -o "$filename" "$url"
+
+	size=$(filesize "$filename")
+	hash=$(checksum "$filename")
+
+	mkdir -p "$dir"
+	tar --strip-components=1 -C "$dir" -xf "$filename"
+	rm "$filename"
+
+	case "$name-$ver" in
+		nginx/njs-0.7.12) patch --batch -d "$dir" -p1 < master/patches/njs-0.7.12-fix-module-build.patch;;
+		nginx/nginx-1.24.*) patch --batch -d "$dir" -p1 < master/patches/nginx-1.24.x-avoid-using-openssl-config.patch;;
+	esac
+
+	echo "$url $size $hash $ver ${name#*/}" | tee -a .SOURCES
+done
