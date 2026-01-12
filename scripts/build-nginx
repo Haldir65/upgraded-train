@@ -126,7 +126,7 @@ esac
 ./objs/nginx$EXEEXT -V
 
 if [ -f linker.map ]; then
-	"$SCRIPT_DIR"/parse-mapfile-loaded-libs linker.map | tee -a .SOURCES
+	sh "$SCRIPT_DIR"/parse-mapfile-loaded-libs linker.map | tee -a .SOURCES
 fi
 
 BIN_NAME="nginx-${NGINX_VERSION}-${HOST_ARCH}-${HOST_OS}${EXEEXT}"

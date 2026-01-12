@@ -81,7 +81,18 @@ jobs:
           LDFLAGS: ${{ env.LINUX_LDFLAGS }}
         run: |
           /bin/sh ./scripts/build-nginx
+      
+      - name: Install `deps` on Ubuntu
+        shell: bash
+        run: |
+          sudo apt install build-essential binutils autoconf tree coreutils -y
 
+      - name: check nginx dependency
+        shell: bash
+        run: |
+          readelf artifact/nginx-1.28.1-x86_64-linux -a | grep "NEEDED"
+          file artifact/nginx-1.28.1-x86_64-linux
+    
       - name: Upload nginx binary to artifacts
         uses: actions/upload-artifact@v4
         with:
