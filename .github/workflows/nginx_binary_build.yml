@@ -75,8 +75,8 @@ jobs:
           NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
           CFLAGS: ${{ env.CFLAGS }}
           LDFLAGS: ${{ env.LINUX_LDFLAGS }}
-        run: ./scripts/build-nginx
-        shell: alpine.sh {0}
+        run: |
+          /bin/sh ./scripts/build-nginx
 
       - name: Upload nginx binary to artifacts
         uses: actions/upload-artifact@v4
