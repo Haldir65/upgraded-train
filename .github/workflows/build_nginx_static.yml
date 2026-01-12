@@ -1,0 +1,63 @@
+name: build_nginx_static
+
+on:
+    workflow_dispatch:
+
+
+jobs:        
+  build_nginx_static_binary:
+    name: build_nginx_static_binary
+    continue-on-error: true
+    strategy:
+      matrix:
+        target:
+          - id: 'linux-amd64'
+            os: 'ubuntu-latest'
+          - id: 'linux-aarch64'
+            os: 'ubuntu-24.04-arm'  ## failed
+
+    runs-on: ${{ matrix.target.os }}    
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 2
+
+      - name: Install `deps` on Ubuntu
+        if: startsWith(matrix.target.id, 'linux-')
+        shell: bash
+        run: |
+          sudo apt install ninja-build build-essential binutils autoconf automake tree clang cmake coreutils libidn2-0-dev pkg-config -y
+          echo "cpu core num is "
+          nproc
+    
+      - name: build server
+        shell: bash
+        run: |
+          bash scripts/build_nginx_static.sh
+     
+      - name: show layouts
+        shell: bash
+        run: |
+            tree -L 2
+            ls -al
+           
+      
+      - name: strip binary
+        shell: bash
+        run: |
+            readelf /usr/local/nginx/sbin/nginx -a | grep "NEEDED"
+            file /usr/local/nginx/sbin/nginx
+            strip /usr/local/nginx/sbin/nginx
+            file /usr/local/nginx/sbin/nginx
+            tar -zcf nginx_static_binary-${{ matrix.target.id }}.tar.gz -C /usr/local/nginx
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nginx_static_binary-${{ matrix.target.id }}.tar.gz
+          path: nginx_static_binary-${{ matrix.target.id }}.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+  
