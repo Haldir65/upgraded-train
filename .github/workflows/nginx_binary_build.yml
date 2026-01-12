@@ -42,6 +42,9 @@ jobs:
           - 1.28.x
         ARCH:
           - aarch64
+        include:
+          - NJS_VERSION: 0.x.x
+
 
     steps:
       - name: Checkout
@@ -53,6 +56,9 @@ jobs:
         shell: bash
         run: bash ./scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
 
+      - name: Download and extract nginx modules
+        shell: bash
+        run: bash ./scripts/fetch-sources nginx/njs@${{ matrix.NJS_VERSION }} $NGINX_MODULES
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
         uses: jirutka/setup-alpine@v1
