@@ -16,6 +16,7 @@ env:
   # List of extra nginx modules to download.
   # NOTE: nginx/njs is not defined here, but directly in the jobs.
   NGINX_MODULES: >-
+    vision5/ngx_devel_kit
     openresty/echo-nginx-module
     openresty/headers-more-nginx-module
     openresty/set-misc-nginx-module
