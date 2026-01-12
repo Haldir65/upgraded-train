@@ -79,8 +79,8 @@ jobs:
           NGINX_MODULES: nginx/njs ${{ env.NGINX_MODULES }}
           CFLAGS: ${{ env.CFLAGS }}
           LDFLAGS: ${{ env.LINUX_LDFLAGS }}
-        run: |
-          /bin/sh ./scripts/build-nginx
+        run: chmod a+x ./scripts/build-nginx && ./scripts/build-nginx
+        shell: alpine.sh {0}
       
       - name: Install `deps` on Ubuntu
         shell: bash
