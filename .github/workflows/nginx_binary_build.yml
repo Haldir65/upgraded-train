@@ -50,7 +50,8 @@ jobs:
             fetch-depth: 1
 
       - name: Download and extract nginx
-        run: ./scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
+        shell: bash
+        run: bash ./scripts/fetch-sources -d . nginx/nginx@release-${{ matrix.NGINX_VERSION }}
 
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
