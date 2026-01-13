@@ -85,16 +85,17 @@ jobs:
       - name: Install `deps` on Ubuntu
         shell: bash
         run: |
-          sudo apt install build-essential binutils autoconf tree coreutils -y
+          sudo apt install curl build-essential binutils autoconf tree coreutils -y
 
       - name: Upload nginx binary to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: nginx-${{ matrix.NGINX_VERSION }}-${{ matrix.ARCH }}-linux
           path: artifact/*
+          retention-days: 3
 
       - name: check nginx dependency
         shell: bash
         run: |
-          readelf artifact/nginx-1.28.1-${{ matrix.ARCH }}-linux -a | grep "NEEDED"
-          file artifact/nginx-1.28.1-${{ matrix.ARCH }}-linux
+          bash ./scripts/post_build_scripts.sh
+         

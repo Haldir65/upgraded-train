@@ -38,9 +38,9 @@ configure() {
 	./auto/configure \
 		--prefix="." \
 		--sbin-path="nginx" \
-		--conf-path="nginx.conf" \
-		--pid-path="nginx.pid" \
-		--lock-path="nginx.lock" \
+		--conf-path="/etc/nginx/nginx.conf" \
+		--pid-path="/etc/nginx/nginx.pid" \
+		--lock-path="/tmp/nginx.lock" \
 		--error-log-path=stderr \
 		--http-log-path=access.log \
 		--http-client-body-temp-path="client_body_temp" \
@@ -50,12 +50,12 @@ configure() {
 		--with-cc="${CC:-cc}" \
 		--with-cc-opt="${CFLAGS:-}" \
 		--with-ld-opt="${LDFLAGS:-}" \
-		--with-debug \
 		--with-http_ssl_module \
 		--with-http_v2_module \
 		--with-http_realip_module \
 		--with-http_auth_request_module \
 		--with-http_secure_link_module \
+		--with-http_gzip_static_module \
 		--without-http_mirror_module \
 		--without-http_geo_module \
 		--without-http_split_clients_module \
