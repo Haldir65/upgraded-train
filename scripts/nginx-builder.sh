@@ -40,6 +40,8 @@ curl -L https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/
 curl -L https://www.zlib.net/zlib-$ZLIB_VER.tar.gz | tar xz
 curl -L https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz | tar xz
 
+tree -L 4
+
 # 2. 获取架构信息定义文件名
 ARCH=$(uname -m)
 REPO_NAME=${GITHUB_REPOSITORY##*/}
@@ -49,6 +51,9 @@ ZIP_NAME="${REPO_NAME}_${ARCH}.zip"
 # 3. 配置并编译
 echo "--- 开始配置 Nginx ---"
 cd nginx-$NGINX_VER
+
+ls -alSh
+tree -L 4
 
 # 关键点：--with-ld-opt="-static" 强制静态链接
 #-----------------------------------------------------------
