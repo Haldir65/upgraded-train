@@ -18,7 +18,7 @@ function _build_zlib_static(){
     mkdir -p ${zlib_install_dir}
     _download_if_not_exists https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.gz zlib-${ZLIB_VERSION}.tar.gz
     tar xzvf zlib-${ZLIB_VERSION}.tar.gz -C ${BUILD_DIR}
-    pushd ${BUILD_DIR}/zlib-${ZLIB_VERSION}
+    cd ${BUILD_DIR}/zlib-${ZLIB_VERSION}
     CFLAGS="-O3 -fPIC" ./configure --prefix="$zlib_install_dir" --static
     make -j8
     make install
@@ -26,7 +26,7 @@ function _build_zlib_static(){
     _green "\n  done build zlib static \n"
     _green "\n  zlib are binary can be found in ${zlib_install_dir} \n"
     tree -L 4 ${zlib_install_dir}
-    popd
+    cd ${ROOT_DIR}
 }
 
 
@@ -39,7 +39,7 @@ function _build_openssl_static_with_zlib(){
     _download_if_not_exists https://github.com/openssl/openssl/releases/download/openssl-$OPENSSL_VERSION/openssl-$OPENSSL_VERSION.tar.gz openssl-$OPENSSL_VERSION.tar.gz
     rm -rf ${BUILD_DIR}/openssl-$OPENSSL_VERSION
     tar xzvf openssl-$OPENSSL_VERSION.tar.gz -C ${BUILD_DIR}
-    pushd ${BUILD_DIR}/openssl-$OPENSSL_VERSION
+    cd ${BUILD_DIR}/openssl-$OPENSSL_VERSION
 
     # 1. 定义基础参数
     CONF_ARGS="no-shared no-docs --static"
@@ -71,7 +71,7 @@ function _build_openssl_static_with_zlib(){
     _green "\n  done build openssl static \n"
     _green "\n  openssl with zlib are binary can be found in ${OPENSSL_INSTALL_DIR} \n"
     tree -L 4 ${OPENSSL_INSTALL_DIR}
-    popd
+    cd ${ROOT_DIR}
 }
 
 
