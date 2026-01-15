@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # This script fetches "latest" releases from GitHub for PCRE2, zlib, OpenSSL, and Nginx,
 # removes common prefixes (e.g. "release-", "v") from each tag,
@@ -10,7 +10,7 @@
 # 0) Minimal dependencies: If additional dependencies are needed,
 #    this section can be modified to include them.
 #-----------------------------------------------------------
-echo "=== Installing minimal build tools  ==="
+# echo "=== Installing minimal build tools  ==="
 # detect_package_manager() {
 #   if command -v yum >/dev/null 2>&1; then
 #     echo "yum"
@@ -61,7 +61,6 @@ apk add --no-cache \
     pcre2-dev \
     curl \
     zip
-
 #-----------------------------------------------------------
 # 1) Function: get_latest_tag_from_github
 #    - Retrieves .tag_name from /releases/latest
@@ -130,12 +129,10 @@ download_and_extract() {
 
   # Detect the top-level directory from the tarball
   local topdir
-  pwd
-  tree -L 3
   topdir="$(tar tzf "$file" 2>/dev/null | head -1 | cut -d/ -f1)"
   if [ -z "$topdir" ]; then
     echo "!!! Could not determine top-level directory from $file" >&2
-    # return 1
+    return 1
   fi
 
   # Extract if not already
@@ -161,7 +158,7 @@ download_and_extract() {
     }
   fi
 
-  echo "$final_dir"/${name}
+  echo "$final_dir"
 }
 
 #-----------------------------------------------------------
@@ -204,10 +201,8 @@ echo "Clean Nginx tag:   $nginx_clean_tag"
 #-----------------------------------------------------------
 # 5) Prepare a location to store & build
 #-----------------------------------------------------------
-ROOT_DIR=`pwd`
-
-SRC_DIR="${ROOT_DIR}/local/src"
-NGINX_PREFIX="${ROOT_DIR}/nginx"
+SRC_DIR="/usr/local/src"
+NGINX_PREFIX="/usr/local/nginx"
 
 mkdir -p "$SRC_DIR"
 
@@ -219,10 +214,19 @@ zlib_dir="$(download_and_extract   "$ZLIB_OWNER"   "$ZLIB_REPO"   "$zlib_raw_tag
 openssl_dir="$(download_and_extract "$OPENSSL_OWNER" "$OPENSSL_REPO" "$openssl_raw_tag" "$openssl_clean_tag" "openssl" "$SRC_DIR")"
 nginx_dir="$(download_and_extract   "$NGINX_OWNER"  "$NGINX_REPO"  "$nginx_raw_tag"   "$nginx_clean_tag"   "nginx"  "$SRC_DIR")"
 
+tree -L 4
+
 echo "pcre2_dir:   $pcre2_dir"
+tree -L 4 $pcre2_dir
+
 echo "zlib_dir:    $zlib_dir"
+tree -L 4 $zlib_dir
+
 echo "openssl_dir: $openssl_dir"
+tree -L 4 $openssl_dir
+
 echo "nginx_dir:   $nginx_dir"
+tree -L 4 $nginx_dir
 
 #-----------------------------------------------------------
 # 7) Create 'nginx' user if needed
@@ -242,7 +246,6 @@ cd "$SRC_DIR/$nginx_dir" || {
   exit 1
 }
 
-tree -L 4
 
 # If the repo has ./configure, use that; else try ./auto/configure
 if [ -x "./configure" ]; then
@@ -317,7 +320,6 @@ echo "    PCRE2:   ${pcre2_clean_tag}"
 echo "    zlib:    ${zlib_clean_tag}"
 echo "    OpenSSL: ${openssl_clean_tag}"
 echo "    Nginx:   ${nginx_clean_tag}"
-
 
  # 5. 打包安装后的目录
 echo "--- 正在打包 nginx_static_aarch64.zip ---"
