@@ -36,8 +36,8 @@ jobs:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
         working-directory: workspace    
         run: |
-              # sh scripts/alpine_build_lib_test.sh
-              sh scripts/nginx-builder.sh
+              sh scripts/alpine_build_lib_test.sh
+              # sh scripts/nginx-builder.sh
 
       -   name: show layouts
           working-directory: workspace 
