@@ -44,7 +44,12 @@ jobs:
       - name: Manual git clone
         run: |
             git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
-            
+      
+      - name: build zlib and openssl static
+        if: github.event.inputs.target_job == 'build_grpc_arm'
+        working-directory: workspace    
+        run: |
+            sh scripts/build_zlib_and_openssl.sh
       - name: build grpc static binary
         env:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
@@ -52,7 +57,6 @@ jobs:
         run: |
               echo "${{ github.event.inputs.target_job }}"
               if [[ "${{ github.event.inputs.target_job }}" == 'build_grpc_arm' ]]; then
-                  sh scripts/build_zlib_and_openssl.sh
                   sh scripts/alpine_build_lib_test.sh
               elif [[ "${{ github.event.inputs.target_job }}" == 'build_nginx_arm' ]]; then
                   sh scripts/nginx-builder.sh
@@ -91,14 +95,18 @@ jobs:
       - name: Manual git clone
         run: |
             git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
-            
+      
+      - name: build zlib and openssl static
+        working-directory: workspace    
+        run: |
+            bash scripts/build_zlib_and_openssl.sh   
+
       - name: build grpc static binary
         env:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
         working-directory: workspace  
         shell: bash  
         run: |
-            bash scripts/build_zlib_and_openssl.sh
             bash scripts/alpine_build_lib_test.sh
 
       - name: show layouts
