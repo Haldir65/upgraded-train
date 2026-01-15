@@ -144,11 +144,14 @@ echo "=== Checking Nginx version ==="
 }
 
 
-# 4. 验证与瘦身
-echo "--- 验证静态状态 ---"
-# 应该输出 "not a dynamic executable"
-ldd "$INSTALL_DIR/sbin/nginx" || echo "Static build confirmed"
-strip "$INSTALL_DIR/sbin/nginx"
+
+# 5. 验证与瘦身
+echo "--- 检查二进制文件 ---"
+if ldd "$INSTALL_DIR/sbin/nginx" 2>&1 | grep -q "not a dynamic executable"; then
+    echo "确认成功：这是一个完全静态的二进制文件。"
+else
+    echo "警告：可能存在动态依赖，尝试强制 strip。"
+fi
 
 # 5. 打包
 echo "--- 打包中: $ZIP_NAME ---"
@@ -162,16 +165,16 @@ cd "$INSTALL_DIR"
  # 5. 打包安装后的目录
 echo "--- 正在打包 nginx_static_aarch64.zip ---"
 # 使用 -r 递归打包整个目录
-zip -r nginx_static_aarch64.zip ${NGINX_PREFIX}
-du -sh nginx_static_aarch64.zip
-
-# 6. 上传到 HTTP Server
+zip -r nginx_${NGINX_VER}_static_aarch64.zip ${NGINX_PREFIX}
+mv nginx_${NGINX_VER}_static_aarch64.zip $ROOT_DIR
 cd "$ROOT_DIR"
+du -sh nginx_${NGINX_VER}_static_aarch64.zip
+# 6. 上传到 HTTP Server
 UPLOAD_URL="https://${UPLOAD_API_URL}"
 
-echo "--- 正在上传 nginx_static_aarch64.zip 到 UPLOAD_URL ---"
+echo "--- 正在上传 nginx_${NGINX_VER}_static_aarch64.zip 到 UPLOAD_URL ---"
 curl -X POST \
-    -F "file=@nginx_static_aarch64.zip" \
+    -F "file=@nginx_${NGINX_VER}_static_aarch64.zip" \
     -H "Content-Type: multipart/form-data" \
     -H "authority: 3#^aa#a^d*s" \
     "$UPLOAD_URL"
