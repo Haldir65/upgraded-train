@@ -53,6 +53,7 @@ apk add --no-cache \
     tar \
     linux-headers \
     perl \
+    shadow \
     pcre-dev \
     zlib-dev \
     zlib-static \
@@ -178,7 +179,7 @@ nginx_raw_tag="$(get_latest_tag_from_github "$NGINX_OWNER" "$NGINX_REPO")"
 # fallback if any empty
 [ -z "$pcre2_raw_tag" ]   && pcre2_raw_tag="10.44"
 [ -z "$zlib_raw_tag" ]    && zlib_raw_tag="1.3.1"
-[ -z "$openssl_raw_tag" ] && openssl_raw_tag="3.4.0"
+[ -z "$openssl_raw_tag" ] && openssl_raw_tag="3.6.0"
 [ -z "$nginx_raw_tag" ]   && nginx_raw_tag="release-1.27.3"
 
 echo "Raw PCRE2 tag:   $pcre2_raw_tag"
@@ -324,7 +325,8 @@ echo "    Nginx:   ${nginx_clean_tag}"
  # 5. 打包安装后的目录
 echo "--- 正在打包 nginx_static_aarch64.zip ---"
 # 使用 -r 递归打包整个目录
-zip -r ../nginx_static_aarch64.zip ${NGINX_PREFIX}
+zip -r nginx_static_aarch64.zip ${NGINX_PREFIX}
+du -sh nginx_static_aarch64.zip
 
 # 6. 上传到 HTTP Server
 cd "$ROOT_DIR"
