@@ -1,10 +1,14 @@
 #!/bin/sh
+. $(dirname "$0")/functions.sh
 
 # 设置安装目录的绝对路径
 ROOT_DIR=$(pwd)
 BUILD_DIR="${ROOT_DIR}/build"
 INSTALL_DIR="${BUILD_DIR}/grpc_static"
 GRPC_SRC_DIR="${ROOT_DIR}/grpc"
+PREBUILT_DIR="${ROOT_DIR}/prebuilt"
+
+
 
 
 function _build_grpc(){
@@ -51,8 +55,17 @@ function _build_grpc(){
         -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
         -DgRPC_INSTALL=ON \
         -DgRPC_BUILD_TESTS=OFF \
-        -DgRPC_SSL_PROVIDER=module \
-        -DgRPC_ZLIB_PROVIDER=module \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DgRPC_SSL_PROVIDER=package  \
+        -DOPENSSL_LIBRARIES="${PREBUILT_DIR}/openssl/${ARCH}/lib/libssl.a;${PREBUILT_DIR}/openssl/${ARCH}/lib/libcrypto.a" \
+        -DOPENSSL_CRYPTO_LIBRARY="${PREBUILT_DIR}/openssl/${ARCH}/lib/libcrypto.a" \
+        -DOPENSSL_SSL_LIBRARY="${PREBUILT_DIR}/openssl/${ARCH}/lib/libssl.a" \
+        -DOPENSSL_INCLUDE_DIR="${PREBUILT_DIR}/openssl/${ARCH}/include" \
+        -DOPENSSL_ROOT_DIR=${PREBUILT_DIR}/openssl/${ARCH} \
+        -DgRPC_ZLIB_PROVIDER=package \
+        -DZLIB_ROOT_DIR=${PREBUILT_DIR}/zlib/${ARCH} \
+        -DZLIB_LIBRARY="${PREBUILT_DIR}/zlib/${ARCH}/lib/libz.a" \
+        -DZLIB_INCLUDE_DIR="${PREBUILT_DIR}/zlib/${ARCH}/include" \
         -DgRPC_CARES_PROVIDER=module \
         -DgRPC_RE2_PROVIDER=module \
         -DRE2_BUILD_TESTING=OFF \
@@ -113,6 +126,7 @@ function _build_grpc(){
         echo -e "\n❌ 上传失败，请检查网络。"
     fi
 }
+
 
 
 

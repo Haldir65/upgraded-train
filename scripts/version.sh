@@ -1,0 +1,2 @@
+readonly ZLIB_VERSION=1.3.1
+readonly OPENSSL_VERSION=3.6.0
