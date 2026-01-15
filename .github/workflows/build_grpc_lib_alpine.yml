@@ -11,35 +11,44 @@ jobs:
     runs-on: ubuntu-24.04-arm
     container:
       image: docker://arm64v8/alpine:3.23  
-    steps:
-     
-              
+    steps:     
       - name: Install `related deps` on alpine
         run: |
             apk add --no-cache build-base cmake git ninja perl linux-headers curl zip tree
             echo "cpu core num is "
             nproc
+      - name: Prints the current branch name
+        run: |
+            echo "github.repository: ${{ github.repository }}" 
+            echo "github.sha: ${{ github.sha }}"
+            echo "Sha: ${{ github.sha }}"
+            echo "Repository: ${{ github.repository }}"
+            echo "Workspace: ${{ github.workspace }}"
+            echo " github.repositoryUrl: ${{  github.repositoryUrl }}"
+            echo " github.ref_name: ${{  github.ref_name }}"
+ 
       - name: Manual git clone
         run: |
-            git clone --depth 1 --branch main https://github.com/Haldir65/upgraded-train
-
+            git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
+            
       - name: build grpc static binary
         env:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
-        working-directory: upgraded-train    
+        working-directory: workspace    
         run: |
-              sh scripts/alpine_build_lib_test.sh
+              # sh scripts/alpine_build_lib_test.sh
+              sh scripts/nginx-builder.sh
 
       -   name: show layouts
-          working-directory: upgraded-train  
+          working-directory: workspace 
           run: |
             tree -L 3
 
-    
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: grpc_assets
-          path: upgraded-train/grpc_install.zip
-          if-no-files-found: error
-          retention-days: 3 
+    # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
+    #   - name: Upload Artifacts
+    #     uses: actions/upload-artifact@v4
+    #     with:
+    #       name: grpc_assets
+    #       path: workspace/grpc_install.zip
+    #       if-no-files-found: error
+    #       retention-days: 3 
