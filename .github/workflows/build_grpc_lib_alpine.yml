@@ -12,22 +12,26 @@ jobs:
     container:
       image: docker://arm64v8/alpine:3.23  
     steps:
-      -   name: Checkout
-          uses: actions/checkout@v4    
+     
               
-      -   name: Install `related deps` on alpine
-          run: |
+      - name: Install `related deps` on alpine
+        run: |
             apk add --no-cache build-base cmake git ninja perl linux-headers curl zip tree
             echo "cpu core num is "
             nproc
+      - name: Manual git clone
+        run: |
+            git clone --depth 1 --branch main https://github.com/Haldir65/upgraded-train
 
-      -   name: build grpc static binary
-          env:
+      - name: build grpc static binary
+        env:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
-          run: |
+        working-directory: upgraded-train    
+        run: |
               sh scripts/alpine_build_lib_test.sh
 
       -   name: show layouts
+          working-directory: upgraded-train  
           run: |
             tree -L 3
 
@@ -36,6 +40,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: grpc_assets
-          path: grpc_install.zip
+          path: upgraded-train/grpc_install.zip
           if-no-files-found: error
           retention-days: 3 
