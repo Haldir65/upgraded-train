@@ -21,7 +21,7 @@ apk add --no-cache \
     zip
 
 
-NGINX_VER="1.28.1"
+NGINX_VER="1.29.4"
 PCRE_VER="10.47"
 ZLIB_VER="1.3.1"
 OPENSSL_VER="3.6.0"
