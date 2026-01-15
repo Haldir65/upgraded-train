@@ -2,15 +2,29 @@ name: Build grpc lib on alpine docker image
 
 on:
     workflow_dispatch:
+      inputs:
+        target_job:
+          description: '选择要运行的任务'
+          required: true
+          default: 'all'
+          type: choice
+          options:
+            - all
+            - build_grpc_arm
+            - build_grpc_x86
+            - build_nginx_arm
 
 env:
   UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
 
 jobs:
   buildGrpcLibOnAlpine:
+    if: |
+      github.event.inputs.target_job == 'build_grpc_arm' || 
+      github.event.inputs.target_job == 'build_nginx_arm'
     runs-on: ubuntu-24.04-arm
     container:
-      image: docker://arm64v8/alpine:3.23  
+      image: docker://arm64v8/alpine:latest
     steps:     
       - name: Install `related deps` on alpine
         run: |
@@ -36,8 +50,16 @@ jobs:
             UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
         working-directory: workspace    
         run: |
-              sh scripts/alpine_build_lib_test.sh
-              # sh scripts/nginx-builder.sh
+              echo "${{ github.event.inputs.target_job }}"
+              if [[ "${{ github.event.inputs.target_job }}" == 'build_grpc_arm' ]]; then
+                  sh scripts/alpine_build_lib_test.sh
+              elif [[ "${{ github.event.inputs.target_job }}" == 'build_nginx_arm' ]]; then
+                  sh scripts/nginx-builder.sh
+              else
+                echo "${{ github.event.inputs.target_job }}"
+                echo "❌ Error: Unknown task type '$TASK_TYPE'"
+                exit 1
+              fi
 
       -   name: show layouts
           working-directory: workspace 
@@ -52,3 +74,41 @@ jobs:
     #       path: workspace/grpc_install.zip
     #       if-no-files-found: error
     #       retention-days: 3 
+
+
+  buildGrpcLibOnUbuntu:
+    if: |
+        github.event.inputs.target_job == 'build_grpc_x86'
+    runs-on: ubuntu-latest
+    steps:     
+      - name: Install `related deps` on ubuntu
+        run: |
+            sudo apt install ninja-build build-essential coreutils tree cmake curl zip tree gzip tar
+            echo "cpu core num is "
+            nproc
+
+      - name: Manual git clone
+        run: |
+            git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
+            
+      - name: build grpc static binary
+        env:
+            UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
+        working-directory: workspace  
+        shell: bash  
+        run: |
+            bash scripts/alpine_build_lib_test.sh
+
+      - name: show layouts
+        working-directory: workspace 
+        run: |
+            tree -L 3
+
+    # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: grpc_lib_x86
+          path: workspace/*.zip
+          if-no-files-found: error
+          retention-days: 3  
