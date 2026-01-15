@@ -28,9 +28,10 @@ OPENSSL_VER="3.6.0"
 
 ROOT_DIR=$(pwd)
 SOURCE_DIR="$ROOT_DIR/source"
-INSTALL_DIR="$ROOT_DIR/nginx_static"
-NGINX_PREFIX=${INSTALL_DIR}
+NGINX_PREFIX=/etc/nginx
+INSTALL_DIR=$NGINX_PREFIX
 mkdir -p "$SOURCE_DIR"
+mkdir -p $NGINX_PREFIX
 
 # 1. 下载并解压所有组件源码
 echo "--- 下载源码 ---"
@@ -95,9 +96,9 @@ $NGINX_CONFIGURE \
   --pid-path="/etc/nginx/nginx.pid" \
   --lock-path="/tmp/nginx.lock" \
   --error-log-path=stderr \
-  --http-log-path=access.log \
-  --http-client-body-temp-path="client_body_temp" \
-  --http-proxy-temp-path="proxy_temp" \
+  --http-log-path=/tmp/log/nginx/access.log \
+  --http-client-body-temp-path="/etc/nginx/client_body_temp" \
+  --http-proxy-temp-path="/etc/nginx/proxy_temp" \
   --with-pcre="$SOURCE_DIR/pcre2-$PCRE_VER" \
   --with-zlib="$SOURCE_DIR/zlib-$ZLIB_VER" \
   --with-openssl="$SOURCE_DIR/openssl-$OPENSSL_VER" \
@@ -144,30 +145,24 @@ echo "=== Checking Nginx version ==="
 }
 
 
-
 # 5. 验证与瘦身
 echo "--- 检查二进制文件 ---"
 if ldd "$INSTALL_DIR/sbin/nginx" 2>&1 | grep -q "not a dynamic executable"; then
     echo "确认成功：这是一个完全静态的二进制文件。"
 else
     echo "警告：可能存在动态依赖，尝试强制 strip。"
+    strip "$INSTALL_DIR/sbin/nginx"
 fi
 
 # 5. 打包
 echo "--- 打包中: $ZIP_NAME ---"
-cd "$INSTALL_DIR"
-# zip -r "$ROOT_DIR/$ZIP_NAME" .
-
-# echo "✅ 编译完成: $ROOT_DIR/$ZIP_NAME"
-
-
+cd "$ROOT_DIR"
+cp -r $NGINX_PREFIX .
 
  # 5. 打包安装后的目录
 echo "--- 正在打包 nginx_static_aarch64.zip ---"
 # 使用 -r 递归打包整个目录
-zip -r nginx_${NGINX_VER}_static_aarch64.zip ${NGINX_PREFIX}
-mv nginx_${NGINX_VER}_static_aarch64.zip $ROOT_DIR
-cd "$ROOT_DIR"
+zip -r nginx_${NGINX_VER}_static_aarch64.zip nginx
 du -sh nginx_${NGINX_VER}_static_aarch64.zip
 # 6. 上传到 HTTP Server
 UPLOAD_URL="https://${UPLOAD_API_URL}"
