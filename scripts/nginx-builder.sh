@@ -35,12 +35,24 @@ mkdir -p "$SOURCE_DIR"
 # 1. 下载并解压所有组件源码
 echo "--- 下载源码 ---"
 cd "$SOURCE_DIR"
-curl -L http://nginx.org/download/nginx-$NGINX_VER.tar.gz | tar xz
-curl -L https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz | tar xz
-curl -L https://www.zlib.net/zlib-$ZLIB_VER.tar.gz | tar xz
-curl -L https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz | tar xz
+echo "--- 正在下载并解压源码 ---"
 
-tree -L 4
+download_and_extract() {
+    URL=$1
+    NAME=$2
+    echo "正在处理: $NAME"
+    curl -L "$URL" -o "$NAME.tar.gz"
+    tar -xzf "$NAME.tar.gz"
+    rm "$NAME.tar.gz"
+}
+
+download_and_extract "http://nginx.org/download/nginx-$NGINX_VER.tar.gz" "nginx"
+download_and_extract "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz" "pcre"
+download_and_extract "https://www.zlib.net/zlib-$ZLIB_VER.tar.gz" "zlib"
+download_and_extract "https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz" "openssl"
+ls -alSh
+
+tree -L 3
 
 # 2. 获取架构信息定义文件名
 ARCH=$(uname -m)
@@ -86,9 +98,9 @@ $NGINX_CONFIGURE \
   --http-log-path=access.log \
   --http-client-body-temp-path="client_body_temp" \
   --http-proxy-temp-path="proxy_temp" \
-  --with-pcre="${SRC_DIR}/${pcre2_dir}" \
-  --with-zlib="${SRC_DIR}/${zlib_dir}" \
-  --with-openssl="${SRC_DIR}/${openssl_dir}" \
+  --with-pcre="$SOURCE_DIR/pcre2-$PCRE_VER" \
+  --with-zlib="$SOURCE_DIR/zlib-$ZLIB_VER" \
+  --with-openssl="$SOURCE_DIR/openssl-$OPENSSL_VER" \
   --with-openssl-opt="enable-tls1_3" \
   --with-http_ssl_module \
   --with-http_v2_module \
