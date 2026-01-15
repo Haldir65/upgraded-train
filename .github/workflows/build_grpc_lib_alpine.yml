@@ -24,7 +24,7 @@ jobs:
       github.event.inputs.target_job == 'build_nginx_arm'
     runs-on: ubuntu-24.04-arm
     container:
-      image: docker://arm64v8/alpine:latest
+      image: docker://arm64v8/alpine:3.20  ## gcc 13 issue, can not use latest
     steps:     
       - name: Install `related deps` on alpine
         run: |
