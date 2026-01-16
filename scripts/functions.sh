@@ -1,5 +1,5 @@
 #!/bin/bash
-ARCH=`uname -m`
+
 
 _green() {
     printf '\033[1;31;32m'
@@ -47,6 +47,14 @@ function _download_if_not_exists(){
         _green "$FILE already exists\n"
     fi
 }
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    ARCH=arm64
+else
+    ARCH=`uname -m`
+fi
+_green "====== ARCH ${ARCH} ======\n"
+
 
 readonly NGHTTP2_VERSION=1.63.0
 readonly NGHTTP3_VERSION=1.5.0

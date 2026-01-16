@@ -9,9 +9,9 @@ on:
           default: 'all'
           type: choice
           options:
-            - all
             - build_grpc_arm
             - build_grpc_x86
+            - build_grpc_darwin
             - build_nginx_arm
 
 env:
@@ -122,3 +122,46 @@ jobs:
           path: workspace/*.zip
           if-no-files-found: error
           retention-days: 3  
+
+  buildGrpcLibOnMacos:
+    if: |
+        github.event.inputs.target_job == 'build_grpc_darwin'
+    runs-on: macos-latest
+    steps:     
+      - name: Install `related deps` on macos
+        run: |
+            brew install ninja cmake tree coreutils curl zip gzip git
+            echo "cpu core num is "
+            nproc
+
+      - name: Manual git clone
+        run: |
+            git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
+      
+      - name: build zlib and openssl static
+        working-directory: workspace    
+        shell: bash
+        run: |
+            bash scripts/build_zlib_and_openssl.sh   
+
+      - name: build grpc static binary
+        env:
+            UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
+        working-directory: workspace  
+        shell: bash  
+        run: |
+            bash scripts/alpine_build_lib_test.sh
+
+      - name: show layouts
+        working-directory: workspace 
+        run: |
+            tree -L 3
+
+    # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: grpc_lib_darwin
+          path: workspace/*.zip
+          if-no-files-found: error
+          retention-days: 3   

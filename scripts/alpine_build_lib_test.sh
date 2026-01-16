@@ -1,5 +1,7 @@
 #!/bin/sh
 . $(dirname "$0")/functions.sh
+. $(dirname "$0")/version.sh
+
 
 # 设置安装目录的绝对路径
 ROOT_DIR=$(pwd)
@@ -12,7 +14,7 @@ PREBUILT_DIR="${ROOT_DIR}/prebuilt"
 
 
 function _build_grpc(){
-    local grpc_version=1.76.0
+    local grpc_version=${GRPC_VERSION}
     # 1. 克隆 gRPC 源码 (如果不存在)
     if [ ! -d "$GRPC_SRC_DIR" ]; then
         echo "--- 正在克隆 gRPC 源码 ---"
@@ -98,6 +100,10 @@ function _build_grpc(){
         ARCH_SUFFIX="unknown"
         ;;
     esac
+
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        ARCH_SUFFIX="darwin-arm64"
+    fi
 
     ARCH_SUFFIX="${ARCH_SUFFIX}-${grpc_version}"
 
