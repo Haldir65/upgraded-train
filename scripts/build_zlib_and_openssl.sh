@@ -45,7 +45,7 @@ function _build_openssl_static_with_zlib(){
     cd ${BUILD_DIR}/openssl-$OPENSSL_VERSION
 
     # 1. 定义基础参数
-    CONF_ARGS="no-shared no-docs --static"
+    CONF_ARGS="no-shared no-docs -static"
     if [ "$PLATFORM" = "macos-arm64" ]; then
         CONF_ARGS="darwin64-arm64-cc zlib $CONF_ARGS"
     elif [ "$PLATFORM" = "linux-arm64" ]; then
