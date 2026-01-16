@@ -62,3 +62,32 @@ readonly NGTCP2_VERSION=1.7.0
 readonly PSL_VERSION=0.21.5
 readonly c_ares_version=1.33.1
 
+
+PLATFORM="undetected"
+
+function _detect_platform(){
+    OS=$(uname -s)
+    ARCH=$(uname -m)
+
+    case "$OS" in
+        "Linux")
+            case "$ARCH" in
+                "x86_64")  PLATFORM="linux-x64" ;;
+                "aarch64") PLATFORM="linux-arm64" ;;
+                *)         PLATFORM="linux-unknown" ;;
+            esac
+            ;;
+        "Darwin")
+            case "$ARCH" in
+                "arm64")   PLATFORM="macos-arm64" ;;
+                "x86_64")  PLATFORM="macos-x64" ;;
+                *)         PLATFORM="macos-unknown" ;;
+            esac
+            ;;
+        *)
+            PLATFORM="unknown"
+            ;;
+    esac
+    _green "[Platform] ${PLATFORM}"
+}
+

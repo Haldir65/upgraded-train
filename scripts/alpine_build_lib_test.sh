@@ -64,6 +64,7 @@ function _build_grpc(){
         -DOPENSSL_SSL_LIBRARY="${PREBUILT_DIR}/openssl/${ARCH}/lib/libssl.a" \
         -DOPENSSL_INCLUDE_DIR="${PREBUILT_DIR}/openssl/${ARCH}/include" \
         -DOPENSSL_ROOT_DIR=${PREBUILT_DIR}/openssl/${ARCH} \
+        -DOPENSSL_USE_STATIC_LIBS=ON \
         -DgRPC_ZLIB_PROVIDER=package \
         -DZLIB_ROOT_DIR=${PREBUILT_DIR}/zlib/${ARCH} \
         -DZLIB_LIBRARY="${PREBUILT_DIR}/zlib/${ARCH}/lib/libz.a" \
@@ -88,24 +89,15 @@ function _build_grpc(){
     echo "--- 正在清理调试符号 ---"
     find "$INSTALL_DIR/lib" -name "*.a" -exec strip --strip-debug {} +
 
-
-    case "$(uname -m)" in
-    aarch64|arm64)
-        ARCH_SUFFIX="arm64"
-        ;;
-    x86_64|amd64)
-        ARCH_SUFFIX="x86_64"
-        ;;
-    *)
-        ARCH_SUFFIX="unknown"
-        ;;
-    esac
-
-    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # 1. 定义基础参数
+    ARCH_SUFFIX="${grpc_version}"
+    if [ "$PLATFORM" = "macos-arm64" ]; then
         ARCH_SUFFIX="darwin-arm64"
+    elif [ "$PLATFORM" = "linux-arm64" ]; then
+        ARCH_SUFFIX="linux-arm64"
+    elif [ "$PLATFORM" = "linux-x64" ]; then
+        ARCH_SUFFIX="linux_x86_64"
     fi
-
-    ARCH_SUFFIX="${ARCH_SUFFIX}-${grpc_version}"
 
     # 5. 打包安装后的目录
     cd "$BUILD_DIR"
@@ -137,6 +129,7 @@ function _build_grpc(){
 
 
 function main(){
+    _detect_platform
     _build_grpc
 }
 

@@ -130,7 +130,7 @@ jobs:
     steps:     
       - name: Install `related deps` on macos
         run: |
-            brew install ninja cmake tree coreutils curl zip gzip git
+            brew install tree coreutils zip gzip
             echo "cpu core num is "
             nproc
 
@@ -155,7 +155,10 @@ jobs:
       - name: show layouts
         working-directory: workspace 
         run: |
-            tree -L 3
+            tree -L 3 prebuilt
+            tree -L 4 build
+
+
 
     # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
       - name: Upload Artifacts
