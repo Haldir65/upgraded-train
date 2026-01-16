@@ -9,6 +9,7 @@ on:
           default: 'all'
           type: choice
           options:
+            - build_grpc_all
             - build_grpc_arm
             - build_grpc_x86
             - build_grpc_darwin
@@ -20,6 +21,7 @@ env:
 jobs:
   buildGrpcLibOnAlpine:
     if: |
+      github.event.inputs.target_job == 'build_grpc_all' || 
       github.event.inputs.target_job == 'build_grpc_arm' || 
       github.event.inputs.target_job == 'build_nginx_arm'
     runs-on: ubuntu-24.04-arm
@@ -46,7 +48,7 @@ jobs:
             git clone --depth 1 --branch ${{ github.ref_name }} https://github.com/${{ github.repository }}.git workspace
       
       - name: build zlib and openssl static
-        if: github.event.inputs.target_job == 'build_grpc_arm'
+        if: github.event.inputs.target_job == 'build_grpc_all' || github.event.inputs.target_job == 'build_grpc_arm'
         working-directory: workspace    
         run: |
             sh scripts/build_zlib_and_openssl.sh
@@ -56,7 +58,7 @@ jobs:
         working-directory: workspace    
         run: |
               echo "${{ github.event.inputs.target_job }}"
-              if [[ "${{ github.event.inputs.target_job }}" == 'build_grpc_arm' ]]; then
+              if [[ "${{ github.event.inputs.target_job }}" == 'build_grpc_all' || "${{ github.event.inputs.target_job }}" == 'build_grpc_arm' ]]; then
                   sh scripts/alpine_build_lib_test.sh
               elif [[ "${{ github.event.inputs.target_job }}" == 'build_nginx_arm' ]]; then
                   sh scripts/nginx-builder.sh
@@ -83,7 +85,7 @@ jobs:
 
   buildGrpcLibOnUbuntu:
     if: |
-        github.event.inputs.target_job == 'build_grpc_x86'
+        github.event.inputs.target_job == 'build_grpc_all' || github.event.inputs.target_job == 'build_grpc_x86'
     runs-on: ubuntu-latest
     steps:     
       - name: Install `related deps` on ubuntu
@@ -125,7 +127,7 @@ jobs:
 
   buildGrpcLibOnMacos:
     if: |
-        github.event.inputs.target_job == 'build_grpc_darwin'
+        github.event.inputs.target_job == 'build_grpc_all' || github.event.inputs.target_job == 'build_grpc_darwin'
     runs-on: macos-latest
     steps:     
       - name: Install `related deps` on macos
@@ -157,8 +159,6 @@ jobs:
         run: |
             tree -L 3 prebuilt
             tree -L 4 build
-
-
 
     # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
       - name: Upload Artifacts
