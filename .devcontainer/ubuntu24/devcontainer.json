@@ -1,0 +1,25 @@
+{
+    "build": { "dockerfile": "Dockerfile" },
+    "features": {
+        "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+            "plugins":"z git fd fzf history zsh-autosuggestions",
+            "omzPlugins":"https://github.com/zsh-users/zsh-autosuggestions"
+        },
+        "ghcr.io/msclock/features/vcpkg:1": {},
+        "ghcr.io/devcontainers-extra/features/yt-dlp:2": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+        // ,
+        // "ghcr.io/devcontainers-community/features/llvm": {
+        //     "version": "17"
+        // }
+    },
+    "customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+
+			]
+		}
+	}
+}
