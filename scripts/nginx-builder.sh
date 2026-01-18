@@ -280,8 +280,8 @@ function build_nginx_brotli_module(){
 }
 
 function main(){
-  # build_nginx_brotli_module
-  build_and_upload_nginx
+  build_nginx_brotli_module
+  # build_and_upload_nginx
 }
 
 main
