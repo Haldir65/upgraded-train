@@ -2,11 +2,26 @@
 set -e
 
 # 1. 安装环境
-apk add build-base ncurses-static ncurses-dev git linux-headers tree jemalloc-dev
+apk add --no-cache \
+    ncurses-static \
+    ncurses-dev \
+    bzip2-static \
+    bzip2-dev \
+    musl-dev \
+    zlib-static \
+    zlib-dev
+
+
+
 
 # 2. 编译
 git clone --depth 1 https://github.com/vim/vim.git /tmp/vim
 cd /tmp/vim/src
+
+echo 'int main(){return 0;}' > test.c
+gcc -static test.c -o test
+
+tree -L 3
 
 export LDFLAGS="-static"
 export LIBS="-lncurses -ltinfo -lbz2 -lz -ljemalloc" # 确保链接所有底层图形库
