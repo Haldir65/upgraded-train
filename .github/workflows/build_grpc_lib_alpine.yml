@@ -14,6 +14,8 @@ on:
             - build_grpc_x86
             - build_grpc_darwin
             - build_nginx_arm
+            - build_vim_arm
+
 
 env:
   UPLOAD_API_URL: ${{ secrets.UPLOAD_API_URL }}
@@ -23,6 +25,7 @@ jobs:
     if: |
       github.event.inputs.target_job == 'build_grpc_all' || 
       github.event.inputs.target_job == 'build_grpc_arm' || 
+      github.event.inputs.target_job == 'build_vim_arm' || 
       github.event.inputs.target_job == 'build_nginx_arm'
     runs-on: ubuntu-24.04-arm
     container:
@@ -62,6 +65,8 @@ jobs:
                   sh scripts/alpine_build_lib_test.sh
               elif [[ "${{ github.event.inputs.target_job }}" == 'build_nginx_arm' ]]; then
                   sh scripts/nginx-builder.sh
+              elif [[ "${{ github.event.inputs.target_job }}" == 'build_vim_arm' ]]; then
+                  sh scripts/build_vim_static.sh    
               else
                 echo "${{ github.event.inputs.target_job }}"
                 echo "❌ Error: Unknown task type '$TASK_TYPE'"
