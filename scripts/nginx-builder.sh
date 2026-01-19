@@ -82,6 +82,7 @@ CONF_ARGS="
     --with-openssl-opt="enable-tls1_3" \
     --with-http_ssl_module \
     --with-http_v2_module \
+    --with-http_v3_module \
     --with-http_gzip_static_module \
     --with-http_stub_status_module \
     --with-http_realip_module \
@@ -280,8 +281,8 @@ function build_nginx_brotli_module(){
 }
 
 function main(){
-  build_nginx_brotli_module
-  # build_and_upload_nginx
+  # build_nginx_brotli_module
+  build_and_upload_nginx
 }
 
 main
