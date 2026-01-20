@@ -2,6 +2,7 @@
 set -e
 
 # 更新并安装核心工具
+# gd-dev 包含了 libgd, libjpeg, libpng, libwebp 等所有开发头文件
 apk update
 apk add --no-cache \
     build-base \
@@ -18,6 +19,7 @@ apk add --no-cache \
     openssl-dev \
     openssl-libs-static \
     pcre2-dev \
+    gd-dev \
     curl \
     zip \
     jemalloc-dev \
@@ -80,6 +82,7 @@ CONF_ARGS="
     --with-zlib="$SOURCE_DIR/zlib-$ZLIB_VER" \
     --with-openssl="$SOURCE_DIR/openssl-$OPENSSL_VER" \
     --with-openssl-opt="enable-tls1_3" \
+    --with-http_image_filter_module=dynamic \
     --with-http_ssl_module \
     --with-http_v2_module \
     --with-http_v3_module \
@@ -256,6 +259,7 @@ function build_nginx_brotli_module(){
   tree -L 3
   cp objs/ngx_http_brotli_filter_module.so $ROOT_DIR/ngx_http_brotli_module_${NGINX_VER}
   cp objs/ngx_http_brotli_static_module.so $ROOT_DIR/ngx_http_brotli_module_${NGINX_VER}
+  cp objs/ngx_http_image_filter_module.so $ROOT_DIR/ngx_http_brotli_module_${NGINX_VER}
 
   cd "$ROOT_DIR"
   # 5. 打包安装后的目录
@@ -281,8 +285,8 @@ function build_nginx_brotli_module(){
 }
 
 function main(){
-  build_nginx_brotli_module
-  # build_and_upload_nginx
+  # build_nginx_brotli_module
+  build_and_upload_nginx
 }
 
 main
