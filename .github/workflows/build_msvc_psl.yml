@@ -27,11 +27,9 @@ jobs:
           arch: x64
 
       - name: Run Build Script
-        shell: bash
         run: |
           # 赋予执行权限并运行
-          chmod +x scripts/build_libpsl.sh
-          ./scripts/build_libpsl.sh
+          ./scripts/build_libpsl.ps1
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
