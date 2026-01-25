@@ -27,6 +27,9 @@ mkdir $INSTALL_DIR
 # 找到 Git/usr/bin 路径并将其从当前 PATH 中移除，避免 link.exe 冲突
 export PATH=$(echo "$PATH" | sed -e 's/:\/usr\/bin//g' -e 's/:\/bin//g' -e 's/C:\\Program Files\\Git\\usr\\bin//g')
 
+export CC=cl
+export CXX=cl
+export AR=lib
 # 确保 MSVC 路径在最前面（通常 ilammy/msvc-dev-cmd 已经做好了，这里是双重保险）
 echo "Current Linker Path: $(which link.exe || echo 'Not found in current bash path, good.')"
 # --- 核心编译步骤 ---
@@ -44,6 +47,15 @@ meson setup $BUILD_DIR \
 echo "=== 开始编译与安装 ==="
 meson compile -C $BUILD_DIR
 meson install -C $BUILD_DIR
+
+
+# 检查结果
+if [ -f "$INSTALL_DIR/lib/psl.lib" ] || [ -f "$INSTALL_DIR/lib/libpsl.lib" ]; then
+    echo "成功生成 MSVC .lib 文件！"
+else
+    echo "警告：未找到 .lib 文件，请检查编译器输出。"
+    # find $INSTALL_DIR -name "*.a" -o -name "*.lib"
+fi
 
 # --- 打包产物 ---
 echo "=== 整理产物并打包 ==="
