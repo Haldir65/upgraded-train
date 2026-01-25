@@ -22,6 +22,13 @@ rm -rf $INSTALL_DIR
 mkdir $BUILD_DIR
 mkdir $INSTALL_DIR
 
+
+# --- 核心修复：排除 Git 自带的干扰项 ---
+# 找到 Git/usr/bin 路径并将其从当前 PATH 中移除，避免 link.exe 冲突
+export PATH=$(echo "$PATH" | sed -e 's/:\/usr\/bin//g' -e 's/:\/bin//g' -e 's/C:\\Program Files\\Git\\usr\\bin//g')
+
+# 确保 MSVC 路径在最前面（通常 ilammy/msvc-dev-cmd 已经做好了，这里是双重保险）
+echo "Current Linker Path: $(which link.exe || echo 'Not found in current bash path, good.')"
 # --- 核心编译步骤 ---
 # 注意：这里使用 Meson，因为 libpsl 官方推荐 MSVC 使用 Meson + Ninja
 echo "=== 配置工程 (Static Release) ==="
@@ -31,7 +38,7 @@ meson setup $BUILD_DIR \
     --buildtype=release \
     --default-library=static \
     --prefix="$(pwd)/$INSTALL_DIR" \
-    -Druntime_library=release \
+    -Db_vscrt=mt \
     -Dtests=false
 
 echo "=== 开始编译与安装 ==="
@@ -43,11 +50,14 @@ echo "=== 整理产物并打包 ==="
 # 移除不需要的 pkgconfig 目录（可选）
 # rm -rf "$INSTALL_DIR/lib/pkgconfig"
 
-if command -v zip >/dev/null 2>&1; then
-    zip -r "../$ZIP_NAME" "$INSTALL_DIR"/*
-    echo "=== 成功完成！打包文件为: $ZIP_NAME ==="
+echo "=== 打包产物 ==="
+if command -v 7z >/dev/null 2>&1; then
+    echo "zip using zip"
+    7z a -tzip "../$ZIP_NAME" "./$INSTALL_DIR/*"
 else
-    echo "未发现 zip 命令，仅完成编译，产物位于: $INSTALL_DIR"
+    # 备选方案：调用 PowerShell
+    echo "zip using powershell"
+    powershell.exe -Command "Compress-Archive -Path './$INSTALL_DIR/*' -DestinationPath '../$ZIP_NAME' -Force"
 fi
 
 cd ..
