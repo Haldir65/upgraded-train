@@ -28,8 +28,9 @@ apk add --no-cache \
 
 NGINX_VER="1.29.4"
 PCRE_VER="10.47"
-ZLIB_VER="1.3.1"
-OPENSSL_VER="3.6.0"
+ZLIB_VER="1.3.2"
+OPENSSL_VER="3.6.1"
+JEMALLOC_VER="5.3.0"
 
 ROOT_DIR=$(pwd)
 SOURCE_DIR="$ROOT_DIR/source"
@@ -52,10 +53,12 @@ download_and_extract() {
     rm "$NAME.tar.gz"
 }
 
-download_and_extract "http://nginx.org/download/nginx-$NGINX_VER.tar.gz" "nginx"
+download_and_extract "https://github.com/nginx/nginx/releases/download/release-${NGINX_VER}/nginx-${NGINX_VER}.tar.gz" "nginx"
 download_and_extract "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz" "pcre"
-download_and_extract "https://www.zlib.net/zlib-$ZLIB_VER.tar.gz" "zlib"
-download_and_extract "https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz" "openssl"
+download_and_extract "https://github.com/madler/zlib/releases/download/v$ZLIB_VER/zlib-$ZLIB_VER.tar.gz"  "zlib"
+download_and_extract "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz" "openssl"
+download_and_extract "https://github.com/jemalloc/jemalloc/archive/refs/tags/${JEMALLOC_VER}.tar.gz" "jemalloc"
+
 ls -alSh
 
 
@@ -78,6 +81,7 @@ CONF_ARGS="
     --http-log-path=/tmp/log/nginx/access.log \
     --http-client-body-temp-path="/etc/nginx/client_body_temp" \
     --http-proxy-temp-path="/etc/nginx/proxy_temp" \
+    --with-jemalloc="$SOURCE_DIR/jemalloc-$JEMALLOC_VER" \
     --with-pcre="$SOURCE_DIR/pcre2-$PCRE_VER" \
     --with-zlib="$SOURCE_DIR/zlib-$ZLIB_VER" \
     --with-openssl="$SOURCE_DIR/openssl-$OPENSSL_VER" \
@@ -285,8 +289,8 @@ function build_nginx_brotli_module(){
 }
 
 function main(){
-  build_nginx_brotli_module
-  # build_and_upload_nginx
+  # build_nginx_brotli_module
+  build_and_upload_nginx
 }
 
 main
