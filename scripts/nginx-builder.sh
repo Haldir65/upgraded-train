@@ -26,7 +26,7 @@ apk add --no-cache \
     automake \
     autoconf
 
-NGINX_VER="1.29.4"
+NGINX_VER="1.29.5"
 PCRE_VER="10.47"
 ZLIB_VER="1.3.2"
 OPENSSL_VER="3.6.1"
