@@ -57,7 +57,6 @@ download_and_extract "https://github.com/nginx/nginx/releases/download/release-$
 download_and_extract "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz" "pcre"
 download_and_extract "https://github.com/madler/zlib/releases/download/v$ZLIB_VER/zlib-$ZLIB_VER.tar.gz"  "zlib"
 download_and_extract "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz" "openssl"
-download_and_extract "https://github.com/jemalloc/jemalloc/archive/refs/tags/${JEMALLOC_VER}.tar.gz" "jemalloc"
 
 ls -alSh
 
@@ -81,7 +80,6 @@ CONF_ARGS="
     --http-log-path=/tmp/log/nginx/access.log \
     --http-client-body-temp-path="/etc/nginx/client_body_temp" \
     --http-proxy-temp-path="/etc/nginx/proxy_temp" \
-    --with-jemalloc="$SOURCE_DIR/jemalloc-$JEMALLOC_VER" \
     --with-pcre="$SOURCE_DIR/pcre2-$PCRE_VER" \
     --with-zlib="$SOURCE_DIR/zlib-$ZLIB_VER" \
     --with-openssl="$SOURCE_DIR/openssl-$OPENSSL_VER" \
