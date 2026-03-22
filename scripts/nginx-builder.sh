@@ -1,5 +1,6 @@
 #!/bin/sh
 set -e
+. $(dirname "$0")/functions.sh
 
 # 更新并安装核心工具
 # gd-dev 包含了 libgd, libjpeg, libpng, libwebp 等所有开发头文件
@@ -26,7 +27,7 @@ apk add --no-cache \
     automake \
     autoconf
 
-NGINX_VER="1.29.5"
+NGINX_VER="1.29.6"
 PCRE_VER="10.47"
 ZLIB_VER="1.3.2"
 OPENSSL_VER="3.6.1"
@@ -39,26 +40,38 @@ INSTALL_DIR=$NGINX_PREFIX
 mkdir -p "$SOURCE_DIR"
 mkdir -p $NGINX_PREFIX
 
-# 1. 下载并解压所有组件源码
-echo "--- 下载源码 ---"
-cd "$SOURCE_DIR"
-echo "--- 正在下载并解压源码 ---"
+
 
 download_and_extract() {
     URL=$1
     NAME=$2
+    cd "$SOURCE_DIR"
     echo "正在处理: $NAME"
-    curl -L "$URL" -o "$NAME.tar.gz"
+    rm -rf $NAME
+    if [ ! -f "$FILE" ]; then
+      _blue "$FILE  not exists \n"
+      curl -L "$URL" -o "$NAME.tar.gz"
+            # 1. 下载并解压所有组件源码
+      _blue "--- 下载源码 ---"
+      _blue "--- 正在下载并解压源码 --- \n"
+    else
+      _green "$FILE already exists\n"
+    fi
     tar -xzf "$NAME.tar.gz"
-    rm "$NAME.tar.gz"
+    ls -alSh
+    tree -L 2
 }
 
-download_and_extract "https://github.com/nginx/nginx/releases/download/release-${NGINX_VER}/nginx-${NGINX_VER}.tar.gz" "nginx"
-download_and_extract "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz" "pcre"
-download_and_extract "https://github.com/madler/zlib/releases/download/v$ZLIB_VER/zlib-$ZLIB_VER.tar.gz"  "zlib"
-download_and_extract "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz" "openssl"
 
-ls -alSh
+function _prepare(){
+  cd "$ROOT_DIR"
+  download_and_extract "https://github.com/nginx/nginx/releases/download/release-${NGINX_VER}/nginx-${NGINX_VER}.tar.gz" "nginx"
+  download_and_extract "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-$PCRE_VER/pcre2-$PCRE_VER.tar.gz" "pcre"
+  download_and_extract "https://github.com/madler/zlib/releases/download/v$ZLIB_VER/zlib-$ZLIB_VER.tar.gz"  "zlib"
+  download_and_extract "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VER}/openssl-${OPENSSL_VER}.tar.gz" "openssl"
+}
+
+
 
 
 # 2. 获取架构信息定义文件名
@@ -103,7 +116,9 @@ CONF_ARGS="
 function build_and_upload_nginx(){
     # 3. 配置并编译
   echo "--- 开始配置 Nginx ---"
-  cd nginx-$NGINX_VER
+  cd "$ROOT_DIR"
+  tree -L 3
+  cd ${SOURCE_DIR}/nginx-$NGINX_VER
 
   # 关键点：--with-ld-opt="-static" 强制静态链接
   #-----------------------------------------------------------
@@ -198,10 +213,10 @@ function build_and_upload_nginx(){
 
 
 function build_nginx_brotli_module(){
+  cd "$ROOT_DIR"
   tree -L 3
-
+  cd ${SOURCE_DIR}
   git clone --recursive https://github.com/google/ngx_brotli.git
-  cd ngx_brotli
   cd ${SOURCE_DIR}/ngx_brotli/deps/brotli
   tree -L 3
   # 创建编译目录
@@ -287,8 +302,10 @@ function build_nginx_brotli_module(){
 }
 
 function main(){
+  _prepare
+  build_and_upload_nginx
+  _prepare
   build_nginx_brotli_module
-  # build_and_upload_nginx
 }
 
 main
