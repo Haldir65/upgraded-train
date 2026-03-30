@@ -9,10 +9,11 @@ RUN mkdir -p /home/toolchains && mkdir -p /builder/shared-workdir/build && apt u
     curl -o openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64.tar.zst -L ${SDK_URL_MIRROR} && \
     tar --zstd -xvf openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64.tar.zst -C /home/toolchains && rm -rf openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64.tar.zst && \
     tree -L 4 /home/toolchains && \
-    mv /home/toolchains/openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64/staging_dir /builder/shared-workdir/build/staging_dir && ls -al /home/toolchains && \
+    mv /home/toolchains/openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64/staging_dir /builder/shared-workdir/build/staging_dir && rm -rf /var/lib/apt/lists/* && locale-gen en_US.UTF-8 && ls -al /home/toolchains && \
     tree -L 4 /builder/shared-workdir/build/staging_dir
 
 ENV STAGING_DIR="/builder/shared-workdir/build/staging_dir"
 
-ENV LANG=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
