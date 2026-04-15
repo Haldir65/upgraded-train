@@ -27,10 +27,10 @@ apk add --no-cache \
     automake \
     autoconf
 
-NGINX_VER="1.29.7"
+NGINX_VER="1.30.0"
 PCRE_VER="10.47"
 ZLIB_VER="1.3.2"
-OPENSSL_VER="3.6.1"
+OPENSSL_VER="4.0.0"
 JEMALLOC_VER="5.3.0"
 
 ROOT_DIR=$(pwd)
