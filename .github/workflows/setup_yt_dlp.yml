@@ -89,7 +89,7 @@ jobs:
             # echo "vname=${find . -type f \( -name "*.mp4" -o -name "*.mkv" -o -name "*.webm" -o -name "*.m4a" \) -exec basename {}  \;}" >> $GITHUB_OUTPUT
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name:  video-assets-${{ github.run_id }} 
           path: dist

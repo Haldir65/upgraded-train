@@ -80,7 +80,7 @@ jobs:
 
     # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
     #   - name: Upload Artifacts
-    #     uses: actions/upload-artifact@v4
+    #     uses: actions/upload-artifact@v7
     #     with:
     #       name: grpc_assets
     #       path: workspace/grpc_install.zip
@@ -123,7 +123,7 @@ jobs:
 
     # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: grpc_lib_x86
           path: workspace/*.zip
@@ -167,7 +167,7 @@ jobs:
 
     # JavaScript Actions in Alpine containers are only supported on x64 Linux runners. Detected Linux Arm64
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: grpc_lib_darwin
           path: workspace/*.zip

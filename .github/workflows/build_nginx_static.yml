@@ -65,7 +65,7 @@ jobs:
             tar --directory ${{ github.workspace }}/local/nginx --create --xz --verbose --file nginx-${{ matrix.target.id }}.tar.xz .
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nginx-${{ matrix.target.id }}.tar.xz
           path: nginx-${{ matrix.target.id }}.tar.xz

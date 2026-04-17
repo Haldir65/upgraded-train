@@ -94,7 +94,7 @@ jobs:
           
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gcc${{ env.GCC_VERSION }}-${{ matrix.target.id }}-${{ matrix.target.os }}
           path: dist

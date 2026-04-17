@@ -73,7 +73,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload artifact (version)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-version
           path: release/version.txt
@@ -82,7 +82,7 @@ jobs:
           overwrite: true
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-binary-linux-${{ env.VERSION }}
           path: release
@@ -159,7 +159,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload artifact (version)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-version
           path: release/version.txt
@@ -168,7 +168,7 @@ jobs:
           overwrite: true
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-binary-linux-musl-${{ env.VERSION }}
           path: release
@@ -240,7 +240,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload artifact (version)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-version
           path: release/version.txt
@@ -249,7 +249,7 @@ jobs:
           overwrite: true
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-binary-windows-${{ env.VERSION }}
           path: release
@@ -319,7 +319,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Upload artifact (version)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-version
           path: ${{ env.MACOS_RELEASE_DIR }}/version.txt
@@ -328,7 +328,7 @@ jobs:
           overwrite: true
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: curl-binary-macos-${{ env.VERSION }}
           path: ${{ env.MACOS_RELEASE_DIR }}/release
@@ -414,7 +414,7 @@ jobs:
   #         token: ${{ secrets.GITHUB_TOKEN }}
 
   #     - name: Upload artifact
-  #       uses: actions/upload-artifact@v4
+  #       uses: actions/upload-artifact@v7
   #       with:
   #         name: curl-release-${{ env.VERSION }}
   #         path: release
