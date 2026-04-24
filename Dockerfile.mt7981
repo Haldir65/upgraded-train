@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:resolute
 
 ARG SDK_URL="https://archive.openwrt.org/releases/25.12.0-rc1/targets/mediatek/filogic/openwrt-sdk-25.12.0-rc1-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
 ARG SDK_URL_MIRROR="https://ftp.snt.utwente.nl/pub/software/openwrt/releases/25.12.2/targets/mediatek/filogic/openwrt-sdk-25.12.2-mediatek-filogic_gcc-14.3.0_musl.Linux-x86_64.tar.zst"
