@@ -1,3 +1,3 @@
 readonly ZLIB_VERSION=1.3.2
-readonly OPENSSL_VERSION=4.0.0
-readonly GRPC_VERSION=1.80.0
+readonly OPENSSL_VERSION=4.0.1
+readonly GRPC_VERSION=1.81.1
