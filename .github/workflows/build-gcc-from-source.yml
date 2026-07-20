@@ -20,7 +20,7 @@ jobs:
             host: 'x86_64-pc-linux-gnu'
 
           - id: 'linux-aarch64'
-            os: 'ubuntu-24.04-arm'
+            os: 'ubuntu-26.04-arm'
             target: 'aarch64-linux-gnu'
             host: 'aarch64-linux-gnu'
 
